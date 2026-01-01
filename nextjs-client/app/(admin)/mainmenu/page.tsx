@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
     Barcode,
     Scan,
@@ -27,7 +28,9 @@ const menuItems = [
     { title: "스캔 작업", icon: ClipboardList, color: "text-slate-800", href: "/scan-work" },
     { title: "Stock Eagle", icon: Bird, color: "text-slate-800", href: "/stock-eagle" },
     { title: "로케이션 관리", icon: MapPin, color: "text-slate-800", href: "/location-management" },
-    { title: "입고 업무", icon: PackagePlus, color: "text-slate-800", href: "/receiving-task" },
+    { title: "상품 등록", icon: PackagePlus, color: "text-slate-800", href: "/products/add" },
+    { title: "상품 조회", icon: PackagePlus, color: "text-slate-800", href: "/products" },
+    { title: "상품 조회2", icon: PackagePlus, color: "text-slate-800", href: "/products/list2" },
 ];
 
 export default function MainMenuPage() {
@@ -71,19 +74,24 @@ export default function MainMenuPage() {
             <main className="flex-1 p-4 bg-slate-50/50">
                 <div className="grid grid-cols-2 gap-3">
                     {menuItems.map((item, index) => (
-                        <Card
+                        <Link
                             key={index}
-                            className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-[0.98]"
+                            href={item.href}
+                            className="block"
                         >
-                            <CardContent className="flex flex-col items-center justify-center p-6 gap-3 min-h-[140px]">
-                                <div className={`${item.color} group-hover:scale-110 transition-transform`}>
-                                    <item.icon className="h-10 w-10 stroke-[1.5]" />
-                                </div>
-                                <span className="text-base font-bold text-center leading-tight">
-                                    {item.title}
-                                </span>
-                            </CardContent>
-                        </Card>
+                            <Card
+                                className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-[0.98]"
+                            >
+                                <CardContent className="flex flex-col items-center justify-center p-6 gap-3 min-h-[140px]">
+                                    <div className={`${item.color} group-hover:scale-110 transition-transform`}>
+                                        <item.icon className="h-10 w-10 stroke-[1.5]" />
+                                    </div>
+                                    <span className="text-base font-bold text-center leading-tight">
+                                        {item.title}
+                                    </span>
+                                </CardContent>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
 
