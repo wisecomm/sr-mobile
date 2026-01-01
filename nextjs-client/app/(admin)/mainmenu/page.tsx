@@ -30,7 +30,7 @@ const menuItems = [
     { title: "로케이션 관리", icon: MapPin, color: "text-slate-800", href: "/location-management" },
     { title: "상품 등록", icon: PackagePlus, color: "text-slate-800", href: "/products/add" },
     { title: "상품 조회", icon: PackagePlus, color: "text-slate-800", href: "/products" },
-    { title: "상품 조회2", icon: PackagePlus, color: "text-slate-800", href: "/products/list2" },
+    { title: "상품 조회2", icon: PackagePlus, color: "text-slate-800", href: "/tabtest" },
 ];
 
 export default function MainMenuPage() {
