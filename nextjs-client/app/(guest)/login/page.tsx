@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useTransition, useState } from "react";
-import Image from "next/image";
+import {
+  ScanBarcode,
+  Boxes,
+  IdCard,
+  LockKeyhole,
+  Eye,
+  EyeOff
+} from "lucide-react";
 import { login } from "@/app/actions/auth-actions";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -59,7 +66,7 @@ function Login() {
         }
 
         setUser(loginResult.data.user);
-        router.push('/paserver', { scroll: false });
+        router.push('/mainmenu', { scroll: false });
       } catch (error: unknown) {
         console.error("onSubmit error:", error);
         toast({
@@ -76,15 +83,8 @@ function Login() {
       {/* Header */}
       <div className="sticky top-0 z-20 w-full bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="flex items-center p-4 pb-3 justify-between max-w-md mx-auto w-full">
-          <div className="text-slate-900 flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-50 border border-slate-200">
-            <Image
-              src="/images/ap/scan-barcode.svg"
-              alt="Barcode Scanner"
-              width={24}
-              height={24}
-              className="brightness-0 saturate-100 invert-[39%] sepia-[91%] font-semibold saturate-[2586%] hue-rotate-[197deg] brightness-[98%] contrast-[93%]"
-              style={{ filter: "invert(42%) sepia(93%) saturate(1518%) hue-rotate(189deg) brightness(97%) contrast(92%)" }}
-            />
+          <div className="text-blue-600 flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 border border-blue-100">
+            <ScanBarcode className="h-6 w-6 stroke-[2.5]" />
           </div>
           <h2 className="text-slate-900 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
             재고 관리 시스템
@@ -95,13 +95,7 @@ function Login() {
       <main className="flex-1 flex flex-col w-full max-w-md mx-auto p-4 justify-center">
         <div className="flex flex-col items-center pb-8 pt-4">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
-            <Image
-              src="/images/ap/boxes.svg"
-              alt="Inventory"
-              width={32}
-              height={32}
-              className="invert brightness-0"
-            />
+            <Boxes className="h-9 w-9 text-white stroke-[1.5]" />
           </div>
           <h1 className="text-slate-900 tracking-tight text-[32px] font-bold leading-tight text-center mb-2">
             로그인
@@ -125,14 +119,8 @@ function Login() {
                   <FormControl>
                     <div className="flex w-full items-stretch rounded-xl shadow-sm">
                       <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                          <Image
-                            src="/images/ap/id-card-lanyard.svg"
-                            alt="ID Card"
-                            width={20}
-                            height={20}
-                            className="opacity-40"
-                          />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10 text-slate-400">
+                          <IdCard className="h-5 w-5" />
                         </div>
                         <input
                           {...field}
@@ -161,14 +149,8 @@ function Login() {
                   <FormControl>
                     <div className="flex w-full items-stretch rounded-xl shadow-sm">
                       <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                          <Image
-                            src="/images/ap/lock-keyhole.svg"
-                            alt="Lock"
-                            width={20}
-                            height={20}
-                            className="opacity-40"
-                          />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10 text-slate-400">
+                          <LockKeyhole className="h-5 w-5" />
                         </div>
                         <input
                           {...field}
@@ -182,13 +164,11 @@ function Login() {
                         className="flex items-center justify-center px-4 rounded-r-xl border border-l-0 border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors group"
                         type="button"
                       >
-                        <Image
-                          src={showPassword ? "/images/ap/eye.svg" : "/images/ap/eye-off.svg"}
-                          alt="Toggle Password"
-                          width={20}
-                          height={20}
-                          className="opacity-50 group-hover:opacity-80 transition-opacity"
-                        />
+                        {showPassword ? (
+                          <Eye className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                        ) : (
+                          <EyeOff className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                        )}
                       </button>
                     </div>
                   </FormControl>
