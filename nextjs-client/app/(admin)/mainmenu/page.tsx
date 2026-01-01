@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAppStore } from "@/store/useAppStore";
+import { useEffect, useState } from "react";
 
 const menuItems = [
     { title: "반품 스캔", icon: Barcode, color: "text-blue-600", href: "/return-scan" },
@@ -29,6 +31,16 @@ const menuItems = [
 ];
 
 export default function MainMenuPage() {
+    const user = useAppStore((state) => state.user);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (!mounted) return null;
+
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 max-w-md mx-auto border-x shadow-sm">
             {/* Header */}
@@ -36,11 +48,15 @@ export default function MainMenuPage() {
                 <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border">
                         <AvatarImage src="/images/avatar-placeholder.png" />
-                        <AvatarFallback className="bg-orange-100 text-orange-600">관리</AvatarFallback>
+                        <AvatarFallback className="bg-orange-100 text-orange-600">
+                            {user?.userName?.[0] || '管'}
+                        </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                        <span className="text-xs text-slate-500 font-medium">상고 A</span>
-                        <span className="text-sm font-bold">환영합니다, 관리자님</span>
+                        <span className="text-xs text-slate-500 font-medium">
+                            {user?.roles?.includes('ROLE_ADMIN') ? '관리자' : '사용자'}
+                        </span>
+                        <span className="text-sm font-bold">환영합니다, {user?.userName || '관리자'}님</span>
                     </div>
                 </div>
                 <div className="relative">
