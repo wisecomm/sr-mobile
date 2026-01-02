@@ -5,3 +5,5 @@
 
 # JWT 토큰 생성 
 : openssl rand -base64 32
+
+# 필요시 성능 모니터링 추가
