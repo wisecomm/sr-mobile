@@ -46,7 +46,7 @@ function Login() {
   useEffect(() => {
     const token = getAccessToken();
     if (token) {
-      router.replace("/paserver");
+      router.replace("/payments");
     }
   }, [router]);
 
