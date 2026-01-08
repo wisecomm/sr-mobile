@@ -64,8 +64,8 @@ export function ProductListGrid() {
 
             <main className="flex-1 px-4 pt-2 space-y-4 w-full">
                 <div className="flex justify-between items-end">
-                    <p className="text-slate-900 text-lg font-bold">검색 결과 <span className="text-blue-600">{table.getFilteredRowModel().rows.length}</span>건</p>
-                    <p className="text-slate-500 text-xs font-medium">최신순 정렬</p>
+                    <p className="text-foreground text-lg font-bold">검색 결과 <span className="text-primary">{table.getFilteredRowModel().rows.length}</span>건</p>
+                    <p className="text-muted-foreground text-xs font-medium">최신순 정렬</p>
                 </div>
 
                 <div className="flex flex-col gap-4">

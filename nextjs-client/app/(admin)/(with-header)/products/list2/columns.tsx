@@ -40,7 +40,7 @@ export const columns: ColumnDef<Product>[] = [
         accessorKey: "quantity",
         header: "입고 수량",
         cell: ({ row }) => (
-            <div className="font-bold text-blue-600">
+            <div className="font-bold text-primary">
                 {row.getValue("quantity")}
             </div>
         ),
@@ -49,7 +49,7 @@ export const columns: ColumnDef<Product>[] = [
         accessorKey: "date",
         header: "입고일",
         cell: ({ row }) => (
-            <div className="text-slate-500 whitespace-nowrap">
+            <div className="text-muted-foreground whitespace-nowrap">
                 {row.getValue("date")}
             </div>
         ),

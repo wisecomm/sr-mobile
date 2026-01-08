@@ -37,27 +37,27 @@ export default function ProductInquiryPage() {
     };
 
     return (
-        <div className="bg-slate-50 font-sans antialiased text-slate-900 min-h-screen flex flex-col max-w-md mx-auto border-x shadow-sm relative">
+        <div className="bg-muted font-sans antialiased text-foreground min-h-screen flex flex-col max-w-md mx-auto border-x shadow-sm relative">
             {/* Header */}
-            <header className="flex items-center gap-3 p-4 sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+            <header className="flex items-center gap-3 p-4 sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
                 <button
                     onClick={() => router.back()}
                     aria-label="뒤로가기"
                     className="flex items-center justify-center p-1 rounded-full hover:bg-black/5 transition-colors -ml-2"
                     type="button"
                 >
-                    <ChevronLeft className="h-6 w-6 text-slate-900" />
+                    <ChevronLeft className="h-6 w-6 text-foreground" />
                 </button>
-                <h1 className="text-lg font-bold text-slate-900 flex-1 text-center pr-8">상품 조회</h1>
+                <h1 className="text-lg font-bold text-foreground flex-1 text-center pr-8">상품 조회</h1>
             </header>
 
             {/* Filter Section */}
-            <div className="p-4 bg-white shadow-sm mb-4">
+            <div className="p-4 bg-background shadow-sm mb-4">
                 <div className="flex items-center gap-3 w-full">
-                    <p className="text-sm font-bold text-slate-900 leading-normal shrink-0">입고 날짜</p>
+                    <p className="text-sm font-bold text-foreground leading-normal shrink-0">입고 날짜</p>
                     <div className="relative flex-1">
                         <input
-                            className="w-full h-11 rounded-xl border border-slate-300 bg-white px-4 pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all shadow-sm font-normal text-sm"
+                            className="w-full h-11 rounded-xl border border-border bg-background px-4 pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm font-normal text-sm"
                             type="text"
                             placeholder="YYYY-MM-DD"
                             value={searchDate}
@@ -73,14 +73,14 @@ export default function ProductInquiryPage() {
                             style={{ right: 0, bottom: 0, width: 1, height: 1 }}
                         />
                         <button
-                            className="absolute right-0 top-0 h-11 w-10 flex items-center justify-center text-slate-500 hover:text-blue-600 transition-colors"
+                            className="absolute right-0 top-0 h-11 w-10 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                             type="button"
                             onClick={handleDateIconClick}
                         >
                             <Calendar className="h-4 w-4" />
                         </button>
                     </div>
-                    <button className="flex h-11 px-10 items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-all text-white font-bold text-sm shadow-md shrink-0">
+                    <button className="flex h-11 px-10 items-center justify-center rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all text-white font-bold text-sm shadow-md shrink-0">
                         <Search className="h-4 w-4 mr-1.5" />
                         <span>조회</span>
                     </button>
@@ -89,35 +89,35 @@ export default function ProductInquiryPage() {
 
             {/* Results Info */}
             <div className="px-4 pb-2 flex justify-between items-end">
-                <p className="text-slate-900 text-lg font-bold">검색 결과 <span className="text-blue-600">{products.length}</span>건</p>
-                <p className="text-slate-500 text-xs font-medium">최신순 정렬</p>
+                <p className="text-foreground text-lg font-bold">검색 결과 <span className="text-primary">{products.length}</span>건</p>
+                <p className="text-muted-foreground text-xs font-medium">최신순 정렬</p>
             </div>
 
             {/* Table Section */}
             <div className="p-4 pb-24">
-                <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className="w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm text-slate-900">
-                            <thead className="bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
+                        <table className="w-full text-left text-sm text-foreground">
+                            <thead className="bg-muted text-xs uppercase text-muted-foreground font-semibold border-b border-border">
                                 <tr>
-                                    <th className="px-4 py-3 text-center border-r border-slate-100 whitespace-nowrap">바코드</th>
-                                    <th className="px-4 py-3 text-center border-r border-slate-100 whitespace-nowrap">상품명</th>
-                                    <th className="px-4 py-3 text-center border-r border-slate-100 whitespace-nowrap">입고수량</th>
+                                    <th className="px-4 py-3 text-center border-r border-border/50 whitespace-nowrap">바코드</th>
+                                    <th className="px-4 py-3 text-center border-r border-border/50 whitespace-nowrap">상품명</th>
+                                    <th className="px-4 py-3 text-center border-r border-border/50 whitespace-nowrap">입고수량</th>
                                     <th className="px-4 py-3 text-center whitespace-nowrap">입고일</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-border/50">
                                 {products.map((p, i) => (
-                                    <tr key={i} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-4 py-4 text-center border-r border-slate-50 text-xs font-medium text-slate-600">{p.barcode}</td>
-                                        <td className="px-4 py-4 border-r border-slate-50">
+                                    <tr key={i} className="hover:bg-muted/50 transition-colors">
+                                        <td className="px-4 py-4 text-center border-r border-border/50 text-xs font-medium text-muted-foreground">{p.barcode}</td>
+                                        <td className="px-4 py-4 border-r border-border/50">
                                             <div className="font-bold truncate max-w-[120px]">{p.name}</div>
                                             {p.status && (
                                                 <div className={`text-[10px] font-bold mt-0.5 ${p.statusColor}`}>{p.status}</div>
                                             )}
                                         </td>
-                                        <td className="px-4 py-4 text-center border-r border-slate-50 font-bold text-blue-600 text-base">{p.quantity}</td>
-                                        <td className="px-4 py-4 text-center text-[11px] text-slate-500 whitespace-nowrap">{p.date}</td>
+                                        <td className="px-4 py-4 text-center border-r border-border/50 font-bold text-primary text-base">{p.quantity}</td>
+                                        <td className="px-4 py-4 text-center text-[11px] text-muted-foreground whitespace-nowrap">{p.date}</td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -58,12 +58,12 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
         <form className="flex flex-col gap-5 p-4" onSubmit={handleSubmit}>
             {/* Barcode Section */}
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-900" htmlFor="barcode">
+                <label className="text-sm font-semibold text-foreground" htmlFor="barcode">
                     상품 바코드
                 </label>
                 <div className="relative">
                     <input
-                        className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 pr-12 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all shadow-sm"
+                        className="w-full h-12 rounded-xl border border-border bg-background px-4 pr-12 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
                         id="barcode"
                         placeholder="바코드를 스캔하세요"
                         type="text"
@@ -71,23 +71,23 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
                         onChange={handleInputChange}
                     />
                     <button
-                        className="absolute right-0 top-0 h-12 w-12 flex items-center justify-center text-slate-500 hover:text-blue-600 transition-colors"
+                        className="absolute right-0 top-0 h-12 w-12 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                         type="button"
                     >
                         <Barcode className="h-6 w-6" />
                     </button>
                 </div>
-                <p className="text-xs text-slate-500">PDA 스캐너 버튼을 눌러 스캔하세요.</p>
+                <p className="text-xs text-muted-foreground">PDA 스캐너 버튼을 눌러 스캔하세요.</p>
             </div>
 
             {/* Receiving Date Section */}
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-900" htmlFor="receivingDate">
+                <label className="text-sm font-semibold text-foreground" htmlFor="receivingDate">
                     입고일자
                 </label>
                 <div className="relative">
                     <input
-                        className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 pr-12 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all shadow-sm"
+                        className="w-full h-12 rounded-xl border border-border bg-background px-4 pr-12 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
                         id="receivingDate"
                         placeholder="YYYY-MM-DD"
                         type="text"
@@ -106,7 +106,7 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
                         style={{ right: 0, bottom: 0, width: 1, height: 1 }}
                     />
                     <button
-                        className="absolute right-0 top-0 h-12 w-12 flex items-center justify-center text-slate-500 hover:text-blue-600 transition-colors"
+                        className="absolute right-0 top-0 h-12 w-12 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                         type="button"
                         onClick={handleDateIconClick}
                     >
@@ -117,11 +117,11 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
 
             {/* Product Name */}
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-900" htmlFor="productName">
+                <label className="text-sm font-semibold text-foreground" htmlFor="productName">
                     상품명
                 </label>
                 <input
-                    className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all shadow-sm"
+                    className="w-full h-12 rounded-xl border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
                     id="productName"
                     placeholder="상품명을 입력하세요"
                     type="text"
@@ -132,11 +132,11 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
 
             {/* Spec / Option */}
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-slate-900" htmlFor="spec">
+                <label className="text-sm font-semibold text-foreground" htmlFor="spec">
                     규격 / 옵션
                 </label>
                 <input
-                    className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none transition-all shadow-sm"
+                    className="w-full h-12 rounded-xl border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
                     id="spec"
                     placeholder="예: 500ml, XL, Red"
                     type="text"
@@ -148,12 +148,12 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
             {/* Unit and Category Grid */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-900" htmlFor="unit">
+                    <label className="text-sm font-semibold text-foreground" htmlFor="unit">
                         단위
                     </label>
                     <div className="relative">
                         <select
-                            className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 pr-10 text-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none appearance-none shadow-sm"
+                            className="w-full h-12 rounded-xl border border-border bg-background px-4 pr-10 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none shadow-sm"
                             id="unit"
                             value={formData.unit}
                             onChange={handleInputChange}
@@ -164,18 +164,18 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
                             <option value="KG">KG (킬로그램)</option>
                             <option value="SET">SET (세트)</option>
                         </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                             <ChevronDown className="h-5 w-5" />
                         </div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-semibold text-slate-900" htmlFor="category">
+                    <label className="text-sm font-semibold text-foreground" htmlFor="category">
                         카테고리
                     </label>
                     <div className="relative">
                         <select
-                            className="w-full h-12 rounded-xl border border-slate-300 bg-white px-4 pr-10 text-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none appearance-none shadow-sm"
+                            className="w-full h-12 rounded-xl border border-border bg-background px-4 pr-10 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none shadow-sm"
                             id="category"
                             value={formData.category}
                             onChange={handleInputChange}
@@ -187,7 +187,7 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
                             <option value="raw">원자재</option>
                             <option value="etc">기타</option>
                         </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                             <ChevronDown className="h-5 w-5" />
                         </div>
                     </div>
@@ -197,14 +197,14 @@ export function ProductAddForm({ onSuccess }: ProductAddFormProps) {
             {/* Action Buttons */}
             <div className="flex gap-3 mt-4">
                 <button
-                    className="flex-1 h-12 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 font-bold text-base active:bg-slate-200 transition-colors"
+                    className="flex-1 h-12 rounded-xl bg-muted border border-border text-foreground font-bold text-base active:bg-muted/80 transition-colors"
                     type="button"
                     onClick={handleReset}
                 >
                     초기화
                 </button>
                 <button
-                    className="flex-1 h-12 rounded-xl bg-blue-600 text-white font-bold text-base shadow-md active:bg-blue-700 transition-colors"
+                    className="flex-1 h-12 rounded-xl bg-primary text-white font-bold text-base shadow-md active:bg-primary/90 transition-colors"
                     type="submit"
                 >
                     등록

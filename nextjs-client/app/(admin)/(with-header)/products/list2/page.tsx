@@ -59,18 +59,18 @@ export default function ProductsList2Page() {
     });
 
     return (
-        <div className="bg-slate-50 font-sans antialiased text-slate-900 min-h-screen flex flex-col max-w-md mx-auto border-x shadow-sm">
+        <div className="bg-muted font-sans antialiased text-foreground min-h-screen flex flex-col max-w-md mx-auto border-x shadow-sm">
             {/* Header */}
-            <header className="flex items-center gap-3 p-4 sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+            <header className="flex items-center gap-3 p-4 sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
                 <button
                     onClick={() => router.back()}
                     aria-label="뒤로가기"
                     className="flex items-center justify-center p-1 rounded-full hover:bg-black/5 transition-colors -ml-2"
                     type="button"
                 >
-                    <ChevronLeft className="h-6 w-6 text-slate-900" />
+                    <ChevronLeft className="h-6 w-6 text-foreground" />
                 </button>
-                <h1 className="text-xl font-bold text-slate-900">상품 목록 (Grid)</h1>
+                <h1 className="text-xl font-bold text-foreground">상품 목록 (Grid)</h1>
             </header>
 
             {/* Filter Section (Moved outside main to remove side margins) */}
@@ -84,12 +84,12 @@ export default function ProductsList2Page() {
             <main className="flex-1 px-4 pt-2 space-y-4 w-full">
                 {/* Results Info */}
                 <div className="flex justify-between items-end">
-                    <p className="text-slate-900 text-lg font-bold">검색 결과 <span className="text-blue-600">{table.getFilteredRowModel().rows.length}</span>건</p>
-                    <p className="text-slate-500 text-xs font-medium">최신순 정렬</p>
+                    <p className="text-foreground text-lg font-bold">검색 결과 <span className="text-primary">{table.getFilteredRowModel().rows.length}</span>건</p>
+                    <p className="text-muted-foreground text-xs font-medium">최신순 정렬</p>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+                    <div className="rounded-xl border bg-background shadow-sm overflow-hidden">
                         <DataTable table={table} />
                     </div>
                 </div>
