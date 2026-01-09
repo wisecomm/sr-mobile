@@ -4,39 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-    ChevronLeft,
-    ChevronRight,
-    LogOut,
-    ChevronDown,
-    LucideIcon,
-} from "lucide-react";
+import { ChevronDown, LucideIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useMyMenus } from "@/hooks/use-menu-query";
 import { MenuInfo } from "@/types";
-
-
-
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface SidebarItem {
     id: string;
@@ -56,13 +33,16 @@ const staticSidebarItems: SidebarItem[] = [
     },
 ];
 
+/**
+ * 메뉴 데이터를 트리 구조로 변환
+ */
 const buildMenuTree = (menus: MenuInfo[]): SidebarItem[] => {
     const menuMap: Record<string, SidebarItem> = {};
     const rootItems: SidebarItem[] = [];
 
     // 1. Map all items (Level 2 and below)
     menus.forEach((menu) => {
-        if (menu.menuLvl === 1) return; // Skip Level 1 root
+        if (menu.menuLvl === 1) return;
 
         menuMap[menu.menuId] = {
             id: menu.menuId,
@@ -75,20 +55,15 @@ const buildMenuTree = (menus: MenuInfo[]): SidebarItem[] => {
 
     // 2. Build hierarchy
     menus.forEach((menu) => {
-        if (menu.menuLvl === 1) return; // Skip Level 1
+        if (menu.menuLvl === 1) return;
 
         const item = menuMap[menu.menuId];
 
-        // Root candidate if level is 2
         if (menu.menuLvl === 2) {
             rootItems.push(item);
-        }
-        // Otherwise, try to find parent
-        else if (menu.upperMenuId && menuMap[menu.upperMenuId]) {
+        } else if (menu.upperMenuId && menuMap[menu.upperMenuId]) {
             menuMap[menu.upperMenuId].children!.push(item);
-        }
-        // Fallback for Level 3+ with missing parent (should be avoided by Backend recursive fetch)
-        else {
+        } else {
             rootItems.push(item);
         }
     });
@@ -108,17 +83,14 @@ const buildMenuTree = (menus: MenuInfo[]): SidebarItem[] => {
     return rootItems;
 };
 
-
+/**
+ * 아이콘 렌더러
+ */
 const IconRenderer = ({ icon: Icon, image, className }: { icon?: LucideIcon, image?: string, className?: string }) => {
     if (image) {
         return (
-            <div className={cn("relative h-6 w-6 shrink-0", className)}>
-                <Image
-                    src={image}
-                    alt=""
-                    fill
-                    className="object-contain"
-                />
+            <div className={cn("relative h-5 w-5 shrink-0", className)}>
+                <Image src={image} alt="" fill className="object-contain" />
             </div>
         );
     }
@@ -131,7 +103,6 @@ const IconRenderer = ({ icon: Icon, image, className }: { icon?: LucideIcon, ima
 export function Sidebar() {
     const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
     const { data: menus } = useMyMenus();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
     const [hasInitializedGroups, setHasInitializedGroups] = useState(false);
@@ -143,7 +114,7 @@ export function Sidebar() {
         return () => clearTimeout(timer);
     }, []);
 
-    // Initial groups open only once when menus are first loaded
+    // 메뉴 로드 시 모든 그룹 열기
     if (menus && menus.length > 0 && !hasInitializedGroups) {
         const dynamicItems = buildMenuTree(menus);
         const initialOpen: Record<string, boolean> = {};
@@ -154,159 +125,93 @@ export function Sidebar() {
         setHasInitializedGroups(true);
     }
 
-
     const toggleGroup = (title: string) => {
-        setOpenGroups((prev: Record<string, boolean>) => ({ ...prev, [title]: !prev[title] }));
+        setOpenGroups(prev => ({ ...prev, [title]: !prev[title] }));
     };
 
     if (!mounted) return null;
 
     return (
-        <TooltipProvider>
-            <div
-                className={cn(
-                    "relative flex flex-col border-r bg-muted/40 transition-all duration-300 dark:bg-card/40",
-                    isCollapsed ? "w-[70px]" : "w-[240px]"
-                )}
-            >
-                <div className="flex h-full flex-col gap-2">
-                    <div className="flex h-[60px] items-center border-b px-4 justify-between">
-                        {!isCollapsed && (
-                            <Link href="/" className="flex items-center gap-2 font-semibold">
-                                <Image
-                                    src="/next.svg"
-                                    alt="Logo"
-                                    width={24}
-                                    height={24}
-                                    className="dark:invert"
-                                />
-                                <span className="text-lg">Admin Panel</span>
-                            </Link>
-                        )}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn("h-8 w-8", isCollapsed && "mx-auto")}
-                            onClick={() => setIsCollapsed(!isCollapsed)}
-                        >
-                            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-                        </Button>
-                    </div>
-                    <div className="flex-1 overflow-auto py-2">
-                        <nav className="grid items-start px-2 text-sm font-medium gap-1">
-                            {sidebarItems.map((item) => {
-                                if (item.children) {
-                                    // Group Item
-                                    if (isCollapsed) {
-                                        return (
-                                            <DropdownMenu key={item.id}>
-                                                <Tooltip delayDuration={0}>
-                                                    <TooltipTrigger asChild>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="flex h-9 w-full items-center justify-center p-0"
-                                                            >
-                                                                <IconRenderer icon={item.icon} image={item.image} />
-                                                                <span className="sr-only">{item.title}</span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent side="right">
-                                                        {item.title}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <DropdownMenuContent side="right" align="start" className="w-48">
-                                                    <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    {item.children.map((child) => (
-                                                        <DropdownMenuItem key={child.id} asChild>
-                                                            <Link href={child.href || "#"} className="cursor-pointer">
-                                                                <IconRenderer icon={child.icon} image={child.image} className="mr-2" />
-                                                                <span>{child.title}</span>
-                                                            </Link>
-                                                        </DropdownMenuItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        );
-                                    } else {
-                                        return (
-                                            <Collapsible
-                                                key={item.id}
-                                                open={openGroups[item.title]}
-                                                onOpenChange={() => toggleGroup(item.title)}
-                                                className="w-full"
-                                            >
-                                                <CollapsibleTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="flex w-full items-center justify-between p-2 hover:bg-muted dark:hover:bg-card"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <IconRenderer icon={item.icon} image={item.image} />
-                                                            <span className="font-semibold">{item.title}</span>
-                                                        </div>
-                                                        <ChevronDown
-                                                            className={cn(
-                                                                "h-4 w-4 transition-transform duration-200",
-                                                                openGroups[item.title] ? "" : "-rotate-90"
-                                                            )}
-                                                        />
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                                <CollapsibleContent className="space-y-1 px-2 py-1">
-                                                    {item.children.map((child) => (
-                                                        <Link
-                                                            key={child.id}
-                                                            href={child.href || "#"}
-                                                            className={cn(
-                                                                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary pl-9",
-                                                                pathname === child.href
-                                                                    ? "bg-muted text-primary dark:bg-card"
-                                                                    : "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            <IconRenderer icon={child.icon} image={child.image} />
-                                                            <span>{child.title}</span>
-                                                        </Link>
-                                                    ))}
-                                                </CollapsibleContent>
-                                            </Collapsible>
-                                        );
-                                    }
-                                } else {
-                                    // Single Item
-                                    return (
-                                        <Tooltip key={item.id}>
-                                            <TooltipTrigger asChild>
-                                                <Link
-                                                    href={item.href || "#"}
-                                                    className={cn(
-                                                        "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                                                        pathname === item.href
-                                                            ? "bg-muted text-primary dark:bg-card"
-                                                            : "text-muted-foreground",
-                                                        isCollapsed && "justify-center px-2"
-                                                    )}
-                                                >
-                                                    <IconRenderer icon={item.icon} image={item.image} />
-                                                    {!isCollapsed && <span>{item.title}</span>}
-                                                </Link>
-                                            </TooltipTrigger>
-                                            {isCollapsed && (
-                                                <TooltipContent side="right">
-                                                    {item.title}
-                                                </TooltipContent>
-                                            )}
-                                        </Tooltip>
-                                    );
-                                }
-                            })}
-                        </nav>
-                    </div>
-                </div>
+        <div className="flex flex-col w-[240px] border-r bg-muted/40 dark:bg-card/40">
+            {/* 로고 */}
+            <div className="flex h-[60px] items-center border-b px-4">
+                <Link href="/" className="flex items-center gap-2 font-semibold">
+                    <Image
+                        src="/next.svg"
+                        alt="Logo"
+                        width={24}
+                        height={24}
+                        className="dark:invert"
+                    />
+                    <span className="text-lg">Admin Panel</span>
+                </Link>
             </div>
-        </TooltipProvider>
+
+            {/* 메뉴 */}
+            <nav className="flex-1 overflow-auto py-2 px-2">
+                <div className="grid gap-1 text-sm font-medium">
+                    {sidebarItems.map((item) => (
+                        item.children ? (
+                            // 그룹 메뉴
+                            <Collapsible
+                                key={item.id}
+                                open={openGroups[item.title]}
+                                onOpenChange={() => toggleGroup(item.title)}
+                            >
+                                <CollapsibleTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="flex w-full items-center justify-between p-2 hover:bg-muted dark:hover:bg-card"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <IconRenderer icon={item.icon} image={item.image} />
+                                            <span className="font-semibold">{item.title}</span>
+                                        </div>
+                                        <ChevronDown
+                                            className={cn(
+                                                "h-4 w-4 transition-transform duration-200",
+                                                openGroups[item.title] ? "" : "-rotate-90"
+                                            )}
+                                        />
+                                    </Button>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="space-y-1 px-2 py-1">
+                                    {item.children.map((child) => (
+                                        <Link
+                                            key={child.id}
+                                            href={child.href || "#"}
+                                            className={cn(
+                                                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary pl-9",
+                                                pathname === child.href
+                                                    ? "bg-muted text-primary dark:bg-card"
+                                                    : "text-muted-foreground"
+                                            )}
+                                        >
+                                            <IconRenderer icon={child.icon} image={child.image} />
+                                            <span>{child.title}</span>
+                                        </Link>
+                                    ))}
+                                </CollapsibleContent>
+                            </Collapsible>
+                        ) : (
+                            // 단일 메뉴
+                            <Link
+                                key={item.id}
+                                href={item.href || "#"}
+                                className={cn(
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                                    pathname === item.href
+                                        ? "bg-muted text-primary dark:bg-card"
+                                        : "text-muted-foreground"
+                                )}
+                            >
+                                <IconRenderer icon={item.icon} image={item.image} />
+                                <span>{item.title}</span>
+                            </Link>
+                        )
+                    ))}
+                </div>
+            </nav>
+        </div>
     );
 }

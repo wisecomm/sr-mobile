@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { ToastProvider } from "@/hooks/use-toast";
+import { SessionManager } from "@/components/session-manager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,10 +15,6 @@ export const metadata: Metadata = {
   description: "PDA 기반 재고 관리 시스템",
 };
 
-import { QueryProvider } from "@/components/providers/query-provider";
-import { ToastProvider } from "@/hooks/use-toast";
-import { SessionManager } from "@/components/session-manager";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +22,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <head />
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <QueryProvider>
           <ToastProvider>
