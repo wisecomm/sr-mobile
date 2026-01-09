@@ -1,74 +1,57 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMenus, getMyMenus, createMenu, updateMenu, deleteMenu } from "@/app/(admin)/(with-header)/menus/actions";
-import { MenuInfo } from "@/types";
+/**
+ * Menu Query Hooks (Refactored)
+ * 
+ * 표준화된 팩토리 함수를 사용하여 리팩토링
+ */
 
+import { menuApi } from '@/lib/api';
+import { MenuInfo } from '@/types';
+import { createQuery, createMutation } from './query/factory';
+
+/**
+ * Query Keys
+ */
 export const menuKeys = {
-    all: ["menus"] as const,
-    lists: () => [...menuKeys.all, "list"] as const,
-    my: () => [...menuKeys.all, "my"] as const,
-    detail: (id: string) => [...menuKeys.all, "detail", id] as const,
+    all: ['menus'] as const,
+    lists: () => [...menuKeys.all, 'list'] as const,
+    my: () => [...menuKeys.all, 'my'] as const,
+    detail: (id: string) => [...menuKeys.all, 'detail', id] as const,
 };
 
-export function useMyMenus() {
-    return useQuery({
-        queryKey: menuKeys.my(),
-        queryFn: async () => {
-            const res = await getMyMenus();
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data || [];
-        },
-    });
-}
+/**
+ * Queries
+ */
 
-export function useMenus() {
-    return useQuery({
-        queryKey: menuKeys.lists(),
-        queryFn: async () => {
-            const res = await getMenus();
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data || [];
-        },
-    });
-}
+// 전체 메뉴 목록 조회
+export const useMenus = createQuery<MenuInfo[], void>({
+    queryKey: () => menuKeys.lists(),
+    queryFn: () => menuApi.getList(),
+});
 
-export function useCreateMenu() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (data: Partial<MenuInfo>) => {
-            const res = await createMenu(data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: menuKeys.all });
-        },
-    });
-}
+// 내 메뉴 목록 조회
+export const useMyMenus = createQuery<MenuInfo[], void>({
+    queryKey: () => menuKeys.my(),
+    queryFn: () => menuApi.getMyMenus(),
+});
 
-export function useUpdateMenu() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<MenuInfo> }) => {
-            const res = await updateMenu(id, data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: menuKeys.all });
-        },
-    });
-}
+/**
+ * Mutations
+ */
 
-export function useDeleteMenu() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const res = await deleteMenu(id);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: menuKeys.all });
-        },
-    });
-}
+// 메뉴 생성
+export const useCreateMenu = createMutation<void, Partial<MenuInfo>>({
+    mutationFn: (data) => menuApi.create(data),
+    invalidateKeys: [menuKeys.all],
+});
+
+// 메뉴 수정
+export const useUpdateMenu = createMutation<void, { id: string; data: Partial<MenuInfo> }>({
+    mutationFn: ({ id, data }) => menuApi.update(id, data),
+    invalidateKeys: [menuKeys.all],
+});
+
+// 메뉴 삭제
+export const useDeleteMenu = createMutation<void, string>({
+    mutationFn: (id) => menuApi.delete(id),
+    invalidateKeys: [menuKeys.all],
+});

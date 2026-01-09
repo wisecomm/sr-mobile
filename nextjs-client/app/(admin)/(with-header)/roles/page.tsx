@@ -23,7 +23,7 @@ export default function RolesPage() {
 
     const [searchId, setSearchId] = React.useState<string | undefined>(undefined);
 
-    const { data: rolesData } = useRoles(pagination.pageIndex, pagination.pageSize, searchId);
+    const { data: rolesData } = useRoles({ page: pagination.pageIndex, size: pagination.pageSize, searchId });
     const createRoleMutation = useCreateRole();
     const updateRoleMutation = useUpdateRole();
     const deleteRoleMutation = useDeleteRole();

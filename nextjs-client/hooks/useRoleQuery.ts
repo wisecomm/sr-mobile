@@ -1,93 +1,73 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getRoles, createRole, updateRole, deleteRole, getRoleMenus, assignRoleMenus } from "@/app/(admin)/(with-header)/roles/actions";
-import { RoleInfo } from "@/types";
+/**
+ * Role Query Hooks (Refactored)
+ * 
+ * 표준화된 팩토리 함수를 사용하여 리팩토링
+ */
 
+import { roleApi } from '@/lib/api';
+import { RoleInfo, PageResponse } from '@/types';
+import { createPaginatedQuery, createMutation } from './query/factory';
+
+/**
+ * Query Keys
+ */
 export const roleKeys = {
-    all: ["roles"] as const,
-    lists: () => [...roleKeys.all, "list"] as const,
-    list: (page: number, size: number, searchId?: string) => [...roleKeys.lists(), { page, size, searchId }] as const,
-    detail: (id: string) => [...roleKeys.all, "detail", id] as const,
-    menus: (id: string) => [...roleKeys.detail(id), "menus"] as const,
+    all: ['roles'] as const,
+    lists: () => [...roleKeys.all, 'list'] as const,
+    list: (page: number, size: number, searchId?: string) => 
+        [...roleKeys.lists(), { page, size, searchId }] as const,
+    detail: (id: string) => [...roleKeys.all, 'detail', id] as const,
+    menus: (id: string) => [...roleKeys.detail(id), 'menus'] as const,
 };
 
-export function useRoles(page: number, size: number, searchId?: string) {
-    return useQuery({
-        queryKey: roleKeys.list(page, size, searchId),
-        queryFn: async () => {
-            // If default pagination/search is needed, handle undefined searchId
-            const res = await getRoles(page, size, searchId);
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data;
-        },
-        placeholderData: (previousData) => previousData,
-    });
-}
+/**
+ * Queries
+ */
 
-export function useRoleMenus(roleId: string | undefined) {
-    return useQuery({
-        queryKey: roleKeys.menus(roleId || ""),
-        queryFn: async () => {
-            const res = await getRoleMenus(roleId!);
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data || [];
-        },
-        enabled: !!roleId,
-    });
-}
+// 역할 목록 조회
+export const useRoles = createPaginatedQuery<
+    PageResponse<RoleInfo>,
+    { page: number; size: number; searchId?: string }
+>({
+    queryKey: (params) => roleKeys.list(params.page, params.size, params.searchId),
+    queryFn: (params) => roleApi.search(params),
+});
 
-export function useCreateRole() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (data: Partial<RoleInfo>) => {
-            const res = await createRole(data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: roleKeys.all });
-        },
-    });
-}
+// 역할 메뉴 목록 조회
+export const useRoleMenus = createPaginatedQuery<
+    string[],
+    { roleId: string }
+>({
+    queryKey: (params) => roleKeys.menus(params.roleId),
+    queryFn: (params) => roleApi.getMenus(params.roleId),
+    enabled: (params) => !!params.roleId,
+    placeholderData: false,
+});
 
-export function useUpdateRole() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<RoleInfo> }) => {
-            const res = await updateRole(id, data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: roleKeys.all });
-        },
-    });
-}
+/**
+ * Mutations
+ */
 
-export function useDeleteRole() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const res = await deleteRole(id);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: roleKeys.all });
-        },
-    });
-}
+// 역할 생성
+export const useCreateRole = createMutation<void, Partial<RoleInfo>>({
+    mutationFn: (data) => roleApi.create(data),
+    invalidateKeys: [roleKeys.all],
+});
 
-export function useAssignRoleMenus() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ roleId, menuIds }: { roleId: string; menuIds: string[] }) => {
-            const res = await assignRoleMenus(roleId, menuIds);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: roleKeys.menus(variables.roleId) });
-            queryClient.invalidateQueries({ queryKey: roleKeys.all });
-        },
-    });
-}
+// 역할 수정
+export const useUpdateRole = createMutation<void, { id: string; data: Partial<RoleInfo> }>({
+    mutationFn: ({ id, data }) => roleApi.update(id, data),
+    invalidateKeys: [roleKeys.all],
+});
+
+// 역할 삭제
+export const useDeleteRole = createMutation<void, string>({
+    mutationFn: (id) => roleApi.delete(id),
+    invalidateKeys: [roleKeys.all],
+});
+
+// 역할 메뉴 부여
+export const useAssignRoleMenus = createMutation<void, { roleId: string; menuIds: string[] }>({
+    mutationFn: ({ roleId, menuIds }) => roleApi.assignMenus(roleId, menuIds),
+    invalidateKeys: [roleKeys.all],
+});

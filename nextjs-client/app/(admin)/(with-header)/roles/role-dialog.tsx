@@ -48,7 +48,7 @@ export function RoleDialog({ open, onOpenChange, role, onSubmit }: RoleDialogPro
     const isEdit = !!role;
 
     const { data: allMenus = [] } = useMenus();
-    const { data: fetchedRoleMenuIds, isLoading: isRoleMenusLoading } = useRoleMenus(role?.roleId);
+    const { data: fetchedRoleMenuIds, isLoading: isRoleMenusLoading } = useRoleMenus({ roleId: role?.roleId || "" });
     const roleMenuIds = React.useMemo(() => fetchedRoleMenuIds || [], [fetchedRoleMenuIds]);
 
     const form = useForm<RoleFormValues>({

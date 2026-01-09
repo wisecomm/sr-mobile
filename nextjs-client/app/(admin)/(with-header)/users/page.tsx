@@ -39,7 +39,7 @@ export default function UsersPage() {
         pageSize: 10,
     });
 
-    const { data: usersData, isLoading } = useUsers(pagination.pageIndex, pagination.pageSize, searchParams.userName, searchParams.startDate, searchParams.endDate);
+    const { data: usersData, isLoading } = useUsers({ page: pagination.pageIndex, size: pagination.pageSize, userName: searchParams.userName, startDate: searchParams.startDate, endDate: searchParams.endDate });
     const createUserMutation = useCreateUser();
     const updateUserMutation = useUpdateUser();
     const deleteUserMutation = useDeleteUser();

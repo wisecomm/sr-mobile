@@ -45,8 +45,8 @@ interface UserDialogProps {
 
 export function UserDialog({ open, onOpenChange, user, onSubmit }: UserDialogProps) {
     const isEdit = !!user;
-    const { data: rolesData } = useRoles(0, 100);
-    const { data: fetchedRoleIds, isLoading: isUserRolesLoading } = useUserRoles(user?.userId);
+    const { data: rolesData } = useRoles({ page: 0, size: 100 });
+    const { data: fetchedRoleIds, isLoading: isUserRolesLoading } = useUserRoles({ userId: user?.userId || "" });
     const assignedRoleIds = React.useMemo(() => fetchedRoleIds || [], [fetchedRoleIds]);
 
     const allRoles = React.useMemo(() => {

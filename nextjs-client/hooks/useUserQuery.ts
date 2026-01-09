@@ -1,92 +1,73 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsers, createUser, updateUser, deleteUser, getUserRoles, assignUserRoles } from "@/app/(admin)/(with-header)/users/actions";
-import { UserDetail } from "@/types";
+/**
+ * User Query Hooks (Refactored)
+ * 
+ * 표준화된 팩토리 함수를 사용하여 리팩토링
+ */
 
+import { userApi } from '@/lib/api';
+import { UserDetail, PageResponse } from '@/types';
+import { createPaginatedQuery, createMutation } from './query/factory';
+
+/**
+ * Query Keys
+ */
 export const userKeys = {
-    all: ["users"] as const,
-    lists: () => [...userKeys.all, "list"] as const,
-    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string) => [...userKeys.lists(), { page, size, userName, startDate, endDate }] as const,
-    detail: (id: string) => [...userKeys.all, "detail", id] as const,
-    roles: (id: string) => [...userKeys.detail(id), "roles"] as const,
+    all: ['users'] as const,
+    lists: () => [...userKeys.all, 'list'] as const,
+    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string) => 
+        [...userKeys.lists(), { page, size, userName, startDate, endDate }] as const,
+    detail: (id: string) => [...userKeys.all, 'detail', id] as const,
+    roles: (id: string) => [...userKeys.detail(id), 'roles'] as const,
 };
 
-export function useUsers(page: number, size: number, userName?: string, startDate?: string, endDate?: string) {
-    return useQuery({
-        queryKey: userKeys.list(page, size, userName, startDate, endDate),
-        queryFn: async () => {
-            const res = await getUsers(page, size, userName, startDate, endDate);
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data;
-        },
-        placeholderData: (previousData) => previousData, // Keep data while fetching new page
-    });
-}
+/**
+ * Queries
+ */
 
-export function useUserRoles(userId: string | undefined) {
-    return useQuery({
-        queryKey: userKeys.roles(userId || ""),
-        queryFn: async () => {
-            const res = await getUserRoles(userId!);
-            if (res.code !== "200") throw new Error(res.message);
-            return res.data || [];
-        },
-        enabled: !!userId,
-    });
-}
+// 사용자 목록 조회
+export const useUsers = createPaginatedQuery<
+    PageResponse<UserDetail>,
+    { page: number; size: number; userName?: string; startDate?: string; endDate?: string }
+>({
+    queryKey: (params) => userKeys.list(params.page, params.size, params.userName, params.startDate, params.endDate),
+    queryFn: (params) => userApi.search(params),
+});
 
-export function useCreateUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (data: Partial<UserDetail>) => {
-            const res = await createUser(data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-        },
-    });
-}
+// 사용자 역할 목록 조회
+export const useUserRoles = createPaginatedQuery<
+    string[],
+    { userId: string }
+>({
+    queryKey: (params) => userKeys.roles(params.userId),
+    queryFn: (params) => userApi.getRoles(params.userId),
+    enabled: (params) => !!params.userId,
+    placeholderData: false,
+});
 
-export function useUpdateUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<UserDetail> }) => {
-            const res = await updateUser(id, data);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-        },
-    });
-}
+/**
+ * Mutations
+ */
 
-export function useDeleteUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const res = await deleteUser(id);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-        },
-    });
-}
+// 사용자 생성
+export const useCreateUser = createMutation<void, Partial<UserDetail>>({
+    mutationFn: (data) => userApi.create(data),
+    invalidateKeys: [userKeys.all],
+});
 
-export function useAssignUserRoles() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async ({ userId, roleIds }: { userId: string; roleIds: string[] }) => {
-            const res = await assignUserRoles(userId, roleIds);
-            if (res.code !== "200") throw new Error(res.message);
-            return res;
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: userKeys.roles(variables.userId) });
-            queryClient.invalidateQueries({ queryKey: userKeys.all });
-        },
-    });
-}
+// 사용자 수정
+export const useUpdateUser = createMutation<void, { id: string; data: Partial<UserDetail> }>({
+    mutationFn: ({ id, data }) => userApi.update(id, data),
+    invalidateKeys: [userKeys.all],
+});
+
+// 사용자 삭제
+export const useDeleteUser = createMutation<void, string>({
+    mutationFn: (id) => userApi.delete(id),
+    invalidateKeys: [userKeys.all],
+});
+
+// 사용자 역할 부여
+export const useAssignUserRoles = createMutation<void, { userId: string; roleIds: string[] }>({
+    mutationFn: ({ userId, roleIds }) => userApi.assignRoles(userId, roleIds),
+    invalidateKeys: [userKeys.all],
+});
