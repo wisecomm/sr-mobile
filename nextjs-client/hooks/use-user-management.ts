@@ -12,7 +12,7 @@ import {
     useUpdateUser, 
     useDeleteUser, 
     useAssignUserRoles 
-} from '@/hooks/useUserQuery';
+} from '@/hooks/use-user-query';
 import { useToast } from '@/hooks/use-toast';
 import { UserDetail } from '@/types';
 

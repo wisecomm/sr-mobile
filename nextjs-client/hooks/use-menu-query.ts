@@ -4,7 +4,7 @@
  * 표준화된 팩토리 함수를 사용하여 리팩토링
  */
 
-import { menuApi } from '@/lib/api';
+import { menuApi } from '@/app/(admin)/(with-header)/menus/api';
 import { MenuInfo } from '@/types';
 import { createQuery, createMutation } from './query/factory';
 

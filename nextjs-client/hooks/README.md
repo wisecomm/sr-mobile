@@ -8,13 +8,31 @@
 
 ```
 hooks/
-├── query/                      # React Query 관련
-│   ├── factory.ts             # 쿼리/뮤테이션 팩토리
+├── index.ts                        # 중앙 export
+├── query/                          # React Query 관련
+│   ├── factory.ts                 # 쿼리/뮤테이션 팩토리
 │   └── README.md
-├── use-user-management.ts     # 사용자 관리 비즈니스 로직
-├── useAuth.ts                 # 인증 관련 훅
-├── use-toast.tsx              # Toast 알림
-└── useXxxQuery.ts             # React Query 훅들
+├── use-user-management.ts          # 사용자 관리 비즈니스 로직
+├── use-role-management.ts          # 역할 관리 비즈니스 로직
+├── use-menu-management.ts          # 메뉴 관리 비즈니스 로직
+├── use-board-master-management.ts  # 게시판 마스터 관리 비즈니스 로직
+├── use-board-post-management.ts    # 게시물 관리 비즈니스 로직
+├── use-auth.ts                     # 인증 관련 훅
+├── use-toast.tsx                   # Toast 알림
+└── use-*-query.ts                  # React Query 훅들
+```
+
+## ⚠️ 네이밍 컨벤션
+
+**kebab-case를 사용합니다!**
+
+```typescript
+// ✅ 올바른 import
+import { useAuth } from '@/hooks/use-auth';
+import { useUsers } from '@/hooks/use-user-query';
+
+// ⚠️ 레거시 (하위 호환성 - deprecated)
+import { useAuth } from '@/hooks/useAuth';
 ```
 
 ## 🎯 주요 훅
@@ -23,7 +41,6 @@ hooks/
 
 사용자 관리 페이지의 모든 비즈니스 로직을 캡슐화합니다.
 
-**사용 예시:**
 ```typescript
 import { useUserManagement } from '@/hooks/use-user-management';
 
@@ -40,18 +57,12 @@ function UsersPage() {
 }
 ```
 
-**특징:**
-- ✅ 비즈니스 로직 완전 분리
-- ✅ 페이지 코드 50% 감소
-- ✅ 재사용 가능
-- ✅ 테스트 용이
-
 ### useAuth
 
 인증 상태 및 기능을 제공합니다.
 
 ```typescript
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 
 function Component() {
     const { 
@@ -68,14 +79,24 @@ function Component() {
 각 도메인별 데이터 페칭 훅입니다.
 
 ```typescript
-import { useUsers, useCreateUser } from '@/hooks/useUserQuery';
-import { useRoles } from '@/hooks/useRoleQuery';
-import { useMenus } from '@/hooks/useMenuQuery';
+import { useUsers, useCreateUser } from '@/hooks/use-user-query';
+import { useRoles } from '@/hooks/use-role-query';
+import { useMenus } from '@/hooks/use-menu-query';
 ```
 
 ## 💡 Best Practices
 
-### 1. 비즈니스 로직 분리
+### 1. 중앙 index에서 import
+
+```typescript
+// ✅ 권장: index에서 import
+import { useAuth, useUsers, useToast } from '@/hooks';
+
+// ⚠️ 개별 파일에서 import도 가능
+import { useAuth } from '@/hooks/use-auth';
+```
+
+### 2. 비즈니스 로직 분리
 
 ```typescript
 // ✅ 좋은 예: 비즈니스 로직을 훅으로 분리
@@ -92,7 +113,7 @@ function UsersPage() {
 }
 ```
 
-### 2. 단일 책임 원칙
+### 3. 단일 책임 원칙
 
 각 훅은 하나의 책임만 가져야 합니다.
 

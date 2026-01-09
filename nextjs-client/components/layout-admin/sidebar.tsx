@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useMyMenus } from "@/hooks/useMenuQuery";
+import { useMyMenus } from "@/hooks/use-menu-query";
 import { MenuInfo } from "@/types";
 
 

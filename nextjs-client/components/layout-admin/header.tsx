@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState, useEffect } from "react";
 import { logout } from "@/app/actions/auth-actions";
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore } from "@/store/use-app-store";
 import {
     DropdownMenu,
     DropdownMenuContent,

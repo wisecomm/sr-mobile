@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from '@/hooks/useMenuQuery';
+import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from '@/hooks/use-menu-query';
 import { useToast } from '@/hooks/use-toast';
 import { MenuInfo } from '@/types';
 

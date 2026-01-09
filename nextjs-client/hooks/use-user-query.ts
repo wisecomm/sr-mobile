@@ -4,7 +4,7 @@
  * 표준화된 팩토리 함수를 사용하여 리팩토링
  */
 
-import { userApi } from '@/lib/api';
+import { userApi } from '@/app/(admin)/(with-header)/users/api';
 import { UserDetail, PageResponse } from '@/types';
 import { createPaginatedQuery, createMutation } from './query/factory';
 
@@ -14,7 +14,7 @@ import { createPaginatedQuery, createMutation } from './query/factory';
 export const userKeys = {
     all: ['users'] as const,
     lists: () => [...userKeys.all, 'list'] as const,
-    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string) => 
+    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string) =>
         [...userKeys.lists(), { page, size, userName, startDate, endDate }] as const,
     detail: (id: string) => [...userKeys.all, 'detail', id] as const,
     roles: (id: string) => [...userKeys.detail(id), 'roles'] as const,

@@ -7,13 +7,13 @@ import { ApiResponse } from './index';
 /**
  * API 응답 코드 타입
  */
-export type ApiCode = '200' | '201' | '400' | '401' | '403' | '404' | '500';
+export type ApiCode = '200' | '400' | '401' | '403' | '404' | '500';
 
 /**
  * API 성공 응답 타입
  */
 export interface ApiSuccessResponse<T> extends ApiResponse<T> {
-    code: '200' | '201';
+    code: '200';
     data: T;
 }
 
@@ -21,7 +21,7 @@ export interface ApiSuccessResponse<T> extends ApiResponse<T> {
  * API 에러 응답 타입
  */
 export interface ApiErrorResponse extends ApiResponse<null> {
-    code: Exclude<ApiCode, '200' | '201'>;
+    code: Exclude<ApiCode, '200'>;
     data: null;
 }
 
@@ -31,7 +31,7 @@ export interface ApiErrorResponse extends ApiResponse<null> {
 export function isSuccessResponse<T>(
     response: ApiResponse<T>
 ): response is ApiSuccessResponse<T> {
-    return (response.code === '200' || response.code === '201') && response.data !== null;
+    return response.code === '200';
 }
 
 /**
@@ -40,7 +40,7 @@ export function isSuccessResponse<T>(
 export function isErrorResponse<T>(
     response: ApiResponse<T>
 ): response is ApiErrorResponse {
-    return response.code !== '200' && response.code !== '201';
+    return response.code !== '200';
 }
 
 /**

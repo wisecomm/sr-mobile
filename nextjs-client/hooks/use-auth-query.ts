@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { login, logout } from "@/app/actions/auth-actions";
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore } from "@/store/use-app-store";
 
 export function useLogin() {
     const setUser = useAppStore((state) => state.setUser);

@@ -4,7 +4,7 @@
  * 표준화된 팩토리 함수를 사용하여 리팩토링
  */
 
-import { roleApi } from '@/lib/api';
+import { roleApi } from '@/app/(admin)/(with-header)/roles/api';
 import { RoleInfo, PageResponse } from '@/types';
 import { createPaginatedQuery, createMutation } from './query/factory';
 
@@ -14,7 +14,7 @@ import { createPaginatedQuery, createMutation } from './query/factory';
 export const roleKeys = {
     all: ['roles'] as const,
     lists: () => [...roleKeys.all, 'list'] as const,
-    list: (page: number, size: number, searchId?: string) => 
+    list: (page: number, size: number, searchId?: string) =>
         [...roleKeys.lists(), { page, size, searchId }] as const,
     detail: (id: string) => [...roleKeys.all, 'detail', id] as const,
     menus: (id: string) => [...roleKeys.detail(id), 'menus'] as const,

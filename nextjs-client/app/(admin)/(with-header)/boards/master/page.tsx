@@ -5,8 +5,8 @@ import { PaginationState } from "@tanstack/react-table";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { BoardMaster } from "./actions";
-import { useBoards, useUpdateBoard, useCreateBoard, useDeleteBoard } from "@/hooks/useBoardQuery";
+import { BoardMaster } from "./api";
+import { useBoardMasters, useCreateBoardMaster, useUpdateBoardMaster, useDeleteBoardMaster } from "@/hooks/use-board-master-query";
 import { BoardDialog } from "./board-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
@@ -36,10 +36,16 @@ export default function BoardsPage() {
         pageSize: 10,
     });
 
-    const { data: boardsData, isLoading } = useBoards(pagination.pageIndex, pagination.pageSize, searchParams.brdNm, searchParams.startDate, searchParams.endDate);
-    const createBoardMutation = useCreateBoard();
-    const updateBoardMutation = useUpdateBoard();
-    const deleteBoardMutation = useDeleteBoard();
+    const { data: boardsData, isLoading } = useBoardMasters({
+        page: pagination.pageIndex,
+        size: pagination.pageSize,
+        brdNm: searchParams.brdNm,
+        startDate: searchParams.startDate,
+        endDate: searchParams.endDate
+    });
+    const createBoardMutation = useCreateBoardMaster();
+    const updateBoardMutation = useUpdateBoardMaster();
+    const deleteBoardMutation = useDeleteBoardMaster();
 
     // Dialog state
     const [dialogOpen, setDialogOpen] = React.useState(false);

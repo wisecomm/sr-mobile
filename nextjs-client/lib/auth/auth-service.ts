@@ -7,7 +7,7 @@
 import { apiClient } from '@/lib/api-client';
 import { sessionManager } from './session-manager';
 import { tokenService } from './token-service';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/store/use-app-store';
 import { ApiResponse, LoginData } from '@/types';
 
 /**
@@ -43,12 +43,12 @@ class AuthService {
             // 로그인 성공 시 세션 저장
             if (response.code === '200' && response.data) {
                 sessionManager.setSession(response.data);
-                
+
                 // Zustand 스토어에도 사용자 정보 저장
                 if (typeof window !== 'undefined') {
                     useAppStore.getState().setUser(response.data.user);
                 }
-                
+
                 console.log('[AuthService] Login successful');
             }
 
@@ -73,7 +73,7 @@ class AuthService {
         try {
             // 서버에 로그아웃 요청 (선택적)
             // await apiClient.post('/v1/auth/logout');
-            
+
             console.log('[AuthService] Logging out...');
         } catch (error) {
             console.error('[AuthService] Logout error:', error);
@@ -121,7 +121,7 @@ class AuthService {
      */
     handleUnauthorized(): void {
         console.warn('[AuthService] Unauthorized access detected');
-        
+
         // 세션 클리어
         sessionManager.clearSession();
 

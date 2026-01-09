@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from 'next/navigation';
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore } from "@/store/use-app-store";
 import { cn } from "@/lib/utils";
 
 const accountFormSchema = z.object({
