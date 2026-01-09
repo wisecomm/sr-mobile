@@ -1,25 +1,23 @@
 /**
- * useBoardPostManagement Hook
- * 
- * 게시물 관리 페이지의 모든 비즈니스 로직을 캡슐화
+ * useBoardsBoardManagement - 게시물 관리 훅
  */
 
 import { useState, useCallback } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
-    useBoardPosts,
-    useCreateBoardPost,
-    useUpdateBoardPost,
-    useDeleteBoardPost,
+    useBoardsBoardList,
+    useCreateBoardsBoard,
+    useUpdateBoardsBoard,
+    useDeleteBoardsBoard,
     Board,
     BoardPostSearchParams,
-} from '@/hooks/use-board-post-query';
+} from '@/hooks/use-boards-board-query';
 import { useToast } from '@/hooks/use-toast';
 
 /**
  * 게시물 관리 훅 리턴 타입
  */
-export interface UseBoardPostManagementReturn {
+export interface UseBoardsBoardManagementReturn {
     // 데이터
     posts: Board[];
     totalPages: number;
@@ -50,7 +48,7 @@ export interface UseBoardPostManagementReturn {
 /**
  * 게시물 관리 훅
  */
-export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManagementReturn {
+export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
@@ -71,15 +69,15 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
     const [selectedPost, setSelectedPost] = useState<Board | null>(null);
 
     // API 훅
-    const { data: postsData, isLoading } = useBoardPosts({
+    const { data: postsData, isLoading } = useBoardsBoardList({
         ...searchParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
     });
 
-    const createPostMutation = useCreateBoardPost();
-    const updatePostMutation = useUpdateBoardPost();
-    const deletePostMutation = useDeleteBoardPost();
+    const createMutation = useCreateBoardsBoard();
+    const updateMutation = useUpdateBoardsBoard();
+    const deleteMutation = useDeleteBoardsBoard();
 
     /**
      * 게시판 ID 설정
@@ -118,7 +116,7 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
      */
     const handleCreate = useCallback(async (data: FormData) => {
         try {
-            await createPostMutation.mutateAsync(data);
+            await createMutation.mutateAsync(data);
 
             toast({
                 title: '등록 완료',
@@ -136,7 +134,7 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
             });
             throw error;
         }
-    }, [createPostMutation, toast, closeDialog]);
+    }, [createMutation, toast, closeDialog]);
 
     /**
      * 게시물 수정
@@ -147,7 +145,7 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
         }
 
         try {
-            await updatePostMutation.mutateAsync({
+            await updateMutation.mutateAsync({
                 id: selectedPost.boardId,
                 data,
             });
@@ -168,7 +166,7 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
             });
             throw error;
         }
-    }, [selectedPost, updatePostMutation, toast, closeDialog]);
+    }, [selectedPost, updateMutation, toast, closeDialog]);
 
     /**
      * 게시물 삭제
@@ -191,7 +189,7 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
 
         try {
             await Promise.all(
-                postIds.map(id => deletePostMutation.mutateAsync(id))
+                postIds.map(id => deleteMutation.mutateAsync(id))
             );
 
             toast({
@@ -208,18 +206,16 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
             });
             throw error;
         }
-    }, [deletePostMutation, toast]);
+    }, [deleteMutation, toast]);
 
     /**
-     * 폼 제출 (생성 또는 수정) - 파일 업로드 지원
+     * 폼 제출 (생성 또는 수정)
      */
     const handleSubmit = useCallback(async (data: Partial<Board> & { deleteFileIds?: number[] }, files?: File[] | null) => {
-        // FormData 빌드
         const formData = new FormData();
         const jsonBlob = new Blob([JSON.stringify(data)], { type: 'application/json' });
         formData.append('request', jsonBlob);
 
-        // 파일 추가
         if (files) {
             files.forEach((file) => {
                 formData.append('files', file);
@@ -234,27 +230,18 @@ export function useBoardPostManagement(initialBrdId?: string): UseBoardPostManag
     }, [selectedPost, handleCreate, handleUpdate]);
 
     return {
-        // 데이터
         posts: postsData?.list || [],
         totalPages: postsData?.pages || 0,
         isLoading,
-
-        // 페이지네이션
         pagination,
         onPaginationChange: setPagination,
-
-        // 검색
         searchParams,
         onSearch: handleSearch,
         setBoardId,
-
-        // 다이얼로그
         dialogOpen,
         selectedPost,
         openDialog,
         closeDialog,
-
-        // CRUD
         handleCreate,
         handleUpdate,
         handleDelete,

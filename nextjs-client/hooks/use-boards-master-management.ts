@@ -1,25 +1,23 @@
 /**
- * useBoardMasterManagement Hook
- * 
- * 게시판 마스터 관리 페이지의 모든 비즈니스 로직을 캡슐화
+ * useBoardsMasterManagement - 게시판 마스터 관리 훅
  */
 
 import { useState, useCallback } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
-    useBoardMasters,
-    useCreateBoardMaster,
-    useUpdateBoardMaster,
-    useDeleteBoardMaster,
+    useBoardsMasterList,
+    useCreateBoardsMaster,
+    useUpdateBoardsMaster,
+    useDeleteBoardsMaster,
     BoardMaster,
     BoardMasterSearchParams,
-} from '@/hooks/use-board-master-query';
+} from '@/hooks/use-boards-master-query';
 import { useToast } from '@/hooks/use-toast';
 
 /**
  * 게시판 마스터 관리 훅 리턴 타입
  */
-export interface UseBoardMasterManagementReturn {
+export interface UseBoardsMasterManagementReturn {
     // 데이터
     boards: BoardMaster[];
     totalPages: number;
@@ -59,10 +57,10 @@ const formatDate = (date: Date): string => {
 /**
  * 게시판 마스터 관리 훅
  */
-export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
+export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const { toast } = useToast();
 
-    // 검색 상태 (page, size 제외)
+    // 검색 상태
     const [searchParams, setSearchParams] = useState<Omit<BoardMasterSearchParams, 'page' | 'size'>>({
         brdNm: '',
         startDate: '',
@@ -79,16 +77,16 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedBoard, setSelectedBoard] = useState<BoardMaster | null>(null);
 
-    // API 훅 - 객체 형태로 파라미터 전달
-    const { data: boardsData, isLoading } = useBoardMasters({
+    // API 훅
+    const { data: boardsData, isLoading } = useBoardsMasterList({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         ...searchParams,
     });
 
-    const createBoardMutation = useCreateBoardMaster();
-    const updateBoardMutation = useUpdateBoardMaster();
-    const deleteBoardMutation = useDeleteBoardMaster();
+    const createMutation = useCreateBoardsMaster();
+    const updateMutation = useUpdateBoardsMaster();
+    const deleteMutation = useDeleteBoardsMaster();
 
     /**
      * 검색 핸들러
@@ -119,7 +117,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
      */
     const handleCreate = useCallback(async (data: Partial<BoardMaster>) => {
         try {
-            await createBoardMutation.mutateAsync(data);
+            await createMutation.mutateAsync(data);
 
             toast({
                 title: '등록 완료',
@@ -137,7 +135,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
             });
             throw error;
         }
-    }, [createBoardMutation, toast, closeDialog]);
+    }, [createMutation, toast, closeDialog]);
 
     /**
      * 게시판 수정
@@ -148,7 +146,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
         }
 
         try {
-            await updateBoardMutation.mutateAsync({
+            await updateMutation.mutateAsync({
                 id: selectedBoard.brdId,
                 data,
             });
@@ -169,7 +167,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
             });
             throw error;
         }
-    }, [selectedBoard, updateBoardMutation, toast, closeDialog]);
+    }, [selectedBoard, updateMutation, toast, closeDialog]);
 
     /**
      * 게시판 삭제
@@ -192,7 +190,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
 
         try {
             await Promise.all(
-                boardIds.map(id => deleteBoardMutation.mutateAsync(id))
+                boardIds.map(id => deleteMutation.mutateAsync(id))
             );
 
             toast({
@@ -209,7 +207,7 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
             });
             throw error;
         }
-    }, [deleteBoardMutation, toast]);
+    }, [deleteMutation, toast]);
 
     /**
      * 폼 제출 (생성 또는 수정)
@@ -223,26 +221,17 @@ export function useBoardMasterManagement(): UseBoardMasterManagementReturn {
     }, [selectedBoard, handleCreate, handleUpdate]);
 
     return {
-        // 데이터
         boards: boardsData?.list || [],
         totalPages: boardsData?.pages || 0,
         isLoading,
-
-        // 페이지네이션
         pagination,
         onPaginationChange: setPagination,
-
-        // 검색
         searchParams,
         onSearch: handleSearch,
-
-        // 다이얼로그
         dialogOpen,
         selectedBoard,
         openDialog,
         closeDialog,
-
-        // CRUD
         handleCreate,
         handleUpdate,
         handleDelete,

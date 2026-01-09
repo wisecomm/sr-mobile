@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { useSearchParams } from "next/navigation";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { useBoardPostManagement } from "@/hooks/use-board-post-management";
+import { useBoardsBoardManagement } from "@/hooks/use-boards-board-management";
 
 export default function BoardsPage() {
     return (
@@ -40,7 +40,7 @@ function BoardsContent() {
         closeDialog,
         handleSubmit,
         handleDelete,
-    } = useBoardPostManagement(brdIdParam);
+    } = useBoardsBoardManagement(brdIdParam);
 
     // Sync URL param with management hook
     React.useEffect(() => {
@@ -51,21 +51,18 @@ function BoardsContent() {
 
     const columns = React.useMemo(() => getColumns(), []);
 
-    // Selection mode
-    const selectionMode: 'single' | 'multi' | undefined = 'single';
-
     const table = useDataTable({
         data: posts,
         columns,
         pageCount: totalPages || -1,
         pagination,
         onPaginationChange,
-        enableMultiRowSelection: (selectionMode as string) === 'multi',
+        enableMultiRowSelection: false,
     });
 
-    const handleAdd = () => {
+    const handleAdd = React.useCallback(() => {
         openDialog();
-    };
+    }, [openDialog]);
 
     const handleEdit = React.useCallback(() => {
         const selectedRows = table.getSelectedRowModel().rows;
@@ -109,7 +106,6 @@ function BoardsContent() {
             keyword: params.keyword,
             startDate: params.startDate,
             endDate: params.endDate,
-            // Preserve brdId from URL/state
         });
     };
 
