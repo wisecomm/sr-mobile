@@ -88,8 +88,8 @@ export default function BoardsMasterPage() {
                     onDelete={handleDeleteClick}
                     onSearch={handleSearch}
                     isLoading={isLoading}
-                    initialStartDate={searchParams.startDate}
-                    initialEndDate={searchParams.endDate}
+                    initialStartDate={searchParams.startDate as string | undefined}
+                    initialEndDate={searchParams.endDate as string | undefined}
                 />
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>

@@ -15,6 +15,7 @@ export interface UserSearchParams extends PaginationParams {
     userName?: string;
     startDate?: string;
     endDate?: string;
+    [key: string]: unknown;
 }
 
 /**
@@ -32,7 +33,12 @@ class UserApiClient extends BaseResourceClient<UserDetail> {
      * 사용자 검색
      */
     async search(params: UserSearchParams): Promise<ApiResponse<PageResponse<UserDetail>>> {
-        return this.getPagedList(params);
+        // Backend uses 1-based pagination, while frontend uses 0-based
+        const adjustedParams = {
+            ...params,
+            page: params.page + 1,
+        };
+        return this.getPagedList(adjustedParams);
     }
 
     /**

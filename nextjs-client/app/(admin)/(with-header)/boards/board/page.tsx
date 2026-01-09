@@ -118,8 +118,8 @@ function BoardsContent() {
                     onDelete={handleDeleteClick}
                     onSearch={handleSearch}
                     isLoading={isLoading}
-                    initialStartDate={searchParams.startDate || ""}
-                    initialEndDate={searchParams.endDate || ""}
+                    initialStartDate={(searchParams.startDate as string) || ""}
+                    initialEndDate={(searchParams.endDate as string) || ""}
                 />
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>

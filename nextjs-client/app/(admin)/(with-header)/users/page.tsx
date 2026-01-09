@@ -119,8 +119,8 @@ export default function UsersPage() {
                     onDelete={handleDeleteClick}
                     onSearch={onSearch}
                     isLoading={isLoading || isDownloading || isUploading}
-                    initialStartDate={searchParams.startDate}
-                    initialEndDate={searchParams.endDate}
+                    initialStartDate={searchParams.startDate as string}
+                    initialEndDate={searchParams.endDate as string}
                     onDownloadExcel={handleDownloadExcel}
                     onUploadExcel={handleUploadExcel}
                 />

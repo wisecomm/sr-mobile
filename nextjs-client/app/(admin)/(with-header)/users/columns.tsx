@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { UserDetail } from "@/types";
-import { TextCell, DateCell, UseYnCell } from "@/components/data-table/cells";
+import { TextCell, DateCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 
 export const getColumns = (): ColumnDef<UserDetail>[] => [

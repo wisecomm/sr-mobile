@@ -49,13 +49,13 @@ export const useUserRoles = createPaginatedQuery<
  */
 
 // 사용자 생성
-export const useCreateUser = createMutation<void, Partial<UserDetail>>({
+export const useCreateUser = createMutation<UserDetail, Partial<UserDetail>>({
     mutationFn: (data) => userApi.create(data),
     invalidateKeys: [userKeys.all],
 });
 
 // 사용자 수정
-export const useUpdateUser = createMutation<void, { id: string; data: Partial<UserDetail> }>({
+export const useUpdateUser = createMutation<UserDetail, { id: string; data: Partial<UserDetail> }>({
     mutationFn: ({ id, data }) => userApi.update(id, data),
     invalidateKeys: [userKeys.all],
 });

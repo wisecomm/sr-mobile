@@ -39,13 +39,13 @@ export const useMyMenus = createQuery<MenuInfo[], void>({
  */
 
 // 메뉴 생성
-export const useCreateMenu = createMutation<void, Partial<MenuInfo>>({
+export const useCreateMenu = createMutation<MenuInfo, Partial<MenuInfo>>({
     mutationFn: (data) => menuApi.create(data),
     invalidateKeys: [menuKeys.all],
 });
 
 // 메뉴 수정
-export const useUpdateMenu = createMutation<void, { id: string; data: Partial<MenuInfo> }>({
+export const useUpdateMenu = createMutation<MenuInfo, { id: string; data: Partial<MenuInfo> }>({
     mutationFn: ({ id, data }) => menuApi.update(id, data),
     invalidateKeys: [menuKeys.all],
 });

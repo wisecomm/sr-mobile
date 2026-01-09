@@ -5,6 +5,7 @@
  */
 
 import { BaseResourceClient, PaginationParams } from '@/lib/base-resource-client';
+import { apiClient } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
 
 /**
@@ -31,6 +32,7 @@ export interface BoardMasterSearchParams extends PaginationParams {
     brdNm?: string;
     startDate?: string;
     endDate?: string;
+    [key: string]: unknown;
 }
 
 /**
@@ -48,7 +50,40 @@ class BoardMasterApiClient extends BaseResourceClient<BoardMaster> {
      * 게시판 목록 조회 (페이지네이션)
      */
     async search(params: BoardMasterSearchParams): Promise<ApiResponse<PageResponse<BoardMaster>>> {
-        return this.getPagedList(params);
+        // Backend uses 1-based pagination, while frontend uses 0-based
+        const adjustedParams = {
+            ...params,
+            page: params.page + 1,
+        };
+        return this.getPagedList(adjustedParams);
+    }
+
+    /**
+     * 게시판 상세 조회
+     */
+    async getById(id: string): Promise<ApiResponse<BoardMaster>> {
+        return apiClient.get<BoardMaster>(`${this.baseUrl}/${id}`);
+    }
+
+    /**
+     * 게시판 생성
+     */
+    async create(data: Partial<BoardMaster>): Promise<ApiResponse<BoardMaster>> {
+        return apiClient.post<BoardMaster>(this.baseUrl, data);
+    }
+
+    /**
+     * 게시판 수정
+     */
+    async update(id: string, data: Partial<BoardMaster>): Promise<ApiResponse<BoardMaster>> {
+        return apiClient.put<BoardMaster>(`${this.baseUrl}/${id}`, data);
+    }
+
+    /**
+     * 게시판 삭제
+     */
+    async delete(id: string): Promise<ApiResponse<void>> {
+        return apiClient.delete<void>(`${this.baseUrl}/${id}`);
     }
 }
 

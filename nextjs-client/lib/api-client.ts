@@ -5,9 +5,78 @@
  * 모든 API 요청은 이 레이어를 통해 처리되어야 합니다.
  */
 
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-import { api } from './axiosClient';
+import axios, { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios';
 import { ApiResponse } from '@/types';
+import { getAccessToken, getRefreshToken, updateAccessToken, logout } from '@/app/actions/auth-actions';
+
+/**
+ * Axios 인스턴스 생성
+ */
+const createAxiosInstance = (): AxiosInstance => {
+    const instance = axios.create({
+        baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+        timeout: 30000,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    // Request Interceptor - 토큰 추가
+    instance.interceptors.request.use(
+        (config) => {
+            const token = getAccessToken();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
+
+    // Response Interceptor - 토큰 갱신 및 에러 처리
+    instance.interceptors.response.use(
+        (response) => response.data,
+        async (error: AxiosError) => {
+            const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+
+            // 401 에러 시 토큰 갱신 시도
+            if (error.response?.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
+
+                const refreshToken = getRefreshToken();
+                if (refreshToken) {
+                    try {
+                        const response = await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'}/v1/auth/refresh`,
+                            { refreshToken }
+                        );
+
+                        const newToken = response.data?.data?.accessToken;
+                        if (newToken) {
+                            updateAccessToken(newToken);
+                            if (originalRequest.headers) {
+                                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                            }
+                            return instance(originalRequest);
+                        }
+                    } catch (refreshError) {
+                        console.error('[API] Token refresh failed:', refreshError);
+                        logout();
+                        return Promise.reject(refreshError);
+                    }
+                }
+
+                logout();
+            }
+
+            return Promise.reject(error);
+        }
+    );
+
+    return instance;
+};
+
+const api = createAxiosInstance();
 
 /**
  * API 에러 정보를 추출하는 헬퍼 함수
@@ -17,11 +86,11 @@ function extractErrorMessage(error: unknown, defaultMessage: string): string {
         const axiosError = error as AxiosError<{ message?: string }>;
         return axiosError.response?.data?.message || axiosError.message || defaultMessage;
     }
-    
+
     if (error instanceof Error) {
         return error.message;
     }
-    
+
     return defaultMessage;
 }
 
@@ -30,14 +99,13 @@ function extractErrorMessage(error: unknown, defaultMessage: string): string {
  */
 function createErrorResponse<T>(error: unknown, defaultMessage: string): ApiResponse<T> {
     const message = extractErrorMessage(error, defaultMessage);
-    
-    // Axios 에러인 경우 상태 코드에 따라 code 설정
+
     if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         const code = status ? status.toString() : '500';
         return { code, message, data: null };
     }
-    
+
     return { code: '500', message, data: null };
 }
 
@@ -58,8 +126,6 @@ async function handleRequest<T>(
 
 /**
  * API Client 클래스
- * 
- * 모든 HTTP 메서드에 대한 통합된 인터페이스를 제공합니다.
  */
 class ApiClient {
     /**
@@ -71,7 +137,7 @@ class ApiClient {
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
-            () => api.get<T>(url, { ...config, params }),
+            () => api.get(url, { ...config, params }),
             `Failed to GET ${url}`
         );
     }
@@ -85,7 +151,7 @@ class ApiClient {
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
-            () => api.post<T>(url, data, config),
+            () => api.post(url, data, config),
             `Failed to POST ${url}`
         );
     }
@@ -99,7 +165,7 @@ class ApiClient {
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
-            () => api.put<T>(url, data, config),
+            () => api.put(url, data, config),
             `Failed to PUT ${url}`
         );
     }
@@ -113,7 +179,7 @@ class ApiClient {
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
-            () => api.patch<T>(url, data, config),
+            () => api.patch(url, data, config),
             `Failed to PATCH ${url}`
         );
     }
@@ -126,7 +192,7 @@ class ApiClient {
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
-            () => api.delete<T>(url, config),
+            () => api.delete(url, config),
             `Failed to DELETE ${url}`
         );
     }
@@ -136,13 +202,13 @@ class ApiClient {
      */
     buildParams(params: Record<string, string | number | boolean | undefined>): URLSearchParams {
         const searchParams = new URLSearchParams();
-        
+
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== '') {
                 searchParams.append(key, String(value));
             }
         });
-        
+
         return searchParams;
     }
 
@@ -153,10 +219,10 @@ class ApiClient {
         if (!params || Object.keys(params).length === 0) {
             return baseUrl;
         }
-        
+
         const searchParams = this.buildParams(params);
         const queryString = searchParams.toString();
-        
+
         return queryString ? `${baseUrl}?${queryString}` : baseUrl;
     }
 }
@@ -165,6 +231,11 @@ class ApiClient {
  * 싱글톤 인스턴스 export
  */
 export const apiClient = new ApiClient();
+
+/**
+ * Raw axios 인스턴스 (특수한 경우에만 사용)
+ */
+export { api };
 
 /**
  * 기존 코드와의 호환성을 위한 개별 함수들

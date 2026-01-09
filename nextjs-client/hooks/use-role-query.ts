@@ -49,13 +49,13 @@ export const useRoleMenus = createPaginatedQuery<
  */
 
 // 역할 생성
-export const useCreateRole = createMutation<void, Partial<RoleInfo>>({
+export const useCreateRole = createMutation<RoleInfo, Partial<RoleInfo>>({
     mutationFn: (data) => roleApi.create(data),
     invalidateKeys: [roleKeys.all],
 });
 
 // 역할 수정
-export const useUpdateRole = createMutation<void, { id: string; data: Partial<RoleInfo> }>({
+export const useUpdateRole = createMutation<RoleInfo, { id: string; data: Partial<RoleInfo> }>({
     mutationFn: ({ id, data }) => roleApi.update(id, data),
     invalidateKeys: [roleKeys.all],
 });

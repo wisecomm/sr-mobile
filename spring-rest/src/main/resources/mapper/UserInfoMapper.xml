@@ -19,9 +19,7 @@
         <result property="sysInsertUserId" column="SYS_INSERT_USER_ID"/>
         <result property="sysUpdateDtm" column="SYS_UPDATE_DTM"/>
         <result property="sysUpdateUserId" column="SYS_UPDATE_USER_ID"/>
-        <collection property="roles" ofType="com.example.springrest.domain.user.model.enums.UserRole">
-            <result column="ROLE_ID"/>
-        </collection>
+        <collection property="roles" column="USER_ID" javaType="java.util.HashSet" ofType="com.example.springrest.domain.user.model.enums.UserRole" select="findRolesByUserId"/>
     </resultMap>
 
     <sql id="UserInfoColumns">
@@ -38,19 +36,15 @@
 
     <select id="findById" resultMap="UserInfoResultMap">
         SELECT 
-            <include refid="UserInfoColumns"/>,
-            r.ROLE_ID
+            <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
-        LEFT JOIN CHMM_USER_ROLE_MAP r ON u.USER_ID = r.USER_ID AND r.USE_YN = '1'
         WHERE u.USER_ID = #{userId}
     </select>
 
     <select id="findAll" resultMap="UserInfoResultMap">
         SELECT 
-            <include refid="UserInfoColumns"/>,
-            r.ROLE_ID
+            <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
-        LEFT JOIN CHMM_USER_ROLE_MAP r ON u.USER_ID = r.USER_ID AND r.USE_YN = '1'
         <where>
             <if test="userName != null and userName != ''">
                 AND u.USER_NAME LIKE CONCAT('%', #{userName}, '%')
@@ -63,6 +57,12 @@
             </if>
         </where>
         ORDER BY u.USER_ID
+    </select>
+
+    <select id="findRolesByUserId" resultType="com.example.springrest.domain.user.model.enums.UserRole">
+        SELECT ROLE_ID
+        FROM CHMM_USER_ROLE_MAP
+        WHERE USER_ID = #{userId} AND USE_YN = '1'
     </select>
 
     <insert id="insert">

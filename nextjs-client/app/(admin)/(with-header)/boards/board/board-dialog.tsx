@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileText } from "lucide-react";
 import { FileUpload } from "@/components/ui/file-upload";
-import { useBoardPost } from "@/hooks/use-board-post-query";
+import { useBoardsBoardDetail } from "@/hooks/use-boards-board-query";
 
 const boardFormSchema = z.object({
     brdId: z.string().min(1, "게시판을 선택해주세요."),
@@ -46,8 +46,6 @@ interface BoardDialogProps {
 export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit }: BoardDialogProps) {
     const isEdit = !!board;
 
-    // Board Selection Logic Removed - Implicitly handled by defaultBrdId
-
     const form = useForm<BoardFormValues>({
         resolver: zodResolver(boardFormSchema),
         defaultValues: {
@@ -59,7 +57,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
         },
     });
 
-    const { data: boardDetail } = useBoardPost(board?.boardId);
+    const { data: boardDetail } = useBoardsBoardDetail(board?.boardId);
     const effectiveBoard = boardDetail || board;
 
     const [files, setFiles] = React.useState<File[]>([]);
@@ -68,7 +66,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
 
     React.useEffect(() => {
         if (open) {
-            setFiles([]); // Reset files on open
+            setFiles([]);
             setDeletedFileIds([]);
             if (effectiveBoard) {
                 form.reset({
@@ -92,8 +90,6 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
         }
     }, [open, effectiveBoard, form, defaultBrdId]);
 
-
-
     const onFormSubmit = async (data: BoardFormValues) => {
         await onSubmit({ ...data, deleteFileIds: deletedFileIds }, files);
     };
@@ -115,10 +111,6 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onFormSubmit)} className="px-6 py-6 space-y-5">
-                        <div className="grid grid-cols-1 gap-6">
-                            {/* Board ID is hidden/implicit via URL */}
-                        </div>
-
                         <FormField
                             control={form.control}
                             name="title"
@@ -171,7 +163,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
                                         await boardPostApi.downloadFile(fileId, file.orgFileNm);
                                     }
                                 }}
-                                maxSize={500 * 1024 * 1024} // 500MB
+                                maxSize={500 * 1024 * 1024}
                             />
                         </div>
 

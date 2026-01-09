@@ -6,7 +6,7 @@
 
 import { BaseResourceClient, PaginationParams } from '@/lib/base-resource-client';
 import { apiClient } from '@/lib/api-client';
-import { api } from '@/lib/axiosClient';
+import { api } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
 
 /**
@@ -49,6 +49,7 @@ export interface BoardPostSearchParams extends PaginationParams {
     keyword?: string;
     startDate?: string;
     endDate?: string;
+    [key: string]: unknown;
 }
 
 /**
@@ -66,7 +67,12 @@ class BoardPostApiClient extends BaseResourceClient<Board> {
      * 게시물 목록 조회 (페이지네이션)
      */
     async search(params: BoardPostSearchParams): Promise<ApiResponse<PageResponse<Board>>> {
-        return this.getPagedList(params);
+        // Backend uses 1-based pagination, while frontend uses 0-based
+        const adjustedParams = {
+            ...params,
+            page: params.page + 1,
+        };
+        return this.getPagedList(adjustedParams);
     }
 
     /**
