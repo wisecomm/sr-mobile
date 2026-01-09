@@ -1,74 +1,29 @@
 "use client";
 
+/**
+ * Menus Page (Refactored)
+ * 
+ * 비즈니스 로직을 커스텀 훅으로 분리하여 간결하고 명확한 구조
+ */
+
 import * as React from "react";
 import { MenuInfo } from "@/types";
-import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from "@/hooks/useMenuQuery";
 import { MenuTree } from "./menu-tree";
 import { MenuForm } from "./menu-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
+import { useMenuManagement } from "@/hooks/use-menu-management";
 
 export default function MenusPage() {
-    const { toast } = useToast();
-    const { data: menus = [], isLoading } = useMenus();
-    const createMenuMutation = useCreateMenu();
-    const updateMenuMutation = useUpdateMenu();
-    const deleteMenuMutation = useDeleteMenu();
-
-    const [selectedMenu, setSelectedMenu] = React.useState<MenuInfo | null>(null);
-
-    // Auto-select first menu if none is selected and data is available
-    React.useEffect(() => {
-        if (!selectedMenu && menus.length > 0) {
-            const firstRoot = menus.find((m: MenuInfo) => !m.upperMenuId) || menus[0];
-            setSelectedMenu(firstRoot);
-        }
-    }, [menus, selectedMenu]);
-
-    const handleSelect = (menu: MenuInfo) => {
-        setSelectedMenu(menu);
-    };
-
-    const handleAddChild = (parentId: string, level: number) => {
-        setSelectedMenu({
-            menuId: "",
-            menuName: "",
-            menuLvl: level,
-            upperMenuId: parentId,
-            leftMenuYn: "Y",
-            useYn: "1",
-            adminMenuYn: "N",
-            personalDataYn: "N",
-        } as MenuInfo);
-    };
-
-    const handleFormSubmit = async (formData: Partial<MenuInfo>) => {
-        try {
-            if (selectedMenu && selectedMenu.menuId) {
-                await updateMenuMutation.mutateAsync({ id: selectedMenu.menuId, data: formData });
-                toast({ title: "수정 완료", description: "메뉴 정보가 수정되었습니다.", variant: "success" });
-            } else {
-                await createMenuMutation.mutateAsync(formData);
-                toast({ title: "등록 완료", description: "새 메뉴가 등록되었습니다.", variant: "success" });
-            }
-        } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : String(error);
-            toast({ title: "오류 발생", description: message || "An error occurred.", variant: "destructive" });
-        }
-    };
-
-    const handleDelete = async (menuId: string) => {
-        if (confirm(`Are you sure you want to delete menu ${menuId}?`)) {
-            try {
-                await deleteMenuMutation.mutateAsync(menuId);
-                setSelectedMenu(null);
-                toast({ title: "삭제 완료", description: "메뉴가 삭제되었습니다.", variant: "success" });
-            } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : String(error);
-                toast({ title: "삭제 실패", description: message || "Failed to delete menu.", variant: "destructive" });
-            }
-        }
-    };
+    // 모든 비즈니스 로직을 커스텀 훅에서 관리
+    const {
+        menus,
+        isLoading,
+        selectedMenu,
+        selectMenu,
+        addChildMenu,
+        handleSubmit,
+        handleDelete,
+    } = useMenuManagement();
 
     return (
         <div className="w-full h-full flex flex-col lg:flex-row gap-6">
@@ -93,21 +48,23 @@ export default function MenusPage() {
                         <MenuTree
                             items={menus}
                             selectedId={selectedMenu?.menuId}
-                            onSelect={handleSelect}
-                            onAddChild={handleAddChild}
+                            onSelect={selectMenu}
+                            onAddChild={addChildMenu}
                         />
                     )}
                 </div>
             </div>
 
-            {/* Right Column: Menu Detail Form */}
-            <div className="flex-1 bg-background dark:bg-card rounded-xl shadow-sm border border-border dark:border-border flex flex-col overflow-hidden">
-                <MenuForm
-                    item={selectedMenu}
-                    allMenus={menus}
-                    onSubmit={handleFormSubmit}
-                    onDelete={handleDelete}
-                />
+            {/* Right Column: Menu Form */}
+            <div className="flex-1 bg-background dark:bg-card rounded-xl shadow-sm border border-border dark:border-border overflow-hidden">
+                {selectedMenu && (
+                    <MenuForm
+                        item={selectedMenu}
+                        allMenus={menus}
+                        onSubmit={handleSubmit}
+                        onDelete={handleDelete}
+                    />
+                )}
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Roles Page (Refactored)
+ * Users Page (Refactored)
  * 
  * 비즈니스 로직을 커스텀 훅으로 분리하여 간결하고 명확한 구조
  */
@@ -12,35 +12,36 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { RoleDialog } from "./role-dialog";
-import { useRoleManagement } from "@/hooks/use-role-management";
+import { UserDialog } from "./user-dialog";
+import { useUserManagement } from "@/hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 
-export default function RolesPage() {
+export default function UsersPage() {
     const { toast } = useToast();
     
     // 모든 비즈니스 로직을 커스텀 훅에서 관리
     const {
-        roles,
+        users,
         totalPages,
         isLoading,
         pagination,
         onPaginationChange,
+        searchParams,
         onSearch,
         dialogOpen,
-        selectedRole,
+        selectedUser,
         openDialog,
         closeDialog,
         handleSubmit,
         handleDelete,
-    } = useRoleManagement();
+    } = useUserManagement();
     
     // 테이블 컬럼 설정
     const columns = React.useMemo(() => getColumns(), []);
     
     // 테이블 인스턴스
     const table = useDataTable({
-        data: roles,
+        data: users,
         columns,
         pageCount: totalPages,
         pagination,
@@ -64,14 +65,14 @@ export default function RolesPage() {
         if (selectedRows.length !== 1) {
             toast({
                 title: "알림",
-                description: "수정할 권한을 하나만 선택해주세요.",
+                description: "수정할 사용자를 한 명만 선택해주세요.",
                 variant: "default",
             });
             return;
         }
         
-        const role = selectedRows[0].original;
-        openDialog(role);
+        const user = selectedRows[0].original;
+        openDialog(user);
     }, [table, toast, openDialog]);
     
     /**
@@ -79,9 +80,9 @@ export default function RolesPage() {
      */
     const handleDeleteClick = React.useCallback(async () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        const roleIds = selectedRows.map(row => row.original.roleId);
+        const userIds = selectedRows.map(row => row.original.userId);
         
-        await handleDelete(roleIds);
+        await handleDelete(userIds);
         table.resetRowSelection();
     }, [table, handleDelete]);
     
@@ -93,14 +94,17 @@ export default function RolesPage() {
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     onSearch={onSearch}
+                    isLoading={isLoading}
+                    initialStartDate={searchParams.startDate}
+                    initialEndDate={searchParams.endDate}
                 />
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>
 
-            <RoleDialog
+            <UserDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}
-                role={selectedRole}
+                user={selectedUser}
                 onSubmit={handleSubmit}
             />
         </div>

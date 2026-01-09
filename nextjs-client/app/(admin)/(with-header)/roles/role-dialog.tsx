@@ -47,7 +47,7 @@ interface RoleDialogProps {
 export function RoleDialog({ open, onOpenChange, role, onSubmit }: RoleDialogProps) {
     const isEdit = !!role;
 
-    const { data: allMenus = [] } = useMenus();
+    const { data: allMenus = [] } = useMenus(undefined);
     const { data: fetchedRoleMenuIds, isLoading: isRoleMenusLoading } = useRoleMenus({ roleId: role?.roleId || "" });
     const roleMenuIds = React.useMemo(() => fetchedRoleMenuIds || [], [fetchedRoleMenuIds]);
 
