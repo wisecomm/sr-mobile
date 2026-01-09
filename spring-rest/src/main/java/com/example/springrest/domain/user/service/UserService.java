@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * 사용자 정보 서비스
@@ -107,5 +108,60 @@ public class UserService {
                 .userSnsid(request.getUserSnsid())
                 .useYn(request.getUseYn())
                 .build();
+    }
+
+    public void downloadExcel(jakarta.servlet.http.HttpServletResponse response, String userName, String startDate,
+            String endDate) throws java.io.IOException {
+        if (startDate != null && !startDate.isEmpty()) {
+            startDate = startDate + " 00:00:00";
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            endDate = endDate + " 23:59:59";
+        }
+
+        List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate);
+
+        List<com.example.springrest.domain.user.model.dto.UserExcelDto> excelData = users.stream()
+                .map(u -> com.example.springrest.domain.user.model.dto.UserExcelDto.builder()
+                        .userId(u.getUserId())
+                        .userName(u.getUserName())
+                        .userEmail(u.getUserEmail())
+                        .userNick(u.getUserNick())
+                        .useYn(u.getUseYn())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+
+        Workbook workbook = com.example.springrest.common.excel.ExcelUtils
+                .toExcel(excelData, com.example.springrest.domain.user.model.dto.UserExcelDto.class);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String fileName = java.net.URLEncoder.encode("사용자목록.xlsx", "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
+    @Transactional
+    public void uploadExcel(org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
+        List<com.example.springrest.domain.user.model.dto.UserExcelDto> excelList = com.example.springrest.common.excel.ExcelUtils
+                .fromExcel(file, com.example.springrest.domain.user.model.dto.UserExcelDto.class);
+
+        for (com.example.springrest.domain.user.model.dto.UserExcelDto dto : excelList) {
+            UserInfoRequest request = UserInfoRequest.builder()
+                    .userId(dto.getUserId())
+                    .userName(dto.getUserName())
+                    .userEmail(dto.getUserEmail())
+                    .userNick(dto.getUserNick())
+                    .useYn(dto.getUseYn())
+                    .userPwd(dto.getUserPwd() != null && !dto.getUserPwd().isEmpty() ? dto.getUserPwd() : "test1234")
+                    .build();
+
+            if (userInfoMapper.findById(dto.getUserId()) != null) {
+                updateUser(request);
+            } else {
+                createUser(request);
+            }
+        }
     }
 }

@@ -1,12 +1,10 @@
-"use client";
-
 import * as React from "react";
 
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, Search, Calendar } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Calendar, Download, Upload } from "lucide-react";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -16,6 +14,8 @@ interface DataTableToolbarProps {
     isLoading?: boolean;
     initialStartDate?: string;
     initialEndDate?: string;
+    onDownloadExcel?: () => void;
+    onUploadExcel?: (file: File) => void;
 }
 
 export function DataTableToolbar({
@@ -25,7 +25,9 @@ export function DataTableToolbar({
     onSearch,
     isLoading,
     initialStartDate = "",
-    initialEndDate = ""
+    initialEndDate = "",
+    onDownloadExcel,
+    onUploadExcel
 }: DataTableToolbarProps) {
     const [userName, setUserName] = React.useState("");
     const [startDate, setStartDate] = React.useState(initialStartDate);
@@ -33,6 +35,7 @@ export function DataTableToolbar({
 
     const startDateRef = React.useRef<HTMLInputElement>(null);
     const endDateRef = React.useRef<HTMLInputElement>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleSearch = () => {
         onSearch({ userName, startDate, endDate });
@@ -54,6 +57,19 @@ export function DataTableToolbar({
                 ref.current.click();
             }
         }
+    };
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && onUploadExcel) {
+            onUploadExcel(file);
+        }
+        // Reset input to allow same file selection again
+        e.target.value = '';
     };
 
     return (
@@ -138,6 +154,39 @@ export function DataTableToolbar({
                 </div>
 
                 <div className="flex items-center space-x-2">
+                    {onUploadExcel && (
+                        <>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept=".xlsx, .xls"
+                                onChange={handleFileChange}
+                            />
+                            <Button
+                                variant="outline"
+                                onClick={handleUploadClick}
+                                className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                                disabled={isLoading}
+                            >
+                                <Upload className="mr-2 h-4 w-4" />
+                                엑셀 업로드
+                            </Button>
+                        </>
+                    )}
+                    {onDownloadExcel && (
+                        <Button
+                            variant="outline"
+                            onClick={onDownloadExcel}
+                            className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                            disabled={isLoading}
+                        >
+                            <Download className="mr-2 h-4 w-4" />
+                            엑셀 다운로드
+                        </Button>
+                    )}
+
+                    <div className="w-[1px] h-4 bg-border mx-2"></div>
 
                     <Button
                         variant="outline"

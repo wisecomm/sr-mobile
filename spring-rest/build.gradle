@@ -60,6 +60,10 @@ dependencies {
 	// Flyway for database migrations
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	// Excel (Apache POI)
+	implementation 'org.apache.poi:poi:5.2.5'
+	implementation 'org.apache.poi:poi-ooxml:5.2.5'
 	
 	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -79,4 +79,21 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<String>>> getUserRoles(@PathVariable String userId) {
         return ResponseEntity.ok(ApiResponse.success(userService.getUserRoleIds(userId)));
     }
+
+    @Operation(summary = "엑셀 다운로드")
+    @GetMapping("/excel/download")
+    public void downloadExcel(jakarta.servlet.http.HttpServletResponse response,
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) throws java.io.IOException {
+        userService.downloadExcel(response, userName, startDate, endDate);
+    }
+
+    @Operation(summary = "엑셀 업로드")
+    @PostMapping("/excel/upload")
+    public ResponseEntity<ApiResponse<Void>> uploadExcel(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
+        userService.uploadExcel(file);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

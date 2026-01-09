@@ -15,10 +15,12 @@ import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { UserDialog } from "./user-dialog";
 import { useUserManagement } from "@/hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
+import { useExcel } from "@/hooks/use-excel";
 
 export default function UsersPage() {
     const { toast } = useToast();
-    
+    const { downloadExcel, uploadExcel, isDownloading, isUploading } = useExcel();
+
     // 모든 비즈니스 로직을 커스텀 훅에서 관리
     const {
         users,
@@ -35,10 +37,10 @@ export default function UsersPage() {
         handleSubmit,
         handleDelete,
     } = useUserManagement();
-    
+
     // 테이블 컬럼 설정
     const columns = React.useMemo(() => getColumns(), []);
-    
+
     // 테이블 인스턴스
     const table = useDataTable({
         data: users,
@@ -48,20 +50,20 @@ export default function UsersPage() {
         onPaginationChange,
         enableMultiRowSelection: false, // 단일 선택 모드
     });
-    
+
     /**
      * 추가 버튼 핸들러
      */
     const handleAdd = React.useCallback(() => {
         openDialog();
     }, [openDialog]);
-    
+
     /**
      * 수정 버튼 핸들러
      */
     const handleEdit = React.useCallback(() => {
         const selectedRows = table.getSelectedRowModel().rows;
-        
+
         if (selectedRows.length !== 1) {
             toast({
                 title: "알림",
@@ -70,22 +72,44 @@ export default function UsersPage() {
             });
             return;
         }
-        
+
         const user = selectedRows[0].original;
         openDialog(user);
     }, [table, toast, openDialog]);
-    
+
     /**
      * 삭제 버튼 핸들러
      */
     const handleDeleteClick = React.useCallback(async () => {
         const selectedRows = table.getSelectedRowModel().rows;
         const userIds = selectedRows.map(row => row.original.userId);
-        
+
         await handleDelete(userIds);
         table.resetRowSelection();
     }, [table, handleDelete]);
-    
+
+    /**
+     * 엑셀 다운로드 핸들러
+     */
+    const handleDownloadExcel = React.useCallback(() => {
+        const today = new Date().toISOString().split('T')[0];
+        downloadExcel('/v1/mgmt/users/excel/download', `사용자목록_${today}.xlsx`, {
+            userName: searchParams.userName,
+            startDate: searchParams.startDate,
+            endDate: searchParams.endDate,
+        });
+    }, [downloadExcel, searchParams]);
+
+    /**
+     * 엑셀 업로드 핸들러
+     */
+    const handleUploadExcel = React.useCallback((file: File) => {
+        uploadExcel('/v1/mgmt/users/excel/upload', file, () => {
+            // 성공 시 목록 갱신
+            onSearch(searchParams);
+        });
+    }, [uploadExcel, onSearch, searchParams]);
+
     return (
         <div className="w-full space-y-6">
             <SearchPageLayout>
@@ -94,9 +118,11 @@ export default function UsersPage() {
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     onSearch={onSearch}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isDownloading || isUploading}
                     initialStartDate={searchParams.startDate}
                     initialEndDate={searchParams.endDate}
+                    onDownloadExcel={handleDownloadExcel}
+                    onUploadExcel={handleUploadExcel}
                 />
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>

@@ -35,3 +35,6 @@ Java 코드는 수정하지 않고 프론트엔드 화면만 반영하고 싶을
 
 http://localhost:3000/boards/board?brdId=NOTICE
 
+
+% cd /Users/danyoh/Library/Application Support/Claude
+% vi claude_desktop_config.json
