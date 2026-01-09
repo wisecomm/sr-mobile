@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Input } from "@/components/ui/input";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search } from "lucide-react";
+import { ActionButtons, toolbarButtonClass } from "@/components/common";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -11,8 +13,6 @@ interface DataTableToolbarProps {
     onDelete: () => Promise<void>;
     onSearch: (term: string) => void;
 }
-
-import { Card, CardContent } from "@/components/ui/card";
 
 export function DataTableToolbar({
     onAdd,
@@ -48,36 +48,18 @@ export function DataTableToolbar({
                         variant="outline"
                         size="sm"
                         onClick={handleSearch}
-                        className="border-slate-200 text-slate-700 hover:bg-slate-100 font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                        className={toolbarButtonClass}
                     >
-                        <Search className="mr-2 h-4 w-4" /> 조회
+                        <Search className="mr-2 h-4 w-4" />
+                        조회
                     </Button>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onAdd}
-                        className="border-slate-200 text-slate-700 hover:bg-slate-100 font-bold px-4 py-2 h-9 rounded-md shadow-sm lg:flex"
-                    >
-                        <Pencil className="mr-2 h-4 w-4" /> 추가
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onEdit}
-                        className="border-slate-200 text-slate-700 hover:bg-slate-100 font-bold px-4 py-2 h-9 rounded-md shadow-sm lg:flex"
-                    >
-                        <Pencil className="mr-2 h-4 w-4" /> 수정
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => await onDelete()}
-                        className="border-slate-200 text-slate-700 hover:bg-slate-100 font-bold px-4 py-2 h-9 rounded-md shadow-sm lg:flex"
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> 삭제
-                    </Button>
+                    <ActionButtons
+                        onAdd={onAdd}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    />
                 </div>
             </CardContent>
         </Card>

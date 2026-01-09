@@ -1,10 +1,11 @@
+"use client";
+
 import * as React from "react";
-
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Pencil, Trash2, Search, Calendar, Download, Upload } from "lucide-react";
+import { Search, Download, Upload } from "lucide-react";
+import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -32,9 +33,6 @@ export function DataTableToolbar({
     const [userName, setUserName] = React.useState("");
     const [startDate, setStartDate] = React.useState(initialStartDate);
     const [endDate, setEndDate] = React.useState(initialEndDate);
-
-    const startDateRef = React.useRef<HTMLInputElement>(null);
-    const endDateRef = React.useRef<HTMLInputElement>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleSearch = () => {
@@ -47,18 +45,6 @@ export function DataTableToolbar({
         }
     };
 
-    const handleDateIconClick = (ref: React.RefObject<HTMLInputElement | null>) => {
-        if (ref.current) {
-            try {
-                ref.current.showPicker();
-            } catch (error) {
-                console.error("showPicker failed:", error);
-                ref.current.focus();
-                ref.current.click();
-            }
-        }
-    };
-
     const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
@@ -68,7 +54,6 @@ export function DataTableToolbar({
         if (file && onUploadExcel) {
             onUploadExcel(file);
         }
-        // Reset input to allow same file selection again
         e.target.value = '';
     };
 
@@ -88,64 +73,22 @@ export function DataTableToolbar({
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">등록일</span>
-                        <div className="relative w-[140px]">
-                            <Input
-                                type="text"
-                                placeholder="YYYY-MM-DD"
-                                value={startDate}
-                                onChange={(event) => setStartDate(event.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="pr-8"
-                            />
-                            <input
-                                type="date"
-                                ref={startDateRef}
-                                className="absolute opacity-0 pointer-events-none"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                style={{ right: 0, bottom: 0, width: 1, height: 1 }}
-                                tabIndex={-1}
-                            />
-                            <button
-                                className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
-                                type="button"
-                                onClick={() => handleDateIconClick(startDateRef)}
-                            >
-                                <Calendar className="h-4 w-4" />
-                            </button>
-                        </div>
+                        <DateInput
+                            value={startDate}
+                            onChange={setStartDate}
+                            onKeyDown={handleKeyDown}
+                        />
                         <span>-</span>
-                        <div className="relative w-[140px]">
-                            <Input
-                                type="text"
-                                placeholder="YYYY-MM-DD"
-                                value={endDate}
-                                onChange={(event) => setEndDate(event.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="pr-8"
-                            />
-                            <input
-                                type="date"
-                                ref={endDateRef}
-                                className="absolute opacity-0 pointer-events-none"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                style={{ right: 0, bottom: 0, width: 1, height: 1 }}
-                                tabIndex={-1}
-                            />
-                            <button
-                                className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
-                                type="button"
-                                onClick={() => handleDateIconClick(endDateRef)}
-                            >
-                                <Calendar className="h-4 w-4" />
-                            </button>
-                        </div>
+                        <DateInput
+                            value={endDate}
+                            onChange={setEndDate}
+                            onKeyDown={handleKeyDown}
+                        />
                     </div>
                     <Button
                         variant="outline"
                         onClick={handleSearch}
-                        className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                        className={toolbarButtonClass}
                         disabled={isLoading}
                     >
                         <Search className="mr-2 h-4 w-4" />
@@ -166,7 +109,7 @@ export function DataTableToolbar({
                             <Button
                                 variant="outline"
                                 onClick={handleUploadClick}
-                                className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                                className={toolbarButtonClass}
                                 disabled={isLoading}
                             >
                                 <Upload className="mr-2 h-4 w-4" />
@@ -178,7 +121,7 @@ export function DataTableToolbar({
                         <Button
                             variant="outline"
                             onClick={onDownloadExcel}
-                            className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
+                            className={toolbarButtonClass}
                             disabled={isLoading}
                         >
                             <Download className="mr-2 h-4 w-4" />
@@ -186,34 +129,16 @@ export function DataTableToolbar({
                         </Button>
                     )}
 
-                    <div className="w-[1px] h-4 bg-border mx-2"></div>
+                    {(onUploadExcel || onDownloadExcel) && (
+                        <div className="w-[1px] h-4 bg-border mx-2" />
+                    )}
 
-                    <Button
-                        variant="outline"
-                        onClick={onAdd}
-                        className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        추가
-                    </Button>
-
-                    <Button
-                        variant="outline"
-                        onClick={onEdit}
-                        className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
-                    >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        수정
-                    </Button>
-
-                    <Button
-                        variant="outline"
-                        onClick={onDelete}
-                        className="border-border text-foreground hover:bg-muted font-bold px-4 py-2 h-9 rounded-md shadow-sm"
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        삭제
-                    </Button>
+                    <ActionButtons
+                        onAdd={onAdd}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        disabled={isLoading}
+                    />
                 </div>
             </CardContent>
         </Card>
