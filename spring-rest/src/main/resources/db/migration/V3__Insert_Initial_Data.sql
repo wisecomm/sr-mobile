@@ -30,7 +30,7 @@ INSERT INTO CHMM_MENU_INFO (MENU_ID, MENU_LVL, MENU_URI, MENU_IMG_URI, MENU_NAME
 	 ('M24000',3,'/boards/board?brdId=NOTICE','/images/menus/settings.svg','공지사항','M20000',NULL,4,'1','2026-01-09 15:58:36.198',NULL,'2026-01-09 15:59:20.315',NULL),
 	 ('M21000',3,'/users','/images/menus/users.svg','사용자 관리','M20000',NULL,1,'1','2025-12-30 13:07:19.393','','2026-01-09 15:59:35.309',NULL),
 	 ('M22000',3,'/menus','/images/menus/menus.svg','메뉴 관리','M20000',NULL,2,'1','2025-12-30 13:08:29.616','','2026-01-09 15:59:48.098',NULL),
-	 ('M23000',3,'/roles','/images/menus/settings.svg','역활 관리','M20000',NULL,3,'1','2025-12-30 13:09:23.085','','2026-01-09 15:59:55.810',NULL),
+	 ('M23000',3,'/roles','/images/menus/settings.svg','역활 관리','M20000',NULL,3,'1','2025-12-30 13:09:23.085','','2026-01-09 15:59:55.810',NULL);
 
 -- 5. 역할-메뉴 권한 매핑
 INSERT INTO CHMM_ROLE_MENU_MAP (ROLE_ID, MENU_ID, USE_YN, SYS_INSERT_DTM) VALUES
