@@ -16,6 +16,7 @@ import { UserDialog } from "./user-dialog";
 import { useUserManagement } from "@/hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 import { useExcel } from "@/hooks/use-excel";
+import { formatDate } from "@/components/common/date-input";
 
 export default function UsersPage() {
     const { toast } = useToast();
@@ -92,7 +93,7 @@ export default function UsersPage() {
      * 엑셀 다운로드 핸들러
      */
     const handleDownloadExcel = React.useCallback(() => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = formatDate(new Date());
         downloadExcel('/v1/mgmt/users/excel/download', `사용자목록_${today}.xlsx`, {
             userName: searchParams.userName,
             startDate: searchParams.startDate,

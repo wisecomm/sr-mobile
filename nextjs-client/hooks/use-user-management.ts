@@ -15,6 +15,7 @@ import {
 } from '@/hooks/use-user-query';
 import { useToast } from '@/hooks/use-toast';
 import { UserDetail } from '@/types';
+import { formatDate } from '@/components/common/date-input';
 
 /**
  * 검색 파라미터
@@ -54,16 +55,6 @@ export interface UseUserManagementReturn {
     handleDelete: (userIds: string[]) => Promise<void>;
     handleSubmit: (data: Partial<UserDetail>, roleIds: string[]) => Promise<void>;
 }
-
-/**
- * 오늘 날짜 포맷
- */
-const formatDate = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
 
 /**
  * 사용자 관리 훅
