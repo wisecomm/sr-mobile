@@ -78,15 +78,11 @@ export const boardsBoardApi = {
     },
 
     createWithFiles: (formData: FormData): Promise<ApiResponse<void>> => {
-        return apiClient.post<void>(BASE_URL, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        return apiClient.post<void>(BASE_URL, formData);
     },
 
     updateWithFiles: (id: number, formData: FormData): Promise<ApiResponse<void>> => {
-        return apiClient.put<void>(`${BASE_URL}/${id}`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        return apiClient.put<void>(`${BASE_URL}/${id}`, formData);
     },
 
     delete: (id: number): Promise<ApiResponse<void>> => {
@@ -94,6 +90,8 @@ export const boardsBoardApi = {
     },
 
     downloadFile: async (fileId: number, fileName: string): Promise<void> => {
+        if (typeof window === 'undefined') return;
+
         try {
             const response = await api.get(`${BASE_URL}/files/${fileId}/download`, {
                 responseType: 'blob',
