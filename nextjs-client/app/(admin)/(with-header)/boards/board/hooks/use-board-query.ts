@@ -6,7 +6,7 @@
 
 import { apiClient, api } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
-import { createPaginatedQuery, createQuery, createMutation } from './query/factory';
+import { createPaginatedQuery, createQuery, createMutation } from '@/hooks/query/factory';
 
 /**
  * 게시물 첨부파일 타입

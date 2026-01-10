@@ -13,7 +13,7 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { UserDialog } from "./user-dialog";
-import { useUserManagement } from "@/hooks/use-user-management";
+import { useUserManagement } from "./hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 import { useExcel } from "@/hooks/use-excel";
 import { formatDate } from "@/components/common/date-input";

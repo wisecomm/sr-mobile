@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { RoleInfo } from "@/types";
-import { useMenus } from "@/hooks/use-menu-query";
-import { useRoleMenus } from "@/hooks/use-role-query";
+import { useMenus } from "@/app/(admin)/(with-header)/menus/hooks/use-menu-query";
+import { useRoleMenus } from "./hooks/use-role-query";
 import { MenuCheckboxTree } from "./menu-checkbox-tree";
 import { ShieldCheck, Loader2 } from "lucide-react";
 import {

@@ -6,7 +6,7 @@
 
 import { apiClient } from '@/lib/api-client';
 import { RoleInfo, ApiResponse, PageResponse } from '@/types';
-import { createPaginatedQuery, createMutation } from './query/factory';
+import { createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
 /**
  * 역할 검색 파라미터

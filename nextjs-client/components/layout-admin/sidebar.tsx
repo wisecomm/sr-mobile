@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { ChevronDown, LucideIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useMyMenus } from "@/hooks/use-menu-query";
+import { useMyMenus } from "@/app/(admin)/(with-header)/menus/hooks/use-menu-query";
 import { MenuInfo } from "@/types";
 import {
     Collapsible,

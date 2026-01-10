@@ -12,7 +12,7 @@ import {
     useUpdateUser,
     useDeleteUser,
     useAssignUserRoles
-} from '@/hooks/use-user-query';
+} from './use-user-query';
 import { useToast } from '@/hooks/use-toast';
 import { UserDetail } from '@/types';
 import { formatDate } from '@/components/common/date-input';

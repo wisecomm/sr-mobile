@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BoardsMaster } from "@/hooks/use-boards-master-query";
+import { BoardsMaster } from "./hooks/use-board-master-query";
 import {
     Dialog,
     DialogContent,

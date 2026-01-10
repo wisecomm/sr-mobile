@@ -11,7 +11,7 @@ import {
     useDeleteBoardsMaster,
     BoardsMaster,
     BoardsMasterSearchParams,
-} from '@/hooks/use-boards-master-query';
+} from './use-board-master-query';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/components/common/date-input';
 

@@ -8,7 +8,7 @@ import { BoardDialog } from "./board-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { useBoardsMasterManagement } from "@/hooks/use-boards-master-management";
+import { useBoardsMasterManagement } from "./hooks/use-board-master-management";
 
 export default function BoardsMasterPage() {
     const { toast } = useToast();

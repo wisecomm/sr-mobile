@@ -1,5 +1,5 @@
 /**
- * useBoardsBoardManagement - 게시물 관리 훅
+ * useBoardManagement - 게시물 관리 훅
  */
 
 import { useState, useCallback } from 'react';
@@ -11,13 +11,13 @@ import {
     useDeleteBoardsBoard,
     BoardsBoard,
     BoardsBoardSearchParams,
-} from '@/hooks/use-boards-board-query';
+} from './use-board-query';
 import { useToast } from '@/hooks/use-toast';
 
 /**
  * 게시물 관리 훅 리턴 타입
  */
-export interface UseBoardsBoardManagementReturn {
+export interface UseBoardManagementReturn {
     // 데이터
     posts: BoardsBoard[];
     totalPages: number;
@@ -48,7 +48,7 @@ export interface UseBoardsBoardManagementReturn {
 /**
  * 게시물 관리 훅
  */
-export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardManagementReturn {
+export function useBoardManagement(initialBrdId?: string): UseBoardManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태

@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { useSearchParams } from "next/navigation";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { useBoardsBoardManagement } from "@/hooks/use-boards-board-management";
+import { useBoardManagement } from "./hooks/use-board-management";
 
 export default function BoardsPage() {
     return (
@@ -40,7 +40,7 @@ function BoardsContent() {
         closeDialog,
         handleSubmit,
         handleDelete,
-    } = useBoardsBoardManagement(brdIdParam);
+    } = useBoardManagement(brdIdParam);
 
     // Sync URL param with management hook
     React.useEffect(() => {

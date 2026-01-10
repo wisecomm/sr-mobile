@@ -6,7 +6,7 @@
 
 import { apiClient } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
-import { createPaginatedQuery, createQuery, createMutation } from './query/factory';
+import { createPaginatedQuery, createQuery, createMutation } from '@/hooks/query/factory';
 
 /**
  * 게시판 마스터 타입

@@ -12,7 +12,7 @@ import {
     useUpdateRole,
     useDeleteRole,
     useAssignRoleMenus
-} from '@/hooks/use-role-query';
+} from './use-role-query';
 import { useToast } from '@/hooks/use-toast';
 import { RoleInfo } from '@/types';
 

@@ -6,7 +6,7 @@
 
 import { apiClient } from '@/lib/api-client';
 import { MenuInfo, ApiResponse, PageResponse } from '@/types';
-import { createQuery, createPaginatedQuery, createMutation } from './query/factory';
+import { createQuery, createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
 /**
  * 메뉴 검색 파라미터

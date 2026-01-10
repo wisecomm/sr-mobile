@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { boardsBoardApi, BoardsBoard, BoardsBoardFile } from "@/hooks/use-boards-board-query";
+import { boardsBoardApi, BoardsBoard, BoardsBoardFile } from "./hooks/use-board-query";
 import {
     Dialog,
     DialogContent,
@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileText, Loader2 } from "lucide-react";
 import { FileUpload } from "@/components/ui/file-upload";
-import { useBoardsBoardDetail } from "@/hooks/use-boards-board-query";
+import { useBoardsBoardDetail } from "./hooks/use-board-query";
 
 const boardFormSchema = z.object({
     brdId: z.string().min(1, "게시판을 선택해주세요."),

@@ -11,7 +11,7 @@ import { MenuInfo } from "@/types";
 import { MenuTree } from "./menu-tree";
 import { MenuForm } from "./menu-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMenuManagement } from "@/hooks/use-menu-management";
+import { useMenuManagement } from "./hooks/use-menu-management";
 
 export default function MenusPage() {
     // 모든 비즈니스 로직을 커스텀 훅에서 관리

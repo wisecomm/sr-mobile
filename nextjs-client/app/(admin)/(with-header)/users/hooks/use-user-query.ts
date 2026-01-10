@@ -6,7 +6,7 @@
 
 import { apiClient } from '@/lib/api-client';
 import { UserDetail, ApiResponse, PageResponse } from '@/types';
-import { createPaginatedQuery, createMutation } from './query/factory';
+import { createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
 /**
  * 사용자 검색 파라미터

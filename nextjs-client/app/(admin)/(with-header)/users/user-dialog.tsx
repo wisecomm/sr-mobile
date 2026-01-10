@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRoles } from "@/hooks/use-role-query";
-import { useUserRoles } from "@/hooks/use-user-query";
+import { useRoles } from "@/app/(admin)/(with-header)/roles/hooks/use-role-query";
+import { useUserRoles } from "./hooks/use-user-query";
 import { UserPlus, Mail, Lock, IdCard, Loader2 } from "lucide-react";
 
 const userFormSchema = z.object({
