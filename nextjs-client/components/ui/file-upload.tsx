@@ -1,9 +1,32 @@
 "use client";
 
 import * as React from "react";
-import { Paperclip, X, File as FileIcon, ChevronUp, Download } from "lucide-react";
+import { Paperclip, X, File as FileIcon, ChevronUp, Download, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// 기본 허용 확장자 (보안상 위험한 파일 제외)
+const DEFAULT_ALLOWED_EXTENSIONS = [
+    // 문서
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.rtf', '.csv',
+    // 이미지
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg',
+    // 압축
+    '.zip', '.rar', '.7z', '.tar', '.gz',
+    // 기타
+    '.json', '.xml',
+];
+
+// 차단 확장자 (보안상 위험한 실행 파일)
+const BLOCKED_EXTENSIONS = [
+    '.exe', '.bat', '.cmd', '.sh', '.ps1', '.vbs', '.js', '.jar', '.msi', '.dll', '.scr', '.com',
+];
+
+interface FileValidationError {
+    fileName: string;
+    reason: 'size' | 'extension' | 'blocked';
+    message: string;
+}
 
 interface FileUploadProps {
     files: File[];
@@ -13,6 +36,7 @@ interface FileUploadProps {
     onDownloadExisting?: (fileId: number) => void;
     maxSize?: number; // in bytes, default 500MB
     accept?: string;
+    allowedExtensions?: string[]; // 허용 확장자 목록 (예: ['.pdf', '.jpg'])
     className?: string;
 }
 
@@ -24,10 +48,67 @@ export function FileUpload({
     onDownloadExisting,
     maxSize = 500 * 1024 * 1024,
     accept,
+    allowedExtensions,
     className,
 }: FileUploadProps) {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = React.useState(false);
+    const [validationErrors, setValidationErrors] = React.useState<FileValidationError[]>([]);
+
+    // 5초 후 에러 메시지 자동 제거
+    React.useEffect(() => {
+        if (validationErrors.length > 0) {
+            const timer = setTimeout(() => {
+                setValidationErrors([]);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [validationErrors]);
+
+    /**
+     * 파일 확장자 추출
+     */
+    const getFileExtension = (fileName: string): string => {
+        const lastDot = fileName.lastIndexOf('.');
+        return lastDot !== -1 ? fileName.slice(lastDot).toLowerCase() : '';
+    };
+
+    /**
+     * 파일 검증
+     */
+    const validateFile = (file: File): FileValidationError | null => {
+        const extension = getFileExtension(file.name);
+
+        // 1. 차단된 확장자 체크 (보안)
+        if (BLOCKED_EXTENSIONS.includes(extension)) {
+            return {
+                fileName: file.name,
+                reason: 'blocked',
+                message: `보안상 위험한 파일 형식입니다 (${extension})`,
+            };
+        }
+
+        // 2. 허용된 확장자 체크
+        const allowed = allowedExtensions || DEFAULT_ALLOWED_EXTENSIONS;
+        if (!allowed.includes(extension)) {
+            return {
+                fileName: file.name,
+                reason: 'extension',
+                message: `허용되지 않는 파일 형식입니다 (${extension})`,
+            };
+        }
+
+        // 3. 파일 크기 체크
+        if (file.size > maxSize) {
+            return {
+                fileName: file.name,
+                reason: 'size',
+                message: `파일 크기가 너무 큽니다 (${formatSize(file.size)} > ${formatSize(maxSize)})`,
+            };
+        }
+
+        return null;
+    };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -40,8 +121,25 @@ export function FileUpload({
     };
 
     const addFiles = (newFiles: File[]) => {
-        const validFiles = newFiles.filter((file) => file.size <= maxSize);
-        onFilesChange([...files, ...validFiles]);
+        const errors: FileValidationError[] = [];
+        const validFiles: File[] = [];
+
+        newFiles.forEach((file) => {
+            const error = validateFile(file);
+            if (error) {
+                errors.push(error);
+            } else {
+                validFiles.push(file);
+            }
+        });
+
+        if (errors.length > 0) {
+            setValidationErrors(errors);
+        }
+
+        if (validFiles.length > 0) {
+            onFilesChange([...files, ...validFiles]);
+        }
     };
 
     const removeFile = (index: number) => {
@@ -176,6 +274,34 @@ export function FileUpload({
                                 또는 하단의 파일 추가 버튼을 클릭하세요
                             </p>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Validation Error Messages */}
+            {validationErrors.length > 0 && (
+                <div className="mx-3 mb-3 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                    <div className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                        <div className="flex-1 space-y-1">
+                            <p className="text-sm font-medium text-destructive">
+                                {validationErrors.length}개 파일을 업로드할 수 없습니다
+                            </p>
+                            <ul className="text-xs text-destructive/80 space-y-0.5">
+                                {validationErrors.map((error, index) => (
+                                    <li key={index} className="truncate">
+                                        • {error.fileName}: {error.message}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setValidationErrors([])}
+                            className="text-destructive/60 hover:text-destructive shrink-0"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             )}
