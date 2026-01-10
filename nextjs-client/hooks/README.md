@@ -8,18 +8,15 @@
 
 ```
 hooks/
-├── index.ts                        # 중앙 export
-├── query/                          # React Query 관련
-│   ├── factory.ts                 # 쿼리/뮤테이션 팩토리
+├── index.ts                        # Shared/Global hooks export
+├── query/                          # Shared React Query factories
+│   ├── factory.ts
 │   └── README.md
-├── use-user-management.ts          # 사용자 관리 비즈니스 로직
-├── use-role-management.ts          # 역할 관리 비즈니스 로직
-├── use-menu-management.ts          # 메뉴 관리 비즈니스 로직
-├── use-board-master-management.ts  # 게시판 마스터 관리 비즈니스 로직
-├── use-board-post-management.ts    # 게시물 관리 비즈니스 로직
-├── use-auth.ts                     # 인증 관련 훅
-├── use-toast.tsx                   # Toast 알림
-└── use-*-query.ts                  # React Query 훅들
+├── use-auth.ts                     # Auth hooks (Global)
+├── use-toast.tsx                   # UI Feedback
+└── use-excel.ts                    # Excel Utility
+
+> **Note**: Feature-specific hooks (Users, Roles, Boards, etc.) have been moved to their respective feature directories (e.g., `app/(admin)/users/hooks/`). See [Feature Architecture](../docs/FEATURE_ARCHITECTURE.md) for details.
 ```
 
 ## ⚠️ 네이밍 컨벤션
