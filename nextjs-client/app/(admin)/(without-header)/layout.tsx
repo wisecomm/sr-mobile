@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { getAccessToken } from "@/app/actions/auth-actions";
 import { Sidebar } from "@/components/layout-admin/sidebar";
@@ -23,7 +23,9 @@ export default function AdminLayout({
 
     return (
         <div className="flex min-h-screen w-full bg-muted/40">
-            <Sidebar />
+            <Suspense fallback={null}>
+                <Sidebar />
+            </Suspense>
             <div className="flex flex-col flex-1 min-h-screen">
                 <Header />
                 <main className="flex-1 bg-muted/50 dark:bg-card/50 py-4 px-6 overflow-y-auto">
