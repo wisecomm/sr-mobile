@@ -163,7 +163,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
                                         await boardsBoardApi.downloadFile(fileId, file.orgFileNm);
                                     }
                                 }}
-                                maxSize={500 * 1024 * 1024}
+                                maxSize={50 * 1024 * 1024}
                             />
                         </div>
 
