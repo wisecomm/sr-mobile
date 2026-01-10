@@ -9,8 +9,8 @@ import {
     useCreateBoardsMaster,
     useUpdateBoardsMaster,
     useDeleteBoardsMaster,
-    BoardMaster,
-    BoardMasterSearchParams,
+    BoardsMaster,
+    BoardsMasterSearchParams,
 } from '@/hooks/use-boards-master-query';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/components/common/date-input';
@@ -20,7 +20,7 @@ import { formatDate } from '@/components/common/date-input';
  */
 export interface UseBoardsMasterManagementReturn {
     // 데이터
-    boards: BoardMaster[];
+    boards: BoardsMaster[];
     totalPages: number;
     isLoading: boolean;
 
@@ -29,20 +29,20 @@ export interface UseBoardsMasterManagementReturn {
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
 
     // 검색
-    searchParams: Omit<BoardMasterSearchParams, 'page' | 'size'>;
-    onSearch: (params: Omit<BoardMasterSearchParams, 'page' | 'size'>) => void;
+    searchParams: Omit<BoardsMasterSearchParams, 'page' | 'size'>;
+    onSearch: (params: Omit<BoardsMasterSearchParams, 'page' | 'size'>) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
-    selectedBoard: BoardMaster | null;
-    openDialog: (board?: BoardMaster) => void;
+    selectedBoard: BoardsMaster | null;
+    openDialog: (board?: BoardsMaster) => void;
     closeDialog: () => void;
 
     // CRUD 작업
-    handleCreate: (data: Partial<BoardMaster>) => Promise<void>;
-    handleUpdate: (data: Partial<BoardMaster>) => Promise<void>;
+    handleCreate: (data: Partial<BoardsMaster>) => Promise<void>;
+    handleUpdate: (data: Partial<BoardsMaster>) => Promise<void>;
     handleDelete: (boardIds: string[]) => Promise<void>;
-    handleSubmit: (data: Partial<BoardMaster>) => Promise<void>;
+    handleSubmit: (data: Partial<BoardsMaster>) => Promise<void>;
 }
 
 /**
@@ -52,7 +52,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<Omit<BoardMasterSearchParams, 'page' | 'size'>>({
+    const [searchParams, setSearchParams] = useState<Omit<BoardsMasterSearchParams, 'page' | 'size'>>({
         brdNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
@@ -66,7 +66,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
 
     // 다이얼로그 상태
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedBoard, setSelectedBoard] = useState<BoardMaster | null>(null);
+    const [selectedBoard, setSelectedBoard] = useState<BoardsMaster | null>(null);
 
     // API 훅
     const { data: boardsData, isLoading } = useBoardsMasterList({
@@ -82,7 +82,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((params: Omit<BoardMasterSearchParams, 'page' | 'size'>) => {
+    const handleSearch = useCallback((params: Omit<BoardsMasterSearchParams, 'page' | 'size'>) => {
         setSearchParams(params);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
@@ -90,7 +90,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 다이얼로그 열기
      */
-    const openDialog = useCallback((board?: BoardMaster) => {
+    const openDialog = useCallback((board?: BoardsMaster) => {
         setSelectedBoard(board || null);
         setDialogOpen(true);
     }, []);
@@ -106,7 +106,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 게시판 생성
      */
-    const handleCreate = useCallback(async (data: Partial<BoardMaster>) => {
+    const handleCreate = useCallback(async (data: Partial<BoardsMaster>) => {
         try {
             await createMutation.mutateAsync(data);
 
@@ -131,7 +131,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 게시판 수정
      */
-    const handleUpdate = useCallback(async (data: Partial<BoardMaster>) => {
+    const handleUpdate = useCallback(async (data: Partial<BoardsMaster>) => {
         if (!selectedBoard) {
             throw new Error('선택된 게시판이 없습니다.');
         }
@@ -203,7 +203,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 폼 제출 (생성 또는 수정)
      */
-    const handleSubmit = useCallback(async (data: Partial<BoardMaster>) => {
+    const handleSubmit = useCallback(async (data: Partial<BoardsMaster>) => {
         if (selectedBoard) {
             await handleUpdate(data);
         } else {

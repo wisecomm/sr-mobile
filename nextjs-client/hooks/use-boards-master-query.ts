@@ -1,5 +1,5 @@
 /**
- * BoardMaster API + Query Hooks
+ * BoardsMaster API + Query Hooks
  *
  * 게시판 마스터 API 클라이언트와 React Query 훅 통합
  */
@@ -11,7 +11,7 @@ import { createPaginatedQuery, createQuery, createMutation } from './query/facto
 /**
  * 게시판 마스터 타입
  */
-export interface BoardMaster {
+export interface BoardsMaster {
     brdId: string;
     brdNm: string;
     brdDesc?: string;
@@ -28,7 +28,7 @@ export interface BoardMaster {
 /**
  * 게시판 마스터 검색 파라미터
  */
-export interface BoardMasterSearchParams {
+export interface BoardsMasterSearchParams {
     page: number;
     size: number;
     brdNm?: string;
@@ -41,8 +41,8 @@ export interface BoardMasterSearchParams {
  */
 const BASE_URL = '/v1/mgmt/boards/master';
 
-const boardMasterApi = {
-    search: (params: BoardMasterSearchParams): Promise<ApiResponse<PageResponse<BoardMaster>>> => {
+const boardsMasterApi = {
+    search: (params: BoardsMasterSearchParams): Promise<ApiResponse<PageResponse<BoardsMaster>>> => {
         const queryParams: Record<string, string | number> = {
             page: params.page + 1,
             size: params.size,
@@ -51,19 +51,19 @@ const boardMasterApi = {
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
 
-        return apiClient.get<PageResponse<BoardMaster>>(BASE_URL, queryParams);
+        return apiClient.get<PageResponse<BoardsMaster>>(BASE_URL, queryParams);
     },
 
-    getById: (id: string): Promise<ApiResponse<BoardMaster>> => {
-        return apiClient.get<BoardMaster>(`${BASE_URL}/${id}`);
+    getById: (id: string): Promise<ApiResponse<BoardsMaster>> => {
+        return apiClient.get<BoardsMaster>(`${BASE_URL}/${id}`);
     },
 
-    create: (data: Partial<BoardMaster>): Promise<ApiResponse<BoardMaster>> => {
-        return apiClient.post<BoardMaster>(BASE_URL, data);
+    create: (data: Partial<BoardsMaster>): Promise<ApiResponse<BoardsMaster>> => {
+        return apiClient.post<BoardsMaster>(BASE_URL, data);
     },
 
-    update: (id: string, data: Partial<BoardMaster>): Promise<ApiResponse<BoardMaster>> => {
-        return apiClient.put<BoardMaster>(`${BASE_URL}/${id}`, data);
+    update: (id: string, data: Partial<BoardsMaster>): Promise<ApiResponse<BoardsMaster>> => {
+        return apiClient.put<BoardsMaster>(`${BASE_URL}/${id}`, data);
     },
 
     delete: (id: string): Promise<ApiResponse<void>> => {
@@ -77,7 +77,7 @@ const boardMasterApi = {
 export const boardsMasterKeys = {
     all: ['boardsMaster'] as const,
     lists: () => [...boardsMasterKeys.all, 'list'] as const,
-    list: (params: BoardMasterSearchParams) => [...boardsMasterKeys.lists(), params] as const,
+    list: (params: BoardsMasterSearchParams) => [...boardsMasterKeys.lists(), params] as const,
     detail: (id: string) => [...boardsMasterKeys.all, 'detail', id] as const,
 };
 
@@ -85,33 +85,33 @@ export const boardsMasterKeys = {
  * Queries
  */
 export const useBoardsMasterList = createPaginatedQuery<
-    PageResponse<BoardMaster>,
-    BoardMasterSearchParams
+    PageResponse<BoardsMaster>,
+    BoardsMasterSearchParams
 >({
     queryKey: (params) => boardsMasterKeys.list(params),
-    queryFn: (params) => boardMasterApi.search(params),
+    queryFn: (params) => boardsMasterApi.search(params),
 });
 
-export const useBoardsMasterDetail = createQuery<BoardMaster, string | undefined>({
+export const useBoardsMasterDetail = createQuery<BoardsMaster, string | undefined>({
     queryKey: (boardId) => boardsMasterKeys.detail(boardId!),
-    queryFn: (boardId) => boardMasterApi.getById(boardId!),
+    queryFn: (boardId) => boardsMasterApi.getById(boardId!),
     enabled: (boardId) => !!boardId,
 });
 
 /**
  * Mutations
  */
-export const useCreateBoardsMaster = createMutation<BoardMaster, Partial<BoardMaster>>({
-    mutationFn: (data) => boardMasterApi.create(data),
+export const useCreateBoardsMaster = createMutation<BoardsMaster, Partial<BoardsMaster>>({
+    mutationFn: (data) => boardsMasterApi.create(data),
     invalidateKeys: [boardsMasterKeys.all],
 });
 
-export const useUpdateBoardsMaster = createMutation<BoardMaster, { id: string; data: Partial<BoardMaster> }>({
-    mutationFn: ({ id, data }) => boardMasterApi.update(id, data),
+export const useUpdateBoardsMaster = createMutation<BoardsMaster, { id: string; data: Partial<BoardsMaster> }>({
+    mutationFn: ({ id, data }) => boardsMasterApi.update(id, data),
     invalidateKeys: [boardsMasterKeys.all],
 });
 
 export const useDeleteBoardsMaster = createMutation<void, string>({
-    mutationFn: (id) => boardMasterApi.delete(id),
+    mutationFn: (id) => boardsMasterApi.delete(id),
     invalidateKeys: [boardsMasterKeys.all],
 });

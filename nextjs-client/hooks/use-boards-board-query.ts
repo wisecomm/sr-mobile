@@ -1,5 +1,5 @@
 /**
- * BoardPost API + Query Hooks
+ * BoardsBoard API + Query Hooks
  *
  * 게시물 API 클라이언트와 React Query 훅 통합
  */
@@ -11,7 +11,7 @@ import { createPaginatedQuery, createQuery, createMutation } from './query/facto
 /**
  * 게시물 첨부파일 타입
  */
-export interface BoardFile {
+export interface BoardsBoardFile {
     fileId: number;
     boardId: number;
     filePath: string;
@@ -23,7 +23,7 @@ export interface BoardFile {
 /**
  * 게시물 타입
  */
-export interface Board {
+export interface BoardsBoard {
     boardId: number;
     brdId: string;
     userId: string;
@@ -36,13 +36,13 @@ export interface Board {
     sysInsertUserId?: string;
     sysUpdateDtm?: string;
     sysUpdateUserId?: string;
-    fileList?: BoardFile[];
+    fileList?: BoardsBoardFile[];
 }
 
 /**
  * 게시물 검색 파라미터
  */
-export interface BoardPostSearchParams {
+export interface BoardsBoardSearchParams {
     page: number;
     size: number;
     brdId: string;
@@ -58,8 +58,8 @@ export interface BoardPostSearchParams {
  */
 const BASE_URL = '/v1/boards/board';
 
-export const boardPostApi = {
-    search: (params: BoardPostSearchParams): Promise<ApiResponse<PageResponse<Board>>> => {
+export const boardsBoardApi = {
+    search: (params: BoardsBoardSearchParams): Promise<ApiResponse<PageResponse<BoardsBoard>>> => {
         const queryParams: Record<string, string | number> = {
             page: params.page + 1,
             size: params.size,
@@ -70,11 +70,11 @@ export const boardPostApi = {
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
 
-        return apiClient.get<PageResponse<Board>>(BASE_URL, queryParams);
+        return apiClient.get<PageResponse<BoardsBoard>>(BASE_URL, queryParams);
     },
 
-    getById: (id: number): Promise<ApiResponse<Board>> => {
-        return apiClient.get<Board>(`${BASE_URL}/${id}`);
+    getById: (id: number): Promise<ApiResponse<BoardsBoard>> => {
+        return apiClient.get<BoardsBoard>(`${BASE_URL}/${id}`);
     },
 
     createWithFiles: (formData: FormData): Promise<ApiResponse<void>> => {
@@ -121,7 +121,7 @@ export const boardPostApi = {
 export const boardsBoardKeys = {
     all: ['boardsBoard'] as const,
     lists: () => [...boardsBoardKeys.all, 'list'] as const,
-    list: (params: BoardPostSearchParams) => [...boardsBoardKeys.lists(), params] as const,
+    list: (params: BoardsBoardSearchParams) => [...boardsBoardKeys.lists(), params] as const,
     detail: (id: number) => [...boardsBoardKeys.all, 'detail', id] as const,
 };
 
@@ -131,18 +131,18 @@ export const boardsBoardKeys = {
 
 // 게시물 목록 조회
 export const useBoardsBoardList = createPaginatedQuery<
-    PageResponse<Board>,
-    BoardPostSearchParams
+    PageResponse<BoardsBoard>,
+    BoardsBoardSearchParams
 >({
     queryKey: (params) => boardsBoardKeys.list(params),
-    queryFn: (params) => boardPostApi.search(params),
+    queryFn: (params) => boardsBoardApi.search(params),
     enabled: (params) => !!params.brdId,
 });
 
 // 게시물 상세 조회
-export const useBoardsBoardDetail = createQuery<Board, number | undefined>({
+export const useBoardsBoardDetail = createQuery<BoardsBoard, number | undefined>({
     queryKey: (boardId) => boardsBoardKeys.detail(boardId!),
-    queryFn: (boardId) => boardPostApi.getById(boardId!),
+    queryFn: (boardId) => boardsBoardApi.getById(boardId!),
     enabled: (boardId) => !!boardId,
 });
 
@@ -152,18 +152,18 @@ export const useBoardsBoardDetail = createQuery<Board, number | undefined>({
 
 // 게시물 생성
 export const useCreateBoardsBoard = createMutation<void, FormData>({
-    mutationFn: (formData) => boardPostApi.createWithFiles(formData),
+    mutationFn: (formData) => boardsBoardApi.createWithFiles(formData),
     invalidateKeys: [boardsBoardKeys.all],
 });
 
 // 게시물 수정
 export const useUpdateBoardsBoard = createMutation<void, { id: number; data: FormData }>({
-    mutationFn: ({ id, data }) => boardPostApi.updateWithFiles(id, data),
+    mutationFn: ({ id, data }) => boardsBoardApi.updateWithFiles(id, data),
     invalidateKeys: [boardsBoardKeys.all],
 });
 
 // 게시물 삭제
 export const useDeleteBoardsBoard = createMutation<void, number>({
-    mutationFn: (id) => boardPostApi.delete(id),
+    mutationFn: (id) => boardsBoardApi.delete(id),
     invalidateKeys: [boardsBoardKeys.all],
 });

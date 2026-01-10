@@ -9,8 +9,8 @@ import {
     useCreateBoardsBoard,
     useUpdateBoardsBoard,
     useDeleteBoardsBoard,
-    Board,
-    BoardPostSearchParams,
+    BoardsBoard,
+    BoardsBoardSearchParams,
 } from '@/hooks/use-boards-board-query';
 import { useToast } from '@/hooks/use-toast';
 
@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
  */
 export interface UseBoardsBoardManagementReturn {
     // 데이터
-    posts: Board[];
+    posts: BoardsBoard[];
     totalPages: number;
     isLoading: boolean;
 
@@ -28,21 +28,21 @@ export interface UseBoardsBoardManagementReturn {
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
 
     // 검색
-    searchParams: BoardPostSearchParams;
-    onSearch: (params: Partial<BoardPostSearchParams>) => void;
+    searchParams: BoardsBoardSearchParams;
+    onSearch: (params: Partial<BoardsBoardSearchParams>) => void;
     setBoardId: (brdId: string) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
-    selectedPost: Board | null;
-    openDialog: (post?: Board) => void;
+    selectedPost: BoardsBoard | null;
+    openDialog: (post?: BoardsBoard) => void;
     closeDialog: () => void;
 
     // CRUD 작업
     handleCreate: (data: FormData) => Promise<void>;
     handleUpdate: (data: FormData) => Promise<void>;
     handleDelete: (postIds: number[]) => Promise<void>;
-    handleSubmit: (data: Partial<Board> & { deleteFileIds?: number[] }, files?: File[] | null) => Promise<void>;
+    handleSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files?: File[] | null) => Promise<void>;
 }
 
 /**
@@ -52,7 +52,7 @@ export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardM
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<BoardPostSearchParams>({
+    const [searchParams, setSearchParams] = useState<BoardsBoardSearchParams>({
         brdId: initialBrdId || '',
         page: 0,
         size: 10,
@@ -66,7 +66,7 @@ export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardM
 
     // 다이얼로그 상태
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedPost, setSelectedPost] = useState<Board | null>(null);
+    const [selectedPost, setSelectedPost] = useState<BoardsBoard | null>(null);
 
     // API 훅
     const { data: postsData, isLoading } = useBoardsBoardList({
@@ -83,22 +83,22 @@ export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardM
      * 게시판 ID 설정
      */
     const setBoardId = useCallback((brdId: string) => {
-        setSearchParams((prev: BoardPostSearchParams) => ({ ...prev, brdId }));
+        setSearchParams((prev: BoardsBoardSearchParams) => ({ ...prev, brdId }));
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((params: Partial<BoardPostSearchParams>) => {
-        setSearchParams((prev: BoardPostSearchParams) => ({ ...prev, ...params }));
+    const handleSearch = useCallback((params: Partial<BoardsBoardSearchParams>) => {
+        setSearchParams((prev: BoardsBoardSearchParams) => ({ ...prev, ...params }));
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
      * 다이얼로그 열기
      */
-    const openDialog = useCallback((post?: Board) => {
+    const openDialog = useCallback((post?: BoardsBoard) => {
         setSelectedPost(post || null);
         setDialogOpen(true);
     }, []);
@@ -211,7 +211,7 @@ export function useBoardsBoardManagement(initialBrdId?: string): UseBoardsBoardM
     /**
      * 폼 제출 (생성 또는 수정)
      */
-    const handleSubmit = useCallback(async (data: Partial<Board> & { deleteFileIds?: number[] }, files?: File[] | null) => {
+    const handleSubmit = useCallback(async (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files?: File[] | null) => {
         const formData = new FormData();
         const jsonBlob = new Blob([JSON.stringify(data)], { type: 'application/json' });
         formData.append('request', jsonBlob);

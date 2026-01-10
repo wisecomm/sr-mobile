@@ -1,11 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Board } from "@/hooks/use-boards-board-query";
+import { BoardsBoard } from "@/hooks/use-boards-board-query";
 import { TextCell, DateCell, NumberCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 
-export const getColumns = (): ColumnDef<Board>[] => [
+export const getColumns = (): ColumnDef<BoardsBoard>[] => [
     createSelectColumn(),
     createColumn("boardId", "순번", {
         sort: true,

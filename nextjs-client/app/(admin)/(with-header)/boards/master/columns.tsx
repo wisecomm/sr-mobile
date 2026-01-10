@@ -1,11 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { BoardMaster } from "@/hooks/use-boards-master-query";
+import { BoardsMaster } from "@/hooks/use-boards-master-query";
 import { TextCell, DateCell, UseYnCell, NumberCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 
-export const getColumns = (): ColumnDef<BoardMaster>[] => [
+export const getColumns = (): ColumnDef<BoardsMaster>[] => [
     createSelectColumn(),
     createColumn("brdId", "게시판 코드", {
         sort: true,

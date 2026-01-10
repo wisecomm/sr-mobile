@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { boardPostApi, Board, BoardFile } from "@/hooks/use-boards-board-query";
+import { boardsBoardApi, BoardsBoard, BoardsBoardFile } from "@/hooks/use-boards-board-query";
 import {
     Dialog,
     DialogContent,
@@ -38,9 +38,9 @@ type BoardFormValues = z.infer<typeof boardFormSchema>;
 interface BoardDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    board?: Board | null;
+    board?: BoardsBoard | null;
     defaultBrdId?: string;
-    onSubmit: (data: Partial<Board> & { deleteFileIds?: number[] }, files: File[] | null) => Promise<void>;
+    onSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files: File[] | null) => Promise<void>;
 }
 
 export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit }: BoardDialogProps) {
@@ -61,7 +61,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
     const effectiveBoard = boardDetail || board;
 
     const [files, setFiles] = React.useState<File[]>([]);
-    const [existingFiles, setExistingFiles] = React.useState<BoardFile[]>([]);
+    const [existingFiles, setExistingFiles] = React.useState<BoardsBoardFile[]>([]);
     const [deletedFileIds, setDeletedFileIds] = React.useState<number[]>([]);
 
     React.useEffect(() => {
@@ -160,7 +160,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
                                 onDownloadExisting={async (fileId) => {
                                     const file = existingFiles.find(f => f.fileId === fileId);
                                     if (file) {
-                                        await boardPostApi.downloadFile(fileId, file.orgFileNm);
+                                        await boardsBoardApi.downloadFile(fileId, file.orgFileNm);
                                     }
                                 }}
                                 maxSize={500 * 1024 * 1024}

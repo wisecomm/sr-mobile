@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BoardMaster } from "@/hooks/use-boards-master-query";
+import { BoardsMaster } from "@/hooks/use-boards-master-query";
 import {
     Dialog,
     DialogContent,
@@ -38,8 +38,8 @@ type BoardFormValues = z.infer<typeof boardFormSchema>;
 interface BoardDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    board?: BoardMaster | null;
-    onSubmit: (data: Partial<BoardMaster>) => Promise<void>;
+    board?: BoardsMaster | null;
+    onSubmit: (data: Partial<BoardsMaster>) => Promise<void>;
 }
 
 export function BoardDialog({ open, onOpenChange, board, onSubmit }: BoardDialogProps) {
