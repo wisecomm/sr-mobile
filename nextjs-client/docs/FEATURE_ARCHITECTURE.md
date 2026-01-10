@@ -85,5 +85,6 @@ graph TD
     *   📄 `page.tsx`: List of posts for a specific board.
     *   🔗 `hooks/use-board-management.ts`: Logic for post CRUD and search.
     *   🔌 `hooks/use-board-query.ts`: API definitions for `BoardsBoard` and **File Attachment logic**.
-    *   🖼️ `board-dialog.tsx`: Post write/edit form including `FileUpload` component.
+    *   🖼️ `board-dialog.tsx`: Wrapper dialog component.
+    *   🖼️ `board-form.tsx`: Pure form component with UI and validation logic.
     *   🖼️ `columns.tsx`: Table columns (includes file attachment icons).
