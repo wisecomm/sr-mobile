@@ -2,7 +2,8 @@ spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:springrest}
     username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+#    password: ${DB_PASSWORD:postgres}
+    password: "ENC(up+qFHeFbOOnqMJFnVwnk0mzzqpNw3yy)"
     driver-class-name: org.postgresql.Driver
     hikari:
 app:
