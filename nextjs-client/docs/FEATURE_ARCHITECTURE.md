@@ -77,7 +77,9 @@ graph TD
     *   📄 `page.tsx`: Board configuration list.
     *   🔗 `hooks/use-board-master-management.ts`: Logic for managing board types (NOTICE, FREE, etc.).
     *   🔌 `hooks/use-board-master-query.ts`: API definitions for `BoardsMaster`.
-    *   🖼️ `board-dialog.tsx`: Form to configure board settings (file upload limits, reply options).
+    *   🔌 `hooks/use-board-master-form.ts`: Form schema and state management.
+    *   🖼️ `board-dialog.tsx`: Wrapper dialog component.
+    *   🖼️ `board-form.tsx`: Pure form component.
 
 ### 5. Board Post Screen (`/boards/board`)
 *   **Directory**: `app/(admin)/(with-header)/boards/board`
