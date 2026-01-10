@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ChevronDown, LucideIcon } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -102,6 +102,7 @@ const IconRenderer = ({ icon: Icon, image, className }: { icon?: LucideIcon, ima
 
 export function Sidebar() {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [mounted, setMounted] = useState(false);
     const { data: menus } = useMyMenus();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -127,6 +128,41 @@ export function Sidebar() {
 
     const toggleGroup = (title: string) => {
         setOpenGroups(prev => ({ ...prev, [title]: !prev[title] }));
+    };
+
+    /**
+     * Check if the menu item is active
+     */
+    const isMenuActive = (href?: string) => {
+        if (!href) return false;
+        if (pathname === href) return true;
+
+        // Split href into path and query
+        const [menuPath, menuQuery] = href.split('?');
+
+        // Path must match exactly
+        if (pathname !== menuPath) return false;
+
+        // If no query in menu href, it matches (assuming strict path match is good enough, or we can enforce exact match)
+        // But usually sidebar menu /users should be active for /users?sort=desc
+        // However, if we have different menus for same path different params, we must check params.
+
+        if (menuQuery) {
+            const params = new URLSearchParams(menuQuery);
+            // Check if all params in menu href are present and equal in current searchParams
+            for (const [key, value] of params.entries()) {
+                if (searchParams.get(key) !== value) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // If menu href has no query, but current URL has query.
+        // e.g. menu: /users, current: /users?page=1 -> Active
+        // e.g. menu: /board, current: /board?id=1 -> Active (unless there is a competing menu)
+        // For now, accept this as match.
+        return true;
     };
 
     if (!mounted) return null;
@@ -182,7 +218,7 @@ export function Sidebar() {
                                             href={child.href || "#"}
                                             className={cn(
                                                 "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary pl-9",
-                                                pathname === child.href
+                                                isMenuActive(child.href)
                                                     ? "bg-muted text-primary dark:bg-card"
                                                     : "text-muted-foreground"
                                             )}
@@ -200,7 +236,7 @@ export function Sidebar() {
                                 href={item.href || "#"}
                                 className={cn(
                                     "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                                    pathname === item.href
+                                    isMenuActive(item.href)
                                         ? "bg-muted text-primary dark:bg-card"
                                         : "text-muted-foreground"
                                 )}
