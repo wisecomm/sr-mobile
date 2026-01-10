@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { BoardMaster } from "./api";
+import { BoardMaster } from "@/hooks/use-boards-master-query";
 import { TextCell, DateCell, UseYnCell, NumberCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 

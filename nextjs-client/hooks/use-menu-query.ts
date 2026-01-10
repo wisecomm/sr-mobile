@@ -1,12 +1,54 @@
 /**
- * Menu Query Hooks (Refactored)
+ * Menu API + Query Hooks
  *
- * 표준화된 팩토리 함수를 사용하여 리팩토링
+ * 메뉴 API 클라이언트와 React Query 훅 통합
  */
 
-import { menuApi } from '@/app/(admin)/(with-header)/menus/api';
-import { MenuInfo, PageResponse } from '@/types';
+import { apiClient } from '@/lib/api-client';
+import { MenuInfo, ApiResponse, PageResponse } from '@/types';
 import { createQuery, createPaginatedQuery, createMutation } from './query/factory';
+
+/**
+ * 메뉴 검색 파라미터
+ */
+export interface MenuSearchParams {
+    page: number;
+    size: number;
+    searchId?: string;
+}
+
+/**
+ * API 함수들
+ */
+const BASE_URL = '/v1/mgmt/menus';
+
+const menuApi = {
+    search: (params: MenuSearchParams): Promise<ApiResponse<PageResponse<MenuInfo>>> => {
+        const queryParams: Record<string, string | number> = {
+            page: params.page + 1,
+            size: params.size,
+        };
+        if (params.searchId) queryParams.searchId = params.searchId;
+
+        return apiClient.get<PageResponse<MenuInfo>>(BASE_URL, queryParams);
+    },
+
+    getMyMenus: (): Promise<ApiResponse<MenuInfo[]>> => {
+        return apiClient.get<MenuInfo[]>(`${BASE_URL}/me`);
+    },
+
+    create: (data: Partial<MenuInfo>): Promise<ApiResponse<MenuInfo>> => {
+        return apiClient.post<MenuInfo>(BASE_URL, data);
+    },
+
+    update: (id: string, data: Partial<MenuInfo>): Promise<ApiResponse<MenuInfo>> => {
+        return apiClient.put<MenuInfo>(`${BASE_URL}/${id}`, data);
+    },
+
+    delete: (id: string): Promise<ApiResponse<void>> => {
+        return apiClient.delete<void>(`${BASE_URL}/${id}`);
+    },
+};
 
 /**
  * Query Keys

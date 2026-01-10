@@ -1,12 +1,62 @@
 /**
- * Role Query Hooks (Refactored)
- * 
- * 표준화된 팩토리 함수를 사용하여 리팩토링
+ * Role API + Query Hooks
+ *
+ * 역할 API 클라이언트와 React Query 훅 통합
  */
 
-import { roleApi } from '@/app/(admin)/(with-header)/roles/api';
-import { RoleInfo, PageResponse } from '@/types';
+import { apiClient } from '@/lib/api-client';
+import { RoleInfo, ApiResponse, PageResponse } from '@/types';
 import { createPaginatedQuery, createMutation } from './query/factory';
+
+/**
+ * 역할 검색 파라미터
+ */
+export interface RoleSearchParams {
+    page: number;
+    size: number;
+    searchId?: string;
+}
+
+/**
+ * API 함수들
+ */
+const BASE_URL = '/v1/mgmt/roles';
+
+const roleApi = {
+    search: (params: RoleSearchParams): Promise<ApiResponse<PageResponse<RoleInfo>>> => {
+        const queryParams: Record<string, string | number> = {
+            page: params.page + 1,
+            size: params.size,
+        };
+        if (params.searchId) queryParams.searchId = params.searchId;
+
+        return apiClient.get<PageResponse<RoleInfo>>(BASE_URL, queryParams);
+    },
+
+    getById: (id: string): Promise<ApiResponse<RoleInfo>> => {
+        return apiClient.get<RoleInfo>(`${BASE_URL}/${id}`);
+    },
+
+    create: (data: Partial<RoleInfo>): Promise<ApiResponse<RoleInfo>> => {
+        return apiClient.post<RoleInfo>(BASE_URL, data);
+    },
+
+    update: (id: string, data: Partial<RoleInfo>): Promise<ApiResponse<RoleInfo>> => {
+        return apiClient.put<RoleInfo>(`${BASE_URL}/${id}`, data);
+    },
+
+    delete: (id: string): Promise<ApiResponse<void>> => {
+        return apiClient.delete<void>(`${BASE_URL}/${id}`);
+    },
+
+    getMenus: (roleId: string): Promise<ApiResponse<string[]>> => {
+        return apiClient.get<string[]>(`${BASE_URL}/${roleId}/menus`);
+    },
+
+    assignMenus: (roleId: string, menuIds: string[]): Promise<ApiResponse<void>> => {
+        return apiClient.post<void>(`${BASE_URL}/assign-menus`, { roleId, menuIds });
+    },
+};
 
 /**
  * Query Keys
