@@ -10,6 +10,37 @@ import { ApiResponse } from '@/types';
 import { getAccessToken, getRefreshToken, updateAccessToken, logout } from '@/app/actions/auth-actions';
 
 /**
+ * 토큰 갱신 상태 관리 (중복 갱신 방지)
+ */
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+/**
+ * 토큰 갱신 함수 (싱글톤 패턴)
+ */
+async function refreshAccessToken(): Promise<string | null> {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return null;
+
+    try {
+        const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'}/v1/auth/refresh`,
+            { refreshToken }
+        );
+
+        const newToken = response.data?.data?.accessToken;
+        if (newToken) {
+            updateAccessToken(newToken);
+            return newToken;
+        }
+        return null;
+    } catch (error) {
+        console.error('[API] Token refresh failed:', error);
+        return null;
+    }
+}
+
+/**
  * Axios 인스턴스 생성
  */
 const createAxiosInstance = (): AxiosInstance => {
@@ -43,30 +74,28 @@ const createAxiosInstance = (): AxiosInstance => {
             if (error.response?.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
 
-                const refreshToken = getRefreshToken();
-                if (refreshToken) {
-                    try {
-                        const response = await axios.post(
-                            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'}/v1/auth/refresh`,
-                            { refreshToken }
-                        );
-
-                        const newToken = response.data?.data?.accessToken;
-                        if (newToken) {
-                            updateAccessToken(newToken);
-                            if (originalRequest.headers) {
-                                originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                            }
-                            return instance(originalRequest);
-                        }
-                    } catch (refreshError) {
-                        console.error('[API] Token refresh failed:', refreshError);
-                        logout();
-                        return Promise.reject(refreshError);
-                    }
+                // 이미 갱신 중이면 기존 Promise 재사용
+                if (!isRefreshing) {
+                    isRefreshing = true;
+                    refreshPromise = refreshAccessToken();
                 }
 
-                logout();
+                try {
+                    const newToken = await refreshPromise;
+
+                    if (newToken) {
+                        if (originalRequest.headers) {
+                            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        }
+                        return instance(originalRequest);
+                    }
+
+                    logout();
+                    return Promise.reject(error);
+                } finally {
+                    isRefreshing = false;
+                    refreshPromise = null;
+                }
             }
 
             return Promise.reject(error);

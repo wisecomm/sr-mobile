@@ -23,18 +23,36 @@ const ToastContext = React.createContext<ToastContextType | undefined>(undefined
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
     const [toasts, setToasts] = React.useState<Toast[]>([])
+    const timeoutRefs = React.useRef<Map<string, NodeJS.Timeout>>(new Map())
+
+    // Cleanup all timeouts on unmount
+    React.useEffect(() => {
+        const timeouts = timeoutRefs.current
+        return () => {
+            timeouts.forEach((timeout) => clearTimeout(timeout))
+            timeouts.clear()
+        }
+    }, [])
 
     const toast = React.useCallback(({ title, description, variant = "default" }: Omit<Toast, "id">) => {
         const id = Math.random().toString(36).substring(2, 9)
         setToasts((prev) => [...prev, { id, title, description, variant }])
 
-        // Auto dismiss after 5 seconds
-        setTimeout(() => {
+        // Auto dismiss after 5 seconds with cleanup tracking
+        const timeoutId = setTimeout(() => {
             setToasts((prev) => prev.filter((t) => t.id !== id))
+            timeoutRefs.current.delete(id)
         }, 5000)
+        timeoutRefs.current.set(id, timeoutId)
     }, [])
 
     const dismiss = React.useCallback((id: string) => {
+        // Clear timeout when manually dismissed
+        const timeoutId = timeoutRefs.current.get(id)
+        if (timeoutId) {
+            clearTimeout(timeoutId)
+            timeoutRefs.current.delete(id)
+        }
         setToasts((prev) => prev.filter((t) => t.id !== id))
     }, [])
 

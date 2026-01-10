@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRoles } from "@/hooks/use-role-query";
 import { useUserRoles } from "@/hooks/use-user-query";
-import { UserPlus, Mail, Lock, IdCard } from "lucide-react";
+import { UserPlus, Mail, Lock, IdCard, Loader2 } from "lucide-react";
 
 const userFormSchema = z.object({
     userId: z.string().min(2, "사용자 ID는 2글자 이상이어야 합니다."),
@@ -280,15 +280,24 @@ export function UserDialog({ open, onOpenChange, user, onSubmit }: UserDialogPro
                                 type="button"
                                 variant="ghost"
                                 onClick={() => onOpenChange(false)}
+                                disabled={form.formState.isSubmitting}
                                 className="px-4 py-2 bg-background dark:bg-card text-muted-foreground dark:text-muted-foreground border border-border dark:border-border rounded-md text-sm font-bold hover:bg-muted dark:hover:bg-muted"
                             >
                                 취소
                             </Button>
                             <Button
                                 type="submit"
-                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary"
+                                disabled={form.formState.isSubmitting}
+                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary disabled:opacity-50"
                             >
-                                저장
+                                {form.formState.isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        저장 중...
+                                    </>
+                                ) : (
+                                    "저장"
+                                )}
                             </Button>
                         </div>
                     </form>

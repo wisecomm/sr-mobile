@@ -197,25 +197,32 @@ export function useRoleManagement(): UseRoleManagementReturn {
         );
         
         if (!confirmed) return;
-        
-        try {
-            await Promise.all(
-                roleIds.map(id => deleteRoleMutation.mutateAsync(id))
-            );
-            
+
+        const results = await Promise.allSettled(
+            roleIds.map(id => deleteRoleMutation.mutateAsync(id))
+        );
+
+        const succeeded = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.filter(r => r.status === 'rejected').length;
+
+        if (failed === 0) {
             toast({
                 title: '삭제 완료',
-                description: '권한이 삭제되었습니다.',
+                description: `${succeeded}개의 권한이 삭제되었습니다.`,
                 variant: 'success',
             });
-        } catch (error) {
-            const message = error instanceof Error ? error.message : '권한 삭제에 실패했습니다.';
+        } else if (succeeded === 0) {
             toast({
                 title: '삭제 실패',
-                description: message,
+                description: '권한 삭제에 실패했습니다.',
                 variant: 'destructive',
             });
-            throw error;
+        } else {
+            toast({
+                title: '부분 삭제',
+                description: `${succeeded}개 성공, ${failed}개 실패`,
+                variant: 'destructive',
+            });
         }
     }, [deleteRoleMutation, toast]);
     
