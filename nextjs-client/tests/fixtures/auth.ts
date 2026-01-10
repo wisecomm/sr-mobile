@@ -15,6 +15,7 @@ export const test = base.extend<{ authenticatedPage: void }>({
         // 로그인 완료 대기
         await page.waitForURL(/\/(mainmenu|users|roles|menus)/);
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         await use();
     },
 });
