@@ -3,6 +3,9 @@ package com.example.springrest.domain.menu.service;
 import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
 import com.example.springrest.domain.menu.model.entity.MenuInfo;
 import com.example.springrest.domain.menu.repository.MenuInfoMapper;
+import com.example.springrest.global.model.dto.PageResponse;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,15 @@ public class MenuService {
 
     public List<MenuInfo> getAllMenus() {
         return menuInfoMapper.findAll();
+    }
+
+    public PageResponse<MenuInfo> getMenusWithPagination(int page, int size, String searchId) {
+        PageHelper.startPage(page, size, "MENU_LVL, MENU_SEQ");
+
+        List<MenuInfo> menus = menuInfoMapper.findAllWithSearch(searchId);
+        PageInfo<MenuInfo> pageInfo = new PageInfo<>(menus);
+
+        return PageResponse.of(pageInfo, menus);
     }
 
     public List<MenuInfo> getMenusByUserId(String userId) {

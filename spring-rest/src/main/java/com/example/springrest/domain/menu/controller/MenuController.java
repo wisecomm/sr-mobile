@@ -1,6 +1,7 @@
 package com.example.springrest.domain.menu.controller;
 
 import com.example.springrest.global.model.dto.ApiResponse;
+import com.example.springrest.global.model.dto.PageResponse;
 import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
 import com.example.springrest.domain.menu.model.entity.MenuInfo;
 import com.example.springrest.domain.menu.service.MenuService;
@@ -25,10 +26,13 @@ public class MenuController {
 
     private final MenuService menuService;
 
-    @Operation(summary = "메뉴 목록 조회")
+    @Operation(summary = "메뉴 목록 조회 (페이지네이션)")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MenuInfo>>> getAllMenus() {
-        return ResponseEntity.ok(ApiResponse.success(menuService.getAllMenus()));
+    public ResponseEntity<ApiResponse<PageResponse<MenuInfo>>> getAllMenus(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchId) {
+        return ResponseEntity.ok(ApiResponse.success(menuService.getMenusWithPagination(page, size, searchId)));
     }
 
     @Operation(summary = "나의 권한 메뉴 조회")

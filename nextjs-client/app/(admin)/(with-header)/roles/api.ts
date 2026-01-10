@@ -1,10 +1,10 @@
 /**
  * Role API Client
- * 
+ *
  * 역할 관리를 위한 API 클라이언트
  */
 
-import { BaseResourceClient, paginateClientSide, filterItems } from '@/lib/base-resource-client';
+import { BaseResourceClient } from '@/lib/base-resource-client';
 import { apiClient } from '@/lib/api-client';
 import { RoleInfo, ApiResponse, PageResponse } from '@/types';
 
@@ -29,38 +29,19 @@ class RoleApiClient extends BaseResourceClient<RoleInfo> {
     }
 
     /**
-     * 역할 검색 (클라이언트 사이드 페이지네이션)
-     * Backend가 페이지네이션을 지원하지 않아 클라이언트에서 처리
+     * 역할 검색 (서버 사이드 페이지네이션)
      */
     async search(params: RoleSearchParams): Promise<ApiResponse<PageResponse<RoleInfo>>> {
-        const response = await this.getList();
-
-        if (response.code !== '200' || !response.data) {
-            return {
-                code: response.code,
-                message: response.message,
-                data: null,
-            };
-        }
-
-        // 클라이언트 사이드 필터링
-        let filteredRoles = response.data;
-        if (params.searchId) {
-            filteredRoles = filterItems(
-                response.data,
-                { roleId: params.searchId },
-                ['roleId', 'roleName']
-            );
-        }
-
-        // 클라이언트 사이드 페이지네이션
-        const pagedData = paginateClientSide(filteredRoles, params.page, params.size);
-
-        return {
-            code: '200',
-            message: 'Success',
-            data: pagedData,
+        const queryParams: Record<string, string | number> = {
+            page: params.page + 1, // 백엔드는 1-based index
+            size: params.size,
         };
+
+        if (params.searchId) {
+            queryParams.searchId = params.searchId;
+        }
+
+        return apiClient.get<PageResponse<RoleInfo>>(this.baseUrl, queryParams);
     }
 
     /**

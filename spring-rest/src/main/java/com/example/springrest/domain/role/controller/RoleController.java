@@ -1,6 +1,7 @@
 package com.example.springrest.domain.role.controller;
 
 import com.example.springrest.global.model.dto.ApiResponse;
+import com.example.springrest.global.model.dto.PageResponse;
 import com.example.springrest.domain.role.model.dto.RoleInfoRequest;
 import com.example.springrest.domain.role.model.dto.RoleInfoResponse;
 import com.example.springrest.domain.role.model.dto.RoleMenuAssignRequest;
@@ -24,10 +25,13 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    @Operation(summary = "역할 목록 조회")
+    @Operation(summary = "역할 목록 조회 (페이지네이션)")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RoleInfoResponse>>> getAllRoles() {
-        return ResponseEntity.ok(ApiResponse.success(roleService.getAllRoles()));
+    public ResponseEntity<ApiResponse<PageResponse<RoleInfoResponse>>> getAllRoles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchId) {
+        return ResponseEntity.ok(ApiResponse.success(roleService.getRolesWithPagination(page, size, searchId)));
     }
 
     @Operation(summary = "역할 상세 조회")

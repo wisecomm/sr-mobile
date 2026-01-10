@@ -36,6 +36,18 @@
         ORDER BY MENU_LVL, MENU_SEQ
     </select>
 
+    <select id="findAllWithSearch" resultMap="MenuInfoResultMap">
+        SELECT <include refid="MenuInfoColumns"/>
+        FROM CHMM_MENU_INFO
+        <where>
+            <if test="searchId != null and searchId != ''">
+                (MENU_ID LIKE CONCAT('%', #{searchId}, '%')
+                OR MENU_NAME LIKE CONCAT('%', #{searchId}, '%'))
+            </if>
+        </where>
+        ORDER BY MENU_LVL, MENU_SEQ
+    </select>
+
     <select id="findByUserId" resultMap="MenuInfoResultMap">
         WITH RECURSIVE MENU_TREE AS (
             -- Base case: menus directly assigned to user's roles

@@ -35,8 +35,9 @@ export interface UseMenuManagementReturn {
 export function useMenuManagement(): UseMenuManagementReturn {
     const { toast } = useToast();
 
-    // API 훅
-    const { data: menus = [], isLoading } = useMenus(undefined);
+    // API 훅 - 메뉴는 트리 구조로 전체 목록이 필요하므로 큰 페이지 사이즈 사용
+    const { data: menusData, isLoading } = useMenus({ page: 0, size: 1000 });
+    const menus = menusData?.list ?? [];
     const createMutation = useCreateMenu();
     const updateMutation = useUpdateMenu();
     const deleteMutation = useDeleteMenu();

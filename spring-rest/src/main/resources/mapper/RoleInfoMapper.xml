@@ -31,6 +31,18 @@
         ORDER BY ROLE_ID ASC
     </select>
 
+    <select id="findAllWithSearch" resultMap="RoleInfoResultMap">
+        SELECT <include refid="RoleInfoColumns"/>
+        FROM CHMM_ROLE_INFO
+        <where>
+            <if test="searchId != null and searchId != ''">
+                (ROLE_ID LIKE CONCAT('%', #{searchId}, '%')
+                OR ROLE_NAME LIKE CONCAT('%', #{searchId}, '%'))
+            </if>
+        </where>
+        ORDER BY ROLE_ID ASC
+    </select>
+
     <insert id="insert">
         INSERT INTO CHMM_ROLE_INFO (
             <include refid="RoleInfoColumns"/>

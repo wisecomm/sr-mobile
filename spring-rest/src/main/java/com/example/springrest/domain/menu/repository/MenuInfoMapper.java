@@ -15,6 +15,8 @@ public interface MenuInfoMapper {
 
     List<MenuInfo> findAll();
 
+    List<MenuInfo> findAllWithSearch(@Param("searchId") String searchId);
+
     List<MenuInfo> findByUserId(@Param("userId") String userId);
 
     int insert(MenuInfo menuInfo);

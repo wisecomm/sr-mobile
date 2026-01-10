@@ -1,12 +1,12 @@
 /**
  * Menu Query Hooks (Refactored)
- * 
+ *
  * 표준화된 팩토리 함수를 사용하여 리팩토링
  */
 
 import { menuApi } from '@/app/(admin)/(with-header)/menus/api';
-import { MenuInfo } from '@/types';
-import { createQuery, createMutation } from './query/factory';
+import { MenuInfo, PageResponse } from '@/types';
+import { createQuery, createPaginatedQuery, createMutation } from './query/factory';
 
 /**
  * Query Keys
@@ -14,6 +14,8 @@ import { createQuery, createMutation } from './query/factory';
 export const menuKeys = {
     all: ['menus'] as const,
     lists: () => [...menuKeys.all, 'list'] as const,
+    list: (page: number, size: number, searchId?: string) =>
+        [...menuKeys.lists(), { page, size, searchId }] as const,
     my: () => [...menuKeys.all, 'my'] as const,
     detail: (id: string) => [...menuKeys.all, 'detail', id] as const,
 };
@@ -22,10 +24,13 @@ export const menuKeys = {
  * Queries
  */
 
-// 전체 메뉴 목록 조회
-export const useMenus = createQuery<MenuInfo[], void>({
-    queryKey: () => menuKeys.lists(),
-    queryFn: () => menuApi.getList(),
+// 전체 메뉴 목록 조회 (페이지네이션)
+export const useMenus = createPaginatedQuery<
+    PageResponse<MenuInfo>,
+    { page: number; size: number; searchId?: string }
+>({
+    queryKey: (params) => menuKeys.list(params.page, params.size, params.searchId),
+    queryFn: (params) => menuApi.search(params),
 });
 
 // 내 메뉴 목록 조회

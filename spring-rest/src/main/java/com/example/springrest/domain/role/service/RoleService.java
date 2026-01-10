@@ -6,6 +6,9 @@ import com.example.springrest.domain.role.model.entity.RoleInfo;
 import com.example.springrest.domain.role.model.entity.RoleMenuMap;
 import com.example.springrest.domain.role.repository.RoleInfoMapper;
 import com.example.springrest.domain.role.repository.RoleMenuMapper;
+import com.example.springrest.global.model.dto.PageResponse;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,19 @@ public class RoleService {
         return roleInfoMapper.findAll().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public PageResponse<RoleInfoResponse> getRolesWithPagination(int page, int size, String searchId) {
+        PageHelper.startPage(page, size, "ROLE_ID ASC");
+
+        List<RoleInfo> roles = roleInfoMapper.findAllWithSearch(searchId);
+        PageInfo<RoleInfo> pageInfo = new PageInfo<>(roles);
+
+        List<RoleInfoResponse> content = roles.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+
+        return PageResponse.of(pageInfo, content);
     }
 
     public RoleInfoResponse getRoleById(String roleId) {

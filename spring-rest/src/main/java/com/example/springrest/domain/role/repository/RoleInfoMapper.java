@@ -15,6 +15,8 @@ public interface RoleInfoMapper {
 
     List<RoleInfo> findAll();
 
+    List<RoleInfo> findAllWithSearch(@Param("searchId") String searchId);
+
     int insert(RoleInfo roleInfo);
 
     int update(RoleInfo roleInfo);
