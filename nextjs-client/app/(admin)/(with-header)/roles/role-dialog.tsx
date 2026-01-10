@@ -8,7 +8,7 @@ import { RoleInfo } from "@/types";
 import { useMenus } from "@/hooks/use-menu-query";
 import { useRoleMenus } from "@/hooks/use-role-query";
 import { MenuCheckboxTree } from "./menu-checkbox-tree";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -228,15 +228,24 @@ export function RoleDialog({ open, onOpenChange, role, onSubmit }: RoleDialogPro
                                 type="button"
                                 variant="ghost"
                                 onClick={() => onOpenChange(false)}
+                                disabled={form.formState.isSubmitting}
                                 className="px-4 py-2 bg-background dark:bg-card text-muted-foreground dark:text-muted-foreground border border-border dark:border-border rounded-md text-sm font-bold hover:bg-muted dark:hover:bg-muted"
                             >
                                 취소
                             </Button>
                             <Button
                                 type="submit"
-                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary"
+                                disabled={form.formState.isSubmitting}
+                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary disabled:opacity-50"
                             >
-                                저장
+                                {form.formState.isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        저장 중...
+                                    </>
+                                ) : (
+                                    "저장"
+                                )}
                             </Button>
                         </div>
                     </form>

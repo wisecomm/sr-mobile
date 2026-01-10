@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { FileText } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useBoardsBoardDetail } from "@/hooks/use-boards-board-query";
 
@@ -210,15 +210,24 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
                                 type="button"
                                 variant="ghost"
                                 onClick={() => onOpenChange(false)}
+                                disabled={form.formState.isSubmitting}
                                 className="px-4 py-2 bg-background dark:bg-card text-muted-foreground dark:text-muted-foreground border border-border dark:border-border rounded-md text-sm font-bold hover:bg-muted dark:hover:bg-muted"
                             >
                                 취소
                             </Button>
                             <Button
                                 type="submit"
-                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary"
+                                disabled={form.formState.isSubmitting}
+                                className="px-6 py-2 bg-primary border border-transparent rounded-md shadow-sm text-sm font-bold text-white hover:opacity-90 hover:bg-primary disabled:opacity-50"
                             >
-                                저장
+                                {form.formState.isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        저장 중...
+                                    </>
+                                ) : (
+                                    "저장"
+                                )}
                             </Button>
                         </div>
                     </form>
