@@ -180,7 +180,12 @@ export function FileUpload({
     const totalCount = files.length + existingFiles.length;
 
     return (
-        <div className={cn("w-full border rounded-lg bg-background", className)}>
+        <div
+            className={cn("w-full border rounded-lg bg-background relative", className)}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
             {/* Header */}
             <div className="flex items-center gap-2 p-3 font-bold text-sm text-foreground">
                 <Paperclip className="w-4 h-4" />
@@ -317,14 +322,6 @@ export function FileUpload({
                     <p className="text-lg font-bold text-primary">파일을 여기에 놓으세요</p>
                 </div>
             )}
-
-            {/* Re-implementing container drag handlers to ensure dropzone works even when list is full */}
-            <div
-                className="absolute inset-0 -z-10"
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-            />
 
             {/* Footer */}
             <div className="flex items-center justify-between p-3 border-t bg-muted/20">

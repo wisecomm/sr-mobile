@@ -31,12 +31,12 @@ export function Dialog({ open, onOpenChange, children, closeOnOutsideClick = tru
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm"
                 onClick={() => closeOnOutsideClick && onOpenChange(false)}
             />
-            <div className="relative z-50 w-full max-w-lg bg-white dark:bg-slate-900 rounded-lg shadow-lg animate-in fade-in zoom-in duration-200">
+            <div className="relative z-50 w-full max-w-lg my-auto bg-white dark:bg-slate-900 rounded-lg shadow-lg animate-in fade-in zoom-in duration-200 max-h-[calc(100dvh-2rem)]">
                 {children}
             </div>
         </div>
@@ -44,7 +44,7 @@ export function Dialog({ open, onOpenChange, children, closeOnOutsideClick = tru
 }
 
 export function DialogContent({ children, className }: { children: React.ReactNode; className?: string }) {
-    return <div className={cn("p-6", className)}>{children}</div>;
+    return <div className={cn("p-6 overflow-y-auto", className)}>{children}</div>;
 }
 
 export function DialogHeader({ children }: { children: React.ReactNode }) {
