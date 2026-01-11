@@ -103,3 +103,6 @@ sr-mobile/
 | `/test-agent [기능]` | Planner → Generator → Healer 테스트 자동화 |
 | `/doc-agent [파일]` | 문서 자동 업데이트 |
 | `/refactor-agent` | 코드 리팩토링 |
+| `/crud-agent [모듈명] [한글명]` | 풀스택(DB+Back+Front) CRUD 모듈 자동 생성 |
+| `/api-sync [모듈명]` | 백엔드 변경사항을 프론트엔드에 동기화 |
+| `/log-agent` | 에러 로그 분석 및 문제 해결 |

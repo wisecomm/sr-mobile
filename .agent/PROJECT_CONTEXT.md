@@ -8,7 +8,13 @@
 - **백엔드**: Spring Boot 3.4.1 + MyBatis + PostgreSQL
 - **패키지 매니저**: pnpm (npm 대신 pnpm 사용)
 - **🌐 언어**: 문서 및 답변은 **한글**로 작성
-- **📐 코딩 패턴**: 업무화면 생성/수정 시 `boards/master` 구조 참조
+
+### 3. 코딩 패턴 (Coding Patterns)
+- **업무화면 생성/수정**: `boards/master` 구조 참조 (표준 패턴)
+- **DB 명명 규칙**:
+  - PostgreSQL 표준인 **소문자 스네이크 표기법 (Lowercase Snake Case)** 사용 권장.
+  - 예: `tb_user_info`, `user_id`, `reg_dt`
+  - (참고: PostgreSQL은 대문자로 작성해도 따옴표가 없으면 소문자로 저장됩니다.)
 
 ## 🔧 실행 방법
 
