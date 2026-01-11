@@ -22,7 +22,7 @@ INSERT INTO CHMM_USER_ROLE_MAP (USER_ID, ROLE_ID, USE_YN, SYS_INSERT_DTM) VALUES
 -- 4. 초기 메뉴 등록
 INSERT INTO CHMM_MENU_INFO (MENU_ID, MENU_LVL, MENU_URI, MENU_IMG_URI, MENU_NAME, UPPER_MENU_ID, MENU_DESC, MENU_SEQ, USE_YN, SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID) VALUES
 	 ('M00000',1,NULL,'/images/menus/settings.svg','최상위메뉴',NULL,NULL,0,'1','2025-12-30 13:41:23.694',NULL,'2025-12-30 13:41:23.694',NULL),
-	 ('M10000',2,'/dashboard','/images/menus/dashboard.svg','대시보드','M00000','',0,'1','2025-12-30 10:55:51.501','','2025-12-30 10:59:02.590',''),
+	 ('M10000',2,'/mainmenu','/images/menus/dashboard.svg','대시보드','M00000','',0,'1','2025-12-30 10:55:51.501','','2025-12-30 10:59:02.590',''),
 	 ('M20000',2,'','/images/menus/settings.svg','관리','M00000','',1,'1','2025-12-30 11:00:20.916','','2025-12-30 11:02:54.488',''),
 	 ('M30000',2,'','/images/menus/about.svg','정보','M00000','',2,'1','2025-12-30 11:02:36.663','','2025-12-30 11:03:02.387',''),
 	 ('M31000',3,'/about','/images/menus/about.svg','소계','M30000','',0,'1','2025-12-30 13:13:06.472','','2025-12-30 13:13:06.472',''),
