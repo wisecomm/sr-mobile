@@ -14,7 +14,7 @@ import {
     useAssignRoleMenus
 } from './use-role-query';
 import { useToast } from '@/hooks/use-toast';
-import { RoleInfo } from '@/types';
+import { RoleInfo } from '../types';
 
 /**
  * 역할 검색 파라미터

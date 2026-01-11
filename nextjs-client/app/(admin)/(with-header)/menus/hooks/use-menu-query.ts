@@ -5,7 +5,8 @@
  */
 
 import { apiClient } from '@/lib/api-client';
-import { MenuInfo, ApiResponse, PageResponse } from '@/types';
+import { ApiResponse, PageResponse } from '@/types';
+import { MenuInfo } from '../types';
 import { createQuery, createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
 /**

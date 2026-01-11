@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { MenuInfo } from "@/types";
+import { MenuInfo } from "../types";
 
 export const menuFormSchema = z.object({
     menuId: z.string().min(2, "Menu ID must be at least 2 characters."),

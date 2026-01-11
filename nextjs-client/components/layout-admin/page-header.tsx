@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { useMyMenus } from "@/app/(admin)/(with-header)/menus/hooks/use-menu-query";
-import { MenuInfo } from "@/types";
+import { MenuInfo } from "@/app/(admin)/(with-header)/menus/types";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 

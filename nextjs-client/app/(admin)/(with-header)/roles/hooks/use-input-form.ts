@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { RoleInfo } from "@/types";
+import { RoleInfo } from "../types";
 
 export const roleFormSchema = z.object({
     roleId: z.string().min(2, "Role ID must be at least 2 characters."),

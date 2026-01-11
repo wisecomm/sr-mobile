@@ -5,7 +5,8 @@
  */
 
 import { sessionManager } from './session-manager';
-import { ApiResponse, LoginData } from '@/types';
+import { ApiResponse } from '@/types';
+import { LoginData } from './types';
 
 /**
  * 토큰 갱신 결과
@@ -83,10 +84,10 @@ class TokenService {
 
             if (apiResponse.code === '200' && apiResponse.data) {
                 const { token, refreshToken: newRefreshToken } = apiResponse.data;
-                
+
                 // 새 토큰 저장
                 sessionManager.updateTokens(token, newRefreshToken);
-                
+
                 console.log('[TokenService] Token refreshed successfully');
                 return {
                     success: true,

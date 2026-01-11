@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserDetail } from "@/types";
+import { UserDetail } from "../types";
 
 export const userFormSchema = z.object({
     userId: z.string().min(2, "사용자 ID는 2글자 이상이어야 합니다."),

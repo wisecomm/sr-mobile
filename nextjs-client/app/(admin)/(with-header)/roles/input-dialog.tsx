@@ -1,5 +1,5 @@
 import * as React from "react";
-import { RoleInfo } from "@/types";
+import { RoleInfo } from "./types";
 import { ShieldCheck } from "lucide-react";
 import {
     Dialog,

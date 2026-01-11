@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { RoleInfo } from "@/types";
+import { RoleInfo } from "./types";
 import { TextCell, UseYnCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 

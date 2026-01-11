@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UserDetail } from "@/types";
+import { UserDetail } from "./types";
 import { useRoles } from "@/app/(admin)/(with-header)/roles/hooks/use-role-query";
 import { useUserRoles } from "./hooks/use-user-query";
 import { Mail, Lock, IdCard, Loader2 } from "lucide-react";

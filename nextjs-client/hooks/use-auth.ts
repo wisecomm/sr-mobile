@@ -8,7 +8,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth/auth-service';
 import { sessionManager } from '@/lib/auth/session-manager';
-import { UserInfo, ApiResponse, LoginData } from '@/types';
+import { ApiResponse } from '@/types';
+import { UserInfo, LoginData } from '@/lib/auth/types';
 
 /**
  * Auth 상태

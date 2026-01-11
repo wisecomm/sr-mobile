@@ -5,7 +5,7 @@
  * localStorage 직접 접근을 캡슐화하고 타입 안전성을 제공합니다.
  */
 
-import { LoginData, UserInfo } from '@/types';
+import { LoginData, UserInfo } from './types';
 
 /**
  * 세션 스토리지 키 정의

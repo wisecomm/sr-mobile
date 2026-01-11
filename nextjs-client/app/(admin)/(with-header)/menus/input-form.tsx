@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Settings } from "lucide-react";
-import { MenuInfo } from "@/types";
+import { MenuInfo } from "./types";
 import {
     Form,
     FormControl,

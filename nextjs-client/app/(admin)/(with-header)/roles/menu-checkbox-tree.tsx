@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { MenuInfo } from "@/types";
+import { MenuInfo } from "@/app/(admin)/(with-header)/menus/types";
 import { ChevronRight, ChevronDown, Folder, File } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 

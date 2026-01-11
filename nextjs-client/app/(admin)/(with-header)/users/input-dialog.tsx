@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UserDetail } from "@/types";
+import { UserDetail } from "./types";
 import { UserPlus } from "lucide-react";
 import {
     Dialog,

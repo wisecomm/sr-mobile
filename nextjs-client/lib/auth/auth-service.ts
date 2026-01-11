@@ -8,7 +8,8 @@ import { apiClient } from '@/lib/api-client';
 import { sessionManager } from './session-manager';
 import { tokenService } from './token-service';
 import { useAppStore } from '@/store/use-app-store';
-import { ApiResponse, LoginData } from '@/types';
+import { ApiResponse } from '@/types';
+import { LoginData } from './types';
 
 /**
  * 로그인 요청 데이터

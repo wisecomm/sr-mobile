@@ -7,7 +7,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from './use-menu-query';
 import { useToast } from '@/hooks/use-toast';
-import { MenuInfo } from '@/types';
+import { MenuInfo } from '../types';
 
 /**
  * 메뉴 관리 훅 리턴 타입
@@ -37,7 +37,10 @@ export function useMenuManagement(): UseMenuManagementReturn {
 
     // API 훅 - 메뉴는 트리 구조로 전체 목록이 필요하므로 큰 페이지 사이즈 사용
     const { data: menusData, isLoading } = useMenus({ page: 0, size: 1000 });
-    const menus = menusData?.list ?? [];
+
+    // 메뉴 데이터가 변경될 때만 재계산
+    const menus = useMemo(() => menusData?.list ?? [], [menusData]);
+
     const createMutation = useCreateMenu();
     const updateMutation = useUpdateMenu();
     const deleteMutation = useDeleteMenu();

@@ -7,7 +7,8 @@
  */
 
 import { authService, sessionManager, SESSION_TIMEOUT_MS } from '@/lib/auth';
-import { ApiResponse, LoginData } from '@/types';
+import { ApiResponse } from '@/types';
+import { LoginData } from '@/lib/auth/types';
 
 /**
  * 세션 타임아웃 설정 (기존 코드 호환성)

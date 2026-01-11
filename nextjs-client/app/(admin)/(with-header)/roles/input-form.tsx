@@ -1,5 +1,5 @@
 import * as React from "react";
-import { RoleInfo } from "@/types";
+import { RoleInfo } from "./types";
 import { ShieldCheck, Loader2 } from "lucide-react";
 import { useMenus } from "@/app/(admin)/(with-header)/menus/hooks/use-menu-query";
 import { useRoleMenus } from "./hooks/use-role-query";

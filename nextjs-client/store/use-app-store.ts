@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { UserInfo } from "@/types";
+import { UserInfo } from "@/lib/auth/types";
 
 interface AppState {
   user: UserInfo | null;

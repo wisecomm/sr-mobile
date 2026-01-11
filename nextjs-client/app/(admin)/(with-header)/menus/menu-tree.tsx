@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { MenuInfo } from "@/types";
+import { MenuInfo } from "./types";
 import { ChevronRight, ChevronDown, Plus, LayoutGrid, Settings, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

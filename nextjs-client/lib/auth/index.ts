@@ -13,6 +13,8 @@ export type { TokenRefreshResult } from './token-service';
 export { authService } from './auth-service';
 export type { LoginRequest, LogoutOptions } from './auth-service';
 
+export * from './types';
+
 // 기존 코드 호환성을 위한 re-export
 export {
     setSession,
