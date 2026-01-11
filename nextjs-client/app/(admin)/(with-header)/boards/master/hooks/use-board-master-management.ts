@@ -29,8 +29,8 @@ export interface UseBoardsMasterManagementReturn {
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
 
     // 검색
-    searchParams: Omit<BoardsMasterSearchParams, 'page' | 'size'>;
-    onSearch: (params: Omit<BoardsMasterSearchParams, 'page' | 'size'>) => void;
+    searchParams: BoardsMasterSearchParams;
+    onSearch: (params: Partial<BoardsMasterSearchParams>) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -52,10 +52,12 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<Omit<BoardsMasterSearchParams, 'page' | 'size'>>({
+    const [searchParams, setSearchParams] = useState<BoardsMasterSearchParams>({
         brdNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
+        page: 0,
+        size: 10,
     });
 
     // 페이지네이션 상태
@@ -70,9 +72,9 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
 
     // API 훅
     const { data: boardsData, isLoading } = useBoardsMasterList({
+        ...searchParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
-        ...searchParams,
     });
 
     const createMutation = useCreateBoardsMaster();
@@ -82,9 +84,9 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((params: Omit<BoardsMasterSearchParams, 'page' | 'size'>) => {
-        setSearchParams(params);
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    const onSearch = useCallback((params: Partial<BoardsMasterSearchParams>) => {
+        setSearchParams((prev) => ({ ...prev, ...params }));
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
@@ -225,7 +227,7 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
         pagination,
         onPaginationChange: setPagination,
         searchParams,
-        onSearch: handleSearch,
+        onSearch,
         dialogOpen,
         selectedBoard,
         openDialog,
