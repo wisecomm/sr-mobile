@@ -88,6 +88,9 @@ task buildFrontend(type: Exec) {
 
     workingDir frontendDir
     
+    // Enable static export for production build
+    environment 'STATIC_EXPORT', 'true'
+    
     // Check if we should use pnpm or npm
     def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
     def pnpmCmd = isWindows ? 'cmd /c pnpm' : 'pnpm'
