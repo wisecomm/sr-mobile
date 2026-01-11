@@ -1,10 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Settings } from "lucide-react";
-import * as z from "zod";
 import { MenuInfo } from "@/types";
 import {
     Form,
@@ -28,90 +23,23 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useInputForm } from "./hooks/use-input-form";
 
-const menuFormSchema = z.object({
-    menuId: z.string().min(2, "Menu ID must be at least 2 characters."),
-    menuName: z.string().min(1, "Menu name is required."),
-    menuLvl: z.number().min(0),
-    menuUri: z.string().optional().or(z.literal("")),
-    menuImgUri: z.string().optional().or(z.literal("")),
-    upperMenuId: z.string().min(1),
-    menuDesc: z.string().optional().or(z.literal("")),
-    menuSeq: z.number().min(0).optional(),
-    useYn: z.string().min(1),
-});
-
-type MenuFormValues = z.infer<typeof menuFormSchema>;
-
-interface MenuFormProps {
+export interface InputFormProps {
     item?: MenuInfo | null;
     allMenus: MenuInfo[];
     onSubmit: (data: Partial<MenuInfo>) => Promise<void>;
     onDelete?: (id: string) => Promise<void>;
 }
 
-export function MenuForm({ item, allMenus, onSubmit, onDelete }: MenuFormProps) {
-    const isEdit = !!(item && item.menuId);
-
-    const form = useForm<MenuFormValues>({
-        resolver: zodResolver(menuFormSchema),
-        defaultValues: {
-            menuId: "",
-            menuName: "",
-            menuLvl: 1,
-            menuUri: "",
-            menuImgUri: "",
-            upperMenuId: "none",
-            menuDesc: "",
-            menuSeq: 0,
-            useYn: "1",
-        },
-    });
-
-    React.useEffect(() => {
-        if (item) {
-            form.reset({
-                menuId: item.menuId,
-                menuName: item.menuName,
-                menuLvl: item.menuLvl,
-                menuUri: item.menuUri || "",
-                menuImgUri: item.menuImgUri || "",
-                upperMenuId: item.upperMenuId || "none",
-                menuDesc: item.menuDesc || "",
-                menuSeq: item.menuSeq || 0,
-                useYn: item.useYn,
-            });
-        } else {
-            form.reset({
-                menuId: "",
-                menuName: "",
-                menuLvl: 1,
-                menuUri: "",
-                menuImgUri: "",
-                upperMenuId: "none",
-                menuDesc: "",
-                menuSeq: 0,
-                useYn: "1",
-            });
-        }
-    }, [item, form]);
-
-    const onFormSubmit = async (data: MenuFormValues) => {
-        const sanitizedData: Partial<MenuInfo> = {
-            ...data,
-            upperMenuId: data.upperMenuId === "none" ? null : data.upperMenuId,
-            menuUri: data.menuUri === "" ? null : data.menuUri,
-            menuImgUri: data.menuImgUri === "" ? null : data.menuImgUri,
-            menuDesc: data.menuDesc === "" ? null : data.menuDesc,
-        };
-        await onSubmit(sanitizedData);
-    };
+export function InputForm({ item, allMenus, onSubmit, onDelete }: InputFormProps) {
+    const { form, handleSubmit, isEdit } = useInputForm({ item, onSubmit });
 
     return (
         <Card className="shadow-md">
             <CardHeader>
                 <CardTitle className="text-xl font-bold">
-                    {isEdit ? `메뉴 : ${item.menuName}` : (item?.upperMenuId && item.upperMenuId !== "none" ? "Add Child Menu" : "Create Root Menu")}
+                    {isEdit && item ? `메뉴 : ${item.menuName}` : (item?.upperMenuId && item.upperMenuId !== "none" ? "Add Child Menu" : "Create Root Menu")}
                 </CardTitle>
                 <CardDescription>
                     Configure menu settings and access control.
@@ -120,7 +48,7 @@ export function MenuForm({ item, allMenus, onSubmit, onDelete }: MenuFormProps) 
             <Separator />
             <CardContent className="pt-6">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
+                    <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                             {/* Basic Info Section */}
                             <div className="space-y-6">
@@ -297,7 +225,7 @@ export function MenuForm({ item, allMenus, onSubmit, onDelete }: MenuFormProps) 
                         {/* Footer Buttons */}
                         <div className="px-8 py-5 bg-muted dark:bg-muted border-t border-border dark:border-border flex items-center justify-end rounded-b-xl -mx-8 -mb-8 mt-10">
                             <div className="flex gap-2">
-                                {isEdit && onDelete && (
+                                {isEdit && onDelete && item && (
                                     <Button
                                         type="button"
                                         variant="destructive"

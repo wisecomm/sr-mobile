@@ -6,10 +6,8 @@
  * 비즈니스 로직을 커스텀 훅으로 분리하여 간결하고 명확한 구조
  */
 
-import * as React from "react";
-import { MenuInfo } from "@/types";
 import { MenuTree } from "./menu-tree";
-import { MenuForm } from "./menu-form";
+import { InputForm } from "./input-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMenuManagement } from "./hooks/use-menu-management";
 
@@ -58,7 +56,7 @@ export default function MenusPage() {
             {/* Right Column: Menu Form */}
             <div className="flex-1 bg-background dark:bg-card rounded-xl shadow-sm border border-border dark:border-border overflow-hidden">
                 {selectedMenu && (
-                    <MenuForm
+                    <InputForm
                         item={selectedMenu}
                         allMenus={menus}
                         onSubmit={handleSubmit}
