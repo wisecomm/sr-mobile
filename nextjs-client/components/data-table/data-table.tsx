@@ -5,7 +5,7 @@ import {
     Table as TanstackTable,
     flexRender,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, ChevronFirst, ChevronLast } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronFirst, ChevronLast, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -26,11 +26,13 @@ import {
 interface DataTableProps<TData> {
     table: TanstackTable<TData>;
     showSeparators?: boolean;
+    isLoading?: boolean;
 }
 
 export function DataTable<TData>({
     table,
     showSeparators = false,
+    isLoading = false,
 }: DataTableProps<TData>) {
     return (
         <Card className="w-full">
@@ -56,7 +58,15 @@ export function DataTable<TData>({
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {table.getRowModel().rows?.length ? (
+                            {isLoading ? (
+                                <TableRow>
+                                    <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                                        <div className="flex justify-center items-center">
+                                            <Loader2 className="h-6 w-6 animate-spin" />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
                                         key={row.id}

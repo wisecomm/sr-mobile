@@ -12,8 +12,8 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { RoleDialog } from "./role-dialog";
-import { useRoleManagement } from "./hooks/use-role-management";
+import { InputDialog } from "./input-dialog";
+import { useRoleManagement, RoleManagementSearchParams } from "./hooks/use-role-management";
 import { useToast } from "@/hooks/use-toast";
 
 export default function RolesPage() {
@@ -85,6 +85,10 @@ export default function RolesPage() {
         table.resetRowSelection();
     }, [table, handleDelete]);
 
+    const handleSearch = (params: Partial<RoleManagementSearchParams>) => {
+        onSearch(params);
+    };
+
     return (
         <div className="w-full space-y-6">
             <SearchPageLayout>
@@ -92,12 +96,13 @@ export default function RolesPage() {
                     onAdd={handleAdd}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
-                    onSearch={onSearch}
+                    onSearch={handleSearch}
+                    isLoading={isLoading}
                 />
-                <DataTable table={table} showSeparators={true} />
+                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
 
-            <RoleDialog
+            <InputDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}
                 role={selectedRole}

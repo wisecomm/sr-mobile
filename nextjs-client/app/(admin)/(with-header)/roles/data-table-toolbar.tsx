@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { ActionButtons, toolbarButtonClass } from "@/components/common";
+import { RoleManagementSearchParams } from "./hooks/use-role-management";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
     onEdit: () => void;
     onDelete: () => Promise<void>;
-    onSearch: (term: string) => void;
+    onSearch: (params: Partial<RoleManagementSearchParams>) => void;
+    isLoading?: boolean;
 }
 
 export function DataTableToolbar({
@@ -19,11 +21,12 @@ export function DataTableToolbar({
     onEdit,
     onDelete,
     onSearch,
+    isLoading,
 }: DataTableToolbarProps) {
     const [searchTerm, setSearchTerm] = React.useState("");
 
     const handleSearch = () => {
-        onSearch(searchTerm);
+        onSearch({ searchId: searchTerm });
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -49,6 +52,7 @@ export function DataTableToolbar({
                         size="sm"
                         onClick={handleSearch}
                         className={toolbarButtonClass}
+                        disabled={isLoading}
                     >
                         <Search className="mr-2 h-4 w-4" />
                         조회
@@ -59,6 +63,7 @@ export function DataTableToolbar({
                         onAdd={onAdd}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        disabled={isLoading}
                     />
                 </div>
             </CardContent>

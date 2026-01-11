@@ -38,7 +38,7 @@ export interface UseRoleManagementReturn {
 
     // 검색
     searchParams: RoleManagementSearchParams;
-    onSearch: (searchId: string) => void;
+    onSearch: (params: Partial<RoleManagementSearchParams>) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -89,9 +89,9 @@ export function useRoleManagement(): UseRoleManagementReturn {
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((searchId: string) => {
-        setSearchParams({ searchId: searchId || undefined });
-        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    const onSearch = useCallback((params: Partial<RoleManagementSearchParams>) => {
+        setSearchParams((prev) => ({ ...prev, ...params }));
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
@@ -249,7 +249,7 @@ export function useRoleManagement(): UseRoleManagementReturn {
 
         // 검색
         searchParams,
-        onSearch: handleSearch,
+        onSearch,
 
         // 다이얼로그
         dialogOpen,

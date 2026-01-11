@@ -12,7 +12,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
-import { UserDialog } from "./user-dialog";
+import { InputDialog } from "./input-dialog";
 import { useUserManagement } from "./hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 import { useExcel } from "@/hooks/use-excel";
@@ -125,10 +125,10 @@ export default function UsersPage() {
                     onDownloadExcel={handleDownloadExcel}
                     onUploadExcel={handleUploadExcel}
                 />
-                <DataTable table={table} showSeparators={true} />
+                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
 
-            <UserDialog
+            <InputDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}
                 user={selectedUser}

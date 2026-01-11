@@ -92,7 +92,7 @@ export default function BoardsMasterPage() {
                     initialStartDate={searchParams.startDate as string | undefined}
                     initialEndDate={searchParams.endDate as string | undefined}
                 />
-                <DataTable table={table} showSeparators={true} />
+                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
 
             <InputDialog

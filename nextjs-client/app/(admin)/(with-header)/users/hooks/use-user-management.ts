@@ -41,7 +41,7 @@ export interface UseUserManagementReturn {
 
     // 검색
     searchParams: UserManagementSearchParams;
-    onSearch: (params: UserManagementSearchParams) => void;
+    onSearch: (params: Partial<UserManagementSearchParams>) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -94,8 +94,11 @@ export function useUserManagement(): UseUserManagementReturn {
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((params: UserManagementSearchParams) => {
-        setSearchParams(params);
+    /**
+     * 검색 핸들러
+     */
+    const onSearch = useCallback((params: Partial<UserManagementSearchParams>) => {
+        setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
@@ -254,7 +257,7 @@ export function useUserManagement(): UseUserManagementReturn {
 
         // 검색
         searchParams,
-        onSearch: handleSearch,
+        onSearch,
 
         // 다이얼로그
         dialogOpen,

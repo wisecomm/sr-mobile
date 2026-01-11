@@ -111,7 +111,7 @@ function BoardsContent() {
                     initialStartDate={(searchParams.startDate as string) || ""}
                     initialEndDate={(searchParams.endDate as string) || ""}
                 />
-                <DataTable table={table} showSeparators={true} />
+                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
 
             <InputDialog
