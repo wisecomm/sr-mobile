@@ -52,13 +52,19 @@ const createAxiosInstance = (): AxiosInstance => {
         },
     });
 
-    // Request Interceptor - 토큰 추가
+    // Request Interceptor - 토큰 추가 및 Content-Type 처리
     instance.interceptors.request.use(
         (config) => {
             const token = getAccessToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
+
+            // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동으로 multipart/form-data 및 boundary 설정)
+            if (config.data instanceof FormData) {
+                delete config.headers['Content-Type'];
+            }
+
             return config;
         },
         (error) => Promise.reject(error)

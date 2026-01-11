@@ -118,7 +118,7 @@ function BoardsContent() {
                 open={dialogOpen}
                 onOpenChange={(open) => !open && closeDialog()}
                 board={selectedPost}
-                defaultBrdId={searchParams.brdId}
+                defaultBrdId={brdIdParam}
                 onSubmit={handleSubmit}
             />
         </div>
