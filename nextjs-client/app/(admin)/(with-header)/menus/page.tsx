@@ -9,6 +9,8 @@
 import { MenuTree } from "./menu-tree";
 import { InputForm } from "./input-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { useMenuManagement } from "./hooks/use-menu-management";
 
 export default function MenusPage() {
@@ -31,6 +33,16 @@ export default function MenusPage() {
                     <div className="flex items-center gap-2 font-medium text-sm text-muted-foreground dark:text-muted-foreground">
                         <span className="text-base">최상위메뉴</span>
                     </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                        onClick={() => addChildMenu("", 1)}
+                        title="최상위 메뉴 추가"
+                        aria-label="최상위 메뉴 추가"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-2">
                     {isLoading ? (

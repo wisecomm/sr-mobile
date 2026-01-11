@@ -24,7 +24,7 @@ async function refreshAccessToken(): Promise<string | null> {
 
     try {
         const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'}/v1/auth/refresh`,
+            `${process.env.NEXT_PUBLIC_API_URL || '/api'}/v1/auth/refresh`,
             { refreshToken }
         );
 
@@ -45,7 +45,7 @@ async function refreshAccessToken(): Promise<string | null> {
  */
 const createAxiosInstance = (): AxiosInstance => {
     const instance = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+        baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
         timeout: 30000,
         headers: {
             'Content-Type': 'application/json',
