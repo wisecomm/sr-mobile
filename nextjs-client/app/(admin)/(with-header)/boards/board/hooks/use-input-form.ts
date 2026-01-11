@@ -14,14 +14,13 @@ const boardFormSchema = z.object({
 
 export type BoardFormValues = z.infer<typeof boardFormSchema>;
 
-export interface UseBoardFormProps {
+export interface UseInputFormProps {
     board?: BoardsBoard | null;
     defaultBrdId?: string;
-    // open: boolean; // Removed to avoid unused variable lint, functionality handled by key-remount 
     onSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files: File[] | null) => Promise<void>;
 }
 
-export interface UseBoardFormReturn {
+export interface UseInputFormReturn {
     form: UseFormReturn<BoardFormValues>;
     files: File[];
     setFiles: (files: File[]) => void;
@@ -32,21 +31,27 @@ export interface UseBoardFormReturn {
     isEdit: boolean;
 }
 
-export function useBoardForm({ board, defaultBrdId, onSubmit }: Omit<UseBoardFormProps, 'open'>): UseBoardFormReturn {
+const defaultValues = {
+    title: "",
+    contents: "",
+    secretYn: "0",
+    useYn: "1",
+};
+
+export function useInputForm({ board, defaultBrdId, onSubmit }: Omit<UseInputFormProps, 'open'>): UseInputFormReturn {
     const isEdit = !!board;
 
     const form = useForm<BoardFormValues>({
         resolver: zodResolver(boardFormSchema),
         defaultValues: {
+            ...defaultValues,
             brdId: defaultBrdId || "",
-            title: "",
-            contents: "",
-            secretYn: "0",
-            useYn: "1",
         },
     });
 
     const { data: boardDetail } = useBoardsBoardDetail(board?.boardId);
+    // Use board detail if available, otherwise fall back to passed board prop.
+    // If neither, effectiveBoard is null/undefined.
     const effectiveBoard = boardDetail || board;
 
     const [files, setFiles] = useState<File[]>([]);
@@ -55,12 +60,8 @@ export function useBoardForm({ board, defaultBrdId, onSubmit }: Omit<UseBoardFor
 
     useEffect(() => {
         if (effectiveBoard) {
-            // Check if we need to reset to avoid infinite loop / extra renders if data is stable
-            // In a real app we might deep compare, but here relying on effectiveBoard ref change is standard.
-            // We'll wrap in a check if form values match to suppress some re-renders if needed, 
-            // but for now, we just acknowledge the reset.
             form.reset({
-                brdId: effectiveBoard.brdId || "",
+                brdId: effectiveBoard.brdId || defaultBrdId || "",
                 title: effectiveBoard.title || "",
                 contents: effectiveBoard.contents || "",
                 secretYn: effectiveBoard.secretYn || "0",
@@ -68,8 +69,14 @@ export function useBoardForm({ board, defaultBrdId, onSubmit }: Omit<UseBoardFor
             });
             // eslint-disable-next-line react-hooks/exhaustive-deps
             setExistingFiles(effectiveBoard.fileList || []);
+        } else {
+            form.reset({
+                ...defaultValues,
+                brdId: defaultBrdId || "",
+            });
+            setExistingFiles([]);
         }
-    }, [effectiveBoard, form]);
+    }, [effectiveBoard, form, defaultBrdId]);
 
     const onFormSubmit = async (data: BoardFormValues) => {
         await onSubmit({ ...data, deleteFileIds: deletedFileIds }, files);

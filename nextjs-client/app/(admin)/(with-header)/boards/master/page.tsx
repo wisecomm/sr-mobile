@@ -4,11 +4,12 @@ import * as React from "react";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { BoardDialog } from "./board-dialog";
+import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardsMasterManagement } from "./hooks/use-board-master-management";
+import { BoardsMasterSearchParams } from "./hooks/use-board-master-query";
 
 export default function BoardsMasterPage() {
     const { toast } = useToast();
@@ -75,7 +76,7 @@ export default function BoardsMasterPage() {
         table.resetRowSelection();
     }, [table, handleDelete, toast]);
 
-    const handleSearch = (params: { brdNm: string; startDate: string; endDate: string }) => {
+    const handleSearch = (params: Partial<BoardsMasterSearchParams>) => {
         onSearch(params);
     };
 
@@ -94,7 +95,7 @@ export default function BoardsMasterPage() {
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>
 
-            <BoardDialog
+            <InputDialog
                 open={dialogOpen}
                 onOpenChange={(open) => !open && closeDialog()}
                 board={selectedBoard}

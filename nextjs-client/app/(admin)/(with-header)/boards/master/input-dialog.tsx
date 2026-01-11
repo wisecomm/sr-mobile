@@ -7,16 +7,16 @@ import {
     DialogContent,
 } from "@/components/ui/dialog";
 import { LayoutDashboard } from "lucide-react";
-import { BoardForm } from "./board-form";
+import { InputForm } from "./input-form";
 
-interface BoardDialogProps {
+interface InputDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     board?: BoardsMaster | null;
     onSubmit: (data: Partial<BoardsMaster>) => Promise<void>;
 }
 
-export function BoardDialog({ open, onOpenChange, board, onSubmit }: BoardDialogProps) {
+export function InputDialog({ open, onOpenChange, board, onSubmit }: InputDialogProps) {
     const isEdit = !!board;
 
     return (
@@ -29,7 +29,7 @@ export function BoardDialog({ open, onOpenChange, board, onSubmit }: BoardDialog
                     </h3>
                 </div>
 
-                <BoardForm
+                <InputForm
                     board={board}
                     open={open}
                     onCancel={() => onOpenChange(false)}

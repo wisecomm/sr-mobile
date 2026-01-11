@@ -15,17 +15,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileUpload } from "@/components/ui/file-upload";
-import { useBoardForm } from "./hooks/use-board-form";
+import { useInputForm } from "./hooks/use-input-form";
 import { BoardsBoard } from "./hooks/use-board-query";
 
-interface BoardFormProps {
+export interface InputFormProps {
     board?: BoardsBoard | null;
     defaultBrdId?: string;
     onCancel: () => void;
     onSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files: File[] | null) => Promise<void>;
 }
 
-export function BoardForm({ board, defaultBrdId, onCancel, onSubmit }: BoardFormProps) {
+export function InputForm({ board, defaultBrdId, onCancel, onSubmit }: InputFormProps) {
     const {
         form,
         files,
@@ -34,7 +34,7 @@ export function BoardForm({ board, defaultBrdId, onCancel, onSubmit }: BoardForm
         handleDeleteExisting,
         handleDownload,
         handleSubmit,
-    } = useBoardForm({ board, defaultBrdId, onSubmit });
+    } = useInputForm({ board, defaultBrdId, onSubmit });
 
     return (
         <Form {...form}>

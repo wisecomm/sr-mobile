@@ -4,12 +4,13 @@ import * as React from "react";
 import { getColumns } from "./columns";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { BoardDialog } from "./board-dialog";
+import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useDataTable } from "@/components/data-table/use-data-table";
 import { useSearchParams } from "next/navigation";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardManagement } from "./hooks/use-board-management";
+import { BoardsBoardSearchParams } from "./hooks/use-board-query";
 
 export default function BoardsPage() {
     return (
@@ -94,19 +95,8 @@ function BoardsContent() {
         table.resetRowSelection();
     }, [table, handleDelete, toast]);
 
-    const handleSearch = (params: {
-        brdId: string;
-        searchType: string;
-        keyword: string;
-        startDate: string;
-        endDate: string
-    }) => {
-        onSearch({
-            searchType: params.searchType,
-            keyword: params.keyword,
-            startDate: params.startDate,
-            endDate: params.endDate,
-        });
+    const handleSearch = (params: Partial<BoardsBoardSearchParams>) => {
+        onSearch(params);
     };
 
     return (
@@ -124,7 +114,7 @@ function BoardsContent() {
                 <DataTable table={table} showSeparators={true} />
             </SearchPageLayout>
 
-            <BoardDialog
+            <InputDialog
                 open={dialogOpen}
                 onOpenChange={(open) => !open && closeDialog()}
                 board={selectedPost}

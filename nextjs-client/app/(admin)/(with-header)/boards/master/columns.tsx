@@ -23,17 +23,14 @@ export const getColumns = (): ColumnDef<BoardsMaster>[] => [
         cell: ({ row }) => <UseYnCell value={row.getValue("replyUseYn")} />
     }),
     createColumn("fileUseYn", "파일첨부", {
-        sort: true,
         size: 80,
         cell: ({ row }) => <UseYnCell value={row.getValue("fileUseYn")} />
     }),
     createColumn("fileMaxCnt", "파일 수", {
-        sort: true,
         size: 80,
         cell: ({ row }) => <NumberCell value={row.getValue("fileMaxCnt")} />
     }),
     createColumn("useYn", "사용", {
-        sort: true,
         size: 80,
         cell: ({ row }) => <UseYnCell value={row.getValue("useYn")} />
     }),

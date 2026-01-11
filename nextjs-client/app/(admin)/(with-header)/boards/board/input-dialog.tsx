@@ -7,9 +7,9 @@ import {
     DialogContent,
 } from "@/components/ui/dialog";
 import { FileText } from "lucide-react";
-import { BoardForm } from "./board-form";
+import { InputForm } from "./input-form";
 
-interface BoardDialogProps {
+interface InputDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     board?: BoardsBoard | null;
@@ -17,7 +17,7 @@ interface BoardDialogProps {
     onSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files: File[] | null) => Promise<void>;
 }
 
-export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit }: BoardDialogProps) {
+export function InputDialog({ open, onOpenChange, board, defaultBrdId, onSubmit }: InputDialogProps) {
     const isEdit = !!board;
 
     return (
@@ -30,7 +30,7 @@ export function BoardDialog({ open, onOpenChange, board, defaultBrdId, onSubmit 
                     </h3>
                 </div>
 
-                <BoardForm
+                <InputForm
                     key={`${board?.boardId || 'new'}-${open ? 'open' : 'closed'}`}
                     board={board}
                     defaultBrdId={defaultBrdId}

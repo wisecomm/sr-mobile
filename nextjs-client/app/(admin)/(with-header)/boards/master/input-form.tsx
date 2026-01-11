@@ -14,18 +14,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useBoardMasterForm } from "./hooks/use-board-master-form";
+import { useInputForm } from "./hooks/use-input-form";
 import { BoardsMaster } from "./hooks/use-board-master-query";
 
-interface BoardFormProps {
+interface InputFormProps {
     board?: BoardsMaster | null;
     open: boolean;
     onCancel: () => void;
     onSubmit: (data: Partial<BoardsMaster>) => Promise<void>;
 }
 
-export function BoardForm({ board, open, onCancel, onSubmit }: BoardFormProps) {
-    const { form, handleSubmit, isEdit } = useBoardMasterForm({ board, open, onSubmit });
+export function InputForm({ board, open, onCancel, onSubmit }: InputFormProps) {
+    const { form, handleSubmit, isEdit } = useInputForm({ board, open, onSubmit });
 
     return (
         <Form {...form}>
