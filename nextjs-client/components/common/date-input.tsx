@@ -1,8 +1,19 @@
 "use client";
 
 import * as React from "react";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+
 import { Input } from "@/components/ui/input";
-import { Calendar } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * 날짜 입력 컴포넌트 Props
@@ -17,39 +28,35 @@ export interface DateInputProps {
 }
 
 /**
- * 날짜 입력 컴포넌트
- * 
- * 텍스트 입력 + 캘린더 아이콘 클릭 시 날짜 선택기 표시
- */
-import { useToast } from "@/hooks/use-toast";
-
-/**
  * 날짜 유효성 검사 (YYYY-MM-DD)
  */
 function isValidDate(dateString: string): boolean {
     const regex = /^\d{4}-\d{2}-\d{2}$/;
     if (!regex.test(dateString)) return false;
 
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return false;
-
     const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
     return (
         date.getFullYear() === year &&
-        date.getMonth() + 1 === month &&
+        date.getMonth() === month - 1 &&
         date.getDate() === day
     );
 }
 
+/**
+ * 날짜 입력 컴포넌트
+ * 
+ * 텍스트 입력 + 캘린더 아이콘 클릭 시 Shadcn Calendar Popover 표시
+ */
 export function DateInput({
     value,
     onChange,
     onKeyDown,
     placeholder = "YYYY-MM-DD",
     className = "w-[140px]",
-    type = "date",
 }: DateInputProps) {
-    const dateRef = React.useRef<HTMLInputElement>(null);
+    const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
     const lastValidValue = React.useRef(value);
     const { toast } = useToast();
@@ -64,14 +71,20 @@ export function DateInput({
         }
     }, [value]);
 
-    const handleDateIconClick = () => {
-        if (dateRef.current) {
-            try {
-                dateRef.current.showPicker();
-            } catch {
-                dateRef.current.focus();
-                dateRef.current.click();
-            }
+    // 문자열 날짜를 Date 객체로 변환 for Calendar
+    const dateObj = React.useMemo(() => {
+        if (!value) return undefined;
+        if (!isValidDate(value)) return undefined; // Reuse isValidDate which is now safe or check regex again
+
+        const [year, month, day] = value.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }, [value]);
+
+
+    const handleSelect = (newDate: Date | undefined) => {
+        if (newDate) {
+            onChange(format(newDate, "yyyy-MM-dd"));
+            setIsCalendarOpen(false); // 날짜 선택 시 팝오버 닫기
         }
     };
 
@@ -107,22 +120,28 @@ export function DateInput({
                 className="pr-8"
                 aria-invalid={isError}
             />
-            <input
-                type={type}
-                ref={dateRef}
-                className="absolute opacity-0 pointer-events-none"
-                value={value}
-                onChange={(e) => handleChange(e.target.value)}
-                style={{ right: 0, bottom: 0, width: 1, height: 1 }}
-                tabIndex={-1}
-            />
-            <button
-                className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
-                type="button"
-                onClick={handleDateIconClick}
-            >
-                <Calendar className="h-4 w-4" />
-            </button>
+            <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center">
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
+                        <button
+                            className="bg-transparent border-0 p-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                            type="button"
+                        >
+                            <CalendarIcon className="h-4 w-4" />
+                        </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                        <Calendar
+                            mode="single"
+                            selected={dateObj}
+                            onSelect={handleSelect}
+                            captionLayout="dropdown"
+                            locale={ko}
+                            defaultMonth={dateObj || new Date()}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
         </div>
     );
 }
@@ -143,3 +162,4 @@ export function formatDate(date: Date): string {
 export function getTodayString(): string {
     return formatDate(new Date());
 }
+

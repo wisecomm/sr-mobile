@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { ActionButtons, toolbarButtonClass, TimeInputSh, DateInputSh, formatTime } from "@/components/common";
+import { ActionButtons, toolbarButtonClass, TimeInputSh, DateInputSh, formatTime, formatDate } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
+import { DateInput } from "@/components/common/date-input";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -29,9 +30,20 @@ export function DataTableToolbar({
 }: DataTableToolbarProps) {
     const [custNm, setCustNm] = React.useState("");
     const [startDate, setStartDate] = React.useState(initialStartDate);
-    const [endDate, setEndDate] = React.useState(initialEndDate);
+    //    const [endDate, setEndDate] = React.useState(initialEndDate);
+    const [endDate, setEndDate] = React.useState(() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() - 1);
+        return formatDate(d);
+    });
 
     const [testTime, setTestTime] = React.useState(formatTime(new Date()));
+
+    const [testDate, setTestDate] = React.useState(() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() - 1);
+        return formatDate(d);
+    });
 
     const { toast } = useToast();
 
@@ -85,6 +97,11 @@ export function DataTableToolbar({
                         <TimeInputSh
                             value={testTime}
                             onChange={setTestTime}
+                        />
+                        <DateInput
+                            value={testDate}
+                            onChange={setTestDate}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
                     <Button

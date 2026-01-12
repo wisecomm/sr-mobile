@@ -37,11 +37,14 @@ export function DateInputSh({
 }: DateInputProps) {
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
-    // 문자열 날짜를 Date 객체로 변환
+    // 문자열 날짜를 Date 객체로 변환 (Timezone Safe)
     const date = React.useMemo(() => {
         if (!value) return undefined;
-        const d = new Date(value);
-        return isNaN(d.getTime()) ? undefined : d;
+        // Verify format YYYY-MM-DD
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+
+        const [year, month, day] = value.split('-').map(Number);
+        return new Date(year, month - 1, day);
     }, [value]);
 
     const handleSelect = (newDate: Date | undefined) => {
@@ -75,6 +78,7 @@ export function DateInputSh({
                     onSelect={handleSelect}
                     captionLayout="dropdown"
                     locale={ko}
+                    defaultMonth={date || new Date()}
                 />
             </PopoverContent>
         </Popover>
