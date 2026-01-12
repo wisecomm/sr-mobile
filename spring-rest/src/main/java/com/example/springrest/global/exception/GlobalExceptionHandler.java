@@ -20,34 +20,6 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
         /**
-         * Jakarta Validation 검증 실패 처리
-         */
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
-
-                String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                                .map(FieldError::getDefaultMessage)
-                                .collect(Collectors.joining(", "));
-
-                log.warn("Validation error: {}", errorMessage);
-
-                return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR.getCode(), errorMessage));
-        }
-
-        /**
-         * IllegalArgumentException 처리
-         */
-        @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
-                log.warn("Invalid argument: {}", ex.getMessage());
-                return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(ApiResponse.error(ErrorCode.INVALID_ARGUMENT.getCode(), ex.getMessage()));
-        }
-
-        /**
          * 인증 실패 예외 처리
          * 
          * @param ex 인증 예외
@@ -59,21 +31,6 @@ public class GlobalExceptionHandler {
                 return ResponseEntity
                                 .status(HttpStatus.UNAUTHORIZED)
                                 .body(ApiResponse.error(ErrorCode.UNAUTHORIZED.getCode(), ex.getMessage()));
-        }
-
-        /**
-         * Rate Limit 초과 예외 처리
-         * 
-         * @param ex Rate Limit 예외
-         * @return 429 Too Many Requests 응답
-         */
-        @ExceptionHandler(RateLimitException.class)
-        public ResponseEntity<ApiResponse<Void>> handleRateLimitException(RateLimitException ex) {
-                log.warn("Rate limit exceeded: {}", ex.getMessage());
-                return ResponseEntity
-                                .status(HttpStatus.TOO_MANY_REQUESTS)
-                                .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
-                                .body(ApiResponse.error(ErrorCode.RATE_LIMIT_EXCEEDED.getCode(), ex.getMessage()));
         }
 
         /**
@@ -91,6 +48,34 @@ public class GlobalExceptionHandler {
         }
 
         /**
+         * Jakarta Validation 검증 실패 처리
+         */
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
+
+                String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                                .map(FieldError::getDefaultMessage)
+                                .collect(Collectors.joining(", "));
+
+                log.warn("Validation error: {}", errorMessage);
+
+                return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR.getCode(), errorMessage));
+        }
+
+        /**
+         * IllegalArgumentException 처리
+         */
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+                log.warn("Invalid argument: {}", ex.getMessage());
+                return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(ApiResponse.error(ErrorCode.INVALID_ARGUMENT.getCode(), ex.getMessage()));
+        }
+
+        /**
          * 일반 예외 처리 (500 Internal Server Error)
          * 
          * @param ex 예외
@@ -100,7 +85,7 @@ public class GlobalExceptionHandler {
         public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
                 log.error("Internal server error", ex);
                 return ResponseEntity
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .status(HttpStatus.OK)
                                 .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
                                                 "Internal server error"));
         }

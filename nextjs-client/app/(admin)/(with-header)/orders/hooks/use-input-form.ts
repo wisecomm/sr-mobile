@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { OrderDetail } from "../types";
@@ -41,7 +41,7 @@ export function useInputForm({ item, onSubmit }: UseInputFormProps): UseInputFor
     const isEdit = !!item;
 
     const form = useForm<OrderFormValues>({
-        resolver: zodResolver(orderFormSchema) as any,
+        resolver: zodResolver(orderFormSchema) as Resolver<OrderFormValues>,
         defaultValues,
     });
 

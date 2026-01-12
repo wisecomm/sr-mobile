@@ -13,6 +13,7 @@ export interface DateInputProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
     placeholder?: string;
     className?: string;
+    type?: "date" | "datetime-local" | "month" | "time";
 }
 
 /**
@@ -26,6 +27,7 @@ export function DateInput({
     onKeyDown,
     placeholder = "YYYY-MM-DD",
     className = "w-[140px]",
+    type = "date",
 }: DateInputProps) {
     const dateRef = React.useRef<HTMLInputElement>(null);
 
@@ -51,7 +53,7 @@ export function DateInput({
                 className="pr-8"
             />
             <input
-                type="date"
+                type={type}
                 ref={dateRef}
                 className="absolute opacity-0 pointer-events-none"
                 value={value}

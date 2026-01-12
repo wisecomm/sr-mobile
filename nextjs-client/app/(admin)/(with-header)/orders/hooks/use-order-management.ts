@@ -2,7 +2,7 @@
  * useOrderManagement Hook
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
     useOrders,
@@ -77,11 +77,21 @@ export function useOrderManagement(): UseOrderManagementReturn {
     const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
     // API 훅
-    const { data: ordersData, isLoading } = useOrders({
+    const { data: ordersData, isLoading, isError, error } = useOrders({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         ...searchParams,
     });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '주문 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     const createOrderMutation = useCreateOrder();
     const updateOrderMutation = useUpdateOrder();

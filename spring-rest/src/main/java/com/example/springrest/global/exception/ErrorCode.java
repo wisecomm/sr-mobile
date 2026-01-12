@@ -38,10 +38,6 @@ public enum ErrorCode {
     CONFLICT("409", "CONFLICT"),
     DUPLICATE_ENTRY("409", "DUPLICATE_ENTRY"),
 
-    // 429 Too Many Requests - 요청 제한 초과
-    TOO_MANY_REQUESTS("429", "TOO_MANY_REQUESTS"),
-    RATE_LIMIT_EXCEEDED("429", "RATE_LIMIT_EXCEEDED"),
-
     // 500 Internal Server Error - 서버 오류
     INTERNAL_SERVER_ERROR("500", "INTERNAL_SERVER_ERROR"),
     DATABASE_ERROR("500", "DATABASE_ERROR");
