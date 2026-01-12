@@ -13,3 +13,6 @@ export * from './use-auth-query';
 
 // UI
 export * from './use-toast';
+
+// Input Utilities
+export * from './use-restricted-input';
