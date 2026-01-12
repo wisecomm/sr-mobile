@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
+import { useToast } from "@/hooks/use-toast";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -44,7 +45,17 @@ export function DataTableToolbar({
     const [startDate, setStartDate] = React.useState(initialStartDate);
     const [endDate, setEndDate] = React.useState(initialEndDate);
 
+    const { toast } = useToast();
+
     const handleSearch = () => {
+        if (startDate && endDate && startDate > endDate) {
+            toast({
+                title: "입력 오류",
+                description: "종료일은 시작일보다 빠를 수 없습니다.",
+                variant: "destructive",
+            });
+            return;
+        }
         onSearch({ brdId: "", searchType, keyword, startDate, endDate });
     };
 

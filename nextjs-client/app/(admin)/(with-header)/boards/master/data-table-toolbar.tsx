@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
+import { useToast } from "@/hooks/use-toast";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -30,7 +31,17 @@ export function DataTableToolbar({
     const [startDate, setStartDate] = React.useState(initialStartDate);
     const [endDate, setEndDate] = React.useState(initialEndDate);
 
+    const { toast } = useToast();
+
     const handleSearch = () => {
+        if (startDate && endDate && startDate > endDate) {
+            toast({
+                title: "입력 오류",
+                description: "종료일은 시작일보다 빠를 수 없습니다.",
+                variant: "destructive",
+            });
+            return;
+        }
         onSearch({ brdNm, startDate, endDate });
     };
 
