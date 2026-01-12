@@ -41,6 +41,13 @@ public class ApiResponse<T> {
     }
 
     /**
+     * 성공 응답 생성 편의 메서드 (데이터 없음)
+     */
+    public static <T> ApiResponse<T> success() {
+        return success(null);
+    }
+
+    /**
      * 에러 응답 생성 편의 메서드
      */
     public static <T> ApiResponse<T> error(String code, String message) {

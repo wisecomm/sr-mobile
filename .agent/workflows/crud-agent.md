@@ -21,6 +21,17 @@ description: 표준 패턴(boards/master)을 기반으로 풀스택(프론트엔
 
 ## 실행 단계 (Steps)
 
+### 0. 🔍 레퍼런스 분석 (Analyze Reference)
+- **목표**: `boards/master` 패턴을 **반드시 읽고** 코딩 스타일을 학습.
+- **액션**: 다음 파일들을 `view_file`로 읽어 구조를 파악합니다.
+  - **Backend**:
+    - `src/main/java/com/example/springrest/domain/boards/master/service/BoardMasterService.java`
+    - `src/main/java/com/example/springrest/domain/boards/master/controller/BoardMasterController.java`
+    - `src/main/resources/mapper/BoardMasterMapper.xml`
+  - **Frontend**:
+    - `app/(admin)/(with-header)/boards/master/page.tsx`
+    - `app/(admin)/(with-header)/boards/master/hooks/use-board-master-management.ts`
+
 ### 1. 📋 컨텍스트 분석 및 계획 (Context Analysis & Planning)
 - **목표**: 도메인 용어 정의 및 DB 전략 결정.
 - **액션**:

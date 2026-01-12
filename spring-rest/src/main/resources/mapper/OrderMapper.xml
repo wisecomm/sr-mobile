@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.springrest.domain.order.repository.OrderMapper">
+    <resultMap id="OrderResultMap" type="com.example.springrest.domain.order.model.entity.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="custNm" column="cust_nm"/>
+        <result property="orderNm" column="order_nm"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="orderAmt" column="order_amt"/>
+        <result property="orderDate" column="order_date"/>
+        <result property="useYn" column="use_yn"/>
+        <result property="sysInsertDtm" column="sys_insert_dtm"/>
+        <result property="sysInsertUserId" column="sys_insert_user_id"/>
+        <result property="sysUpdateDtm" column="sys_update_dtm"/>
+        <result property="sysUpdateUserId" column="sys_update_user_id"/>
+    </resultMap>
+
+    <sql id="OrderColumns">
+        order_id, cust_nm, order_nm, order_status, order_amt, order_date, use_yn,
+        sys_insert_dtm, sys_insert_user_id, sys_update_dtm, sys_update_user_id
+    </sql>
+
+    <select id="findById" resultMap="OrderResultMap">
+        SELECT <include refid="OrderColumns"/>
+        FROM tb_orders
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="findAll" resultMap="OrderResultMap">
+        SELECT <include refid="OrderColumns"/>
+        FROM tb_orders
+        <where>
+            <if test="custNm != null and custNm != ''">
+                AND cust_nm LIKE CONCAT('%', #{custNm}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND sys_insert_dtm &gt;= #{startDate}::timestamp
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND sys_insert_dtm &lt;= #{endDate}::timestamp
+            </if>
+        </where>
+        ORDER BY sys_insert_dtm DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tb_orders (
+            <include refid="OrderColumns"/>
+        ) VALUES (
+            #{orderId}, #{custNm}, #{orderNm}, #{orderStatus}, #{orderAmt}, #{orderDate}, #{useYn},
+            NOW(), #{sysInsertUserId}, NOW(), #{sysUpdateUserId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tb_orders
+        SET cust_nm = #{custNm},
+            order_nm = #{orderNm},
+            order_status = #{orderStatus},
+            order_amt = #{orderAmt},
+            order_date = #{orderDate},
+            use_yn = #{useYn},
+            sys_update_dtm = NOW(),
+            sys_update_user_id = #{sysUpdateUserId}
+        WHERE order_id = #{orderId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tb_orders
+        WHERE order_id = #{orderId}
+    </delete>
+</mapper>
