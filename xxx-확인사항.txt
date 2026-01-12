@@ -1,5 +1,10 @@
 
-# nextjs 페이지 빌드 후 복사 배포
+???
+- 칼랜더 에이터 타임 입력까지 검토해야 되나 ?
+  칼랜더가 안이쁨 ㅎㅎㅎ
+  
+
+# nextjs 페이지 빌드 후 복사 배포 하는 곳
  - "${projectDir}/src/main/resources/static"
 
 
