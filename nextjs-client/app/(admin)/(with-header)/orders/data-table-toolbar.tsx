@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
+import { ActionButtons, toolbarButtonClass, TimeInputSh, DateInputSh, formatTime } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
 
 interface DataTableToolbarProps {
@@ -31,9 +31,13 @@ export function DataTableToolbar({
     const [startDate, setStartDate] = React.useState(initialStartDate);
     const [endDate, setEndDate] = React.useState(initialEndDate);
 
+    const [testTime, setTestTime] = React.useState(formatTime(new Date()));
+
     const { toast } = useToast();
 
     const handleSearch = () => {
+        // 콘솔로그 타임
+        console.log("testTime ㅌㅌㅌ=" + testTime);
         if (startDate && endDate && startDate > endDate) {
             toast({
                 title: "입력 오류",
@@ -67,16 +71,20 @@ export function DataTableToolbar({
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">주문일</span>
-                        <DateInput
+                        <DateInputSh
                             value={startDate}
                             onChange={setStartDate}
                             onKeyDown={handleKeyDown}
                         />
                         <span>-</span>
-                        <DateInput
+                        <DateInputSh
                             value={endDate}
                             onChange={setEndDate}
                             onKeyDown={handleKeyDown}
+                        />
+                        <TimeInputSh
+                            value={testTime}
+                            onChange={setTestTime}
                         />
                     </div>
                     <Button
@@ -86,7 +94,7 @@ export function DataTableToolbar({
                         disabled={isLoading}
                     >
                         <Search className="mr-2 h-4 w-4" />
-                        조회
+                        조회1
                     </Button>
                 </div>
 

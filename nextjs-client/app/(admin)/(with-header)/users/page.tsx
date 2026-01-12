@@ -16,7 +16,7 @@ import { InputDialog } from "./input-dialog";
 import { useUserManagement } from "./hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 import { useExcel } from "@/hooks/use-excel";
-import { formatDate } from "@/components/common/date-input";
+import { formatDate } from '@/components/common/date-input-sh';
 
 export default function UsersPage() {
     const { toast } = useToast();

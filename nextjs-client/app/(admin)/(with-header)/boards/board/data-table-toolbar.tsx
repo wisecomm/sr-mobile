@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
+import { DateInputSh, ActionButtons, toolbarButtonClass } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
 
 interface DataTableToolbarProps {
@@ -92,14 +92,14 @@ export function DataTableToolbar({
 
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">기간</span>
-                        <DateInput
+                        <DateInputSh
                             value={startDate}
                             onChange={setStartDate}
                             onKeyDown={handleKeyDown}
                             className="w-[130px]"
                         />
                         <span>~</span>
-                        <DateInput
+                        <DateInputSh
                             value={endDate}
                             onChange={setEndDate}
                             onKeyDown={handleKeyDown}

@@ -12,7 +12,7 @@ import {
 } from './use-order-query';
 import { useToast } from '@/hooks/use-toast';
 import { OrderDetail } from '../types';
-import { formatDate } from '@/components/common/date-input';
+import { formatDate } from '@/components/common/date-input-sh';
 
 /**
  * 검색 파라미터

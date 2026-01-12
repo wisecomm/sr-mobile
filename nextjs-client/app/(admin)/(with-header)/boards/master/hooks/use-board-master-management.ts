@@ -13,7 +13,7 @@ import {
     BoardsMasterSearchParams,
 } from './use-board-master-query';
 import { useToast } from '@/hooks/use-toast';
-import { formatDate } from '@/components/common/date-input';
+import { formatDate } from '@/components/common/date-input-sh';
 
 /**
  * 게시판 마스터 관리 훅 리턴 타입

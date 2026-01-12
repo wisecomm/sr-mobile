@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
+import { DateInputSh, ActionButtons, toolbarButtonClass } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
 
 interface DataTableToolbarProps {
@@ -67,13 +67,13 @@ export function DataTableToolbar({
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">등록일</span>
-                        <DateInput
+                        <DateInputSh
                             value={startDate}
                             onChange={setStartDate}
                             onKeyDown={handleKeyDown}
                         />
                         <span>-</span>
-                        <DateInput
+                        <DateInputSh
                             value={endDate}
                             onChange={setEndDate}
                             onKeyDown={handleKeyDown}
