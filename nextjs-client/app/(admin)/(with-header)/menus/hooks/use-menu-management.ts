@@ -4,7 +4,7 @@
  * 메뉴 관리 페이지의 모든 비즈니스 로직을 캡슐화
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useMenus, useCreateMenu, useUpdateMenu, useDeleteMenu } from './use-menu-query';
 import { useToast } from '@/hooks/use-toast';
 import { MenuInfo } from '../types';
@@ -36,7 +36,17 @@ export function useMenuManagement(): UseMenuManagementReturn {
     const { toast } = useToast();
 
     // API 훅 - 메뉴는 트리 구조로 전체 목록이 필요하므로 큰 페이지 사이즈 사용
-    const { data: menusData, isLoading } = useMenus({ page: 0, size: 1000 });
+    const { data: menusData, isLoading, isError, error } = useMenus({ page: 0, size: 1000 });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '메뉴 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     // 메뉴 데이터가 변경될 때만 재계산
     const menus = useMemo(() => menusData?.list ?? [], [menusData]);

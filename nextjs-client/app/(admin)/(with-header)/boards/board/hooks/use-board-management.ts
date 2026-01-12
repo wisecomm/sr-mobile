@@ -2,7 +2,7 @@
  * useBoardManagement - 게시물 관리 훅
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
     useBoardsBoardList,
@@ -69,11 +69,21 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
     const [selectedPost, setSelectedPost] = useState<BoardsBoard | null>(null);
 
     // API 훅
-    const { data: postsData, isLoading } = useBoardsBoardList({
+    const { data: postsData, isLoading, isError, error } = useBoardsBoardList({
         ...searchParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
     });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '게시물 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     const createMutation = useCreateBoardsBoard();
     const updateMutation = useUpdateBoardsBoard();

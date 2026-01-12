@@ -4,7 +4,7 @@
  * 역할 관리 페이지의 모든 비즈니스 로직을 캡슐화
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
     useRoles,
@@ -75,11 +75,21 @@ export function useRoleManagement(): UseRoleManagementReturn {
     const [selectedRole, setSelectedRole] = useState<RoleInfo | null>(null);
 
     // API 훅
-    const { data: rolesData, isLoading } = useRoles({
+    const { data: rolesData, isLoading, isError, error } = useRoles({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         searchId: searchParams.searchId,
     });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '권한 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     const createRoleMutation = useCreateRole();
     const updateRoleMutation = useUpdateRole();

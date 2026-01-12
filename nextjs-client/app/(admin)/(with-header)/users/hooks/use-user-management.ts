@@ -4,7 +4,7 @@
  * 사용자 관리 페이지의 모든 비즈니스 로직을 캡슐화
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
     useUsers,
@@ -80,11 +80,21 @@ export function useUserManagement(): UseUserManagementReturn {
     const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
 
     // API 훅
-    const { data: usersData, isLoading } = useUsers({
+    const { data: usersData, isLoading, isError, error } = useUsers({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         ...searchParams,
     });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '사용자 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     const createUserMutation = useCreateUser();
     const updateUserMutation = useUpdateUser();

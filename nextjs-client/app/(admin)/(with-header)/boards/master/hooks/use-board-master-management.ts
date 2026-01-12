@@ -2,7 +2,7 @@
  * useBoardsMasterManagement - 게시판 마스터 관리 훅
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
     useBoardsMasterList,
@@ -71,11 +71,21 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const [selectedBoard, setSelectedBoard] = useState<BoardsMaster | null>(null);
 
     // API 훅
-    const { data: boardsData, isLoading } = useBoardsMasterList({
+    const { data: boardsData, isLoading, isError, error } = useBoardsMasterList({
         ...searchParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
     });
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                title: '목록 조회 실패',
+                description: error?.message || '게시판 목록을 불러오는 중 오류가 발생했습니다.',
+                variant: 'destructive',
+            });
+        }
+    }, [isError, error, toast]);
 
     const createMutation = useCreateBoardsMaster();
     const updateMutation = useUpdateBoardsMaster();
