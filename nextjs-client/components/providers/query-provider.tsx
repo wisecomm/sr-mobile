@@ -16,7 +16,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
                         staleTime: 60 * 1000,      // 1분: 데이터가 fresh로 유지되는 시간
                         gcTime: 5 * 60 * 1000,     // 5분: 미사용 데이터가 캐시에 유지되는 시간
                         retry: 1,
-                        refetchOnWindowFocus: true,
+                        refetchOnWindowFocus: true, // 윈도우 포커스가 변경되면 refetch
                     },
                 },
             })
