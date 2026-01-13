@@ -120,7 +120,7 @@ class AuthService {
     /**
      * 인증 실패 처리 (401 Unauthorized)
      */
-    handleUnauthorized(): void {
+    handleUnauthorized(redirect: boolean = true): void {
         console.warn('[AuthService] Unauthorized access detected');
 
         // 세션 클리어
@@ -129,7 +129,9 @@ class AuthService {
         // Zustand 스토어 클리어
         if (typeof window !== 'undefined') {
             useAppStore.getState().clearUser();
-            window.location.href = '/login';
+            if (redirect) {
+                window.location.href = '/login';
+            }
         }
     }
 
@@ -155,4 +157,4 @@ export const authService = new AuthService();
  */
 export const login = (formData: FormData) => authService.loginWithFormData(formData);
 export const logout = () => authService.logout();
-export const handleUnauthorized = () => authService.handleUnauthorized();
+export const handleUnauthorized = (redirect?: boolean) => authService.handleUnauthorized(redirect);

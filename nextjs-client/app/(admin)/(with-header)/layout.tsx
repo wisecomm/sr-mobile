@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
-import { useRouter } from "next/navigation";
-import { getAccessToken } from "@/app/actions/auth-actions";
+import { Suspense } from "react";
+
 import { Sidebar } from "@/components/layout-admin/sidebar";
 import { Header } from "@/components/layout-admin/header";
 import { PageHeader } from "@/components/layout-admin/page-header";
@@ -13,14 +12,7 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const router = useRouter();
 
-    useEffect(() => {
-        const token = getAccessToken();
-        if (!token) {
-            router.replace("/login");
-        }
-    }, [router]);
 
     return (
         <div className="flex min-h-screen w-full bg-muted/40">

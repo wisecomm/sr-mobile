@@ -25,7 +25,7 @@ export function SessionManager() {
         isValid: false,
         remainingMinutes: 0,
     });
-    
+
     // 경고 표시 여부 추적 (중복 알림 방지)
     const warningShownRef = useRef(false);
 
@@ -49,9 +49,9 @@ export function SessionManager() {
 
             setSessionState({ isValid, remainingMinutes });
 
-            // 세션이 만료되었고 로그인 페이지가 아니면 로그아웃
-            if (!isValid && pathname !== '/login' && pathname !== '/') {
-                console.warn('[SessionManager] Session expired, redirecting to login');
+            // 세션이 유효하지 않으면 로그인 페이지로 이동 (AdminLayout에만 존재하므로 강제 리다이렉트)
+            if (!isValid) {
+                console.warn('[SessionManager] Session invalid or expired, redirecting to login');
                 authService.handleUnauthorized();
             }
 
@@ -59,7 +59,7 @@ export function SessionManager() {
             if (remainingMinutes === 5 && !warningShownRef.current) {
                 warningShownRef.current = true;
                 console.warn('[SessionManager] Session will expire in 5 minutes');
-                
+
                 // 사용자에게 알림 표시 (선택적)
                 if (typeof window !== 'undefined' && 'Notification' in window) {
                     if (Notification.permission === 'granted') {
@@ -70,7 +70,7 @@ export function SessionManager() {
                     }
                 }
             }
-            
+
             // 5분이 아니면 경고 플래그 리셋
             if (remainingMinutes !== 5) {
                 warningShownRef.current = false;
@@ -110,7 +110,7 @@ export function SessionManager() {
      */
     if (process.env.NODE_ENV === 'development' && sessionState.isValid) {
         return (
-            <div 
+            <div
                 className="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50"
                 style={{ pointerEvents: 'none' }}
             >
