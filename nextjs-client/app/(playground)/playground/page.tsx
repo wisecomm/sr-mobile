@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DateInput } from '@/components/common';
+import { DateInput, TimeInput } from '@/components/common';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 export default function PlaygroundPage() {
     const { toast } = useToast();
     const [date, setDate] = useState<string>('');
+    const [time, setTime] = useState<string>('11:20:30');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     return (
@@ -150,8 +151,7 @@ export default function PlaygroundPage() {
 
                     <Card className="md:col-span-2">
                         <CardHeader>
-                            <CardTitle>Date & Time 예제</CardTitle>
-                            <CardDescription>Using DateInput</CardDescription>
+                            <CardTitle>캘린더 Date & Time 예제</CardTitle>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
@@ -177,7 +177,16 @@ export default function PlaygroundPage() {
                                 </div>
                                 <p className="text-sm text-muted-foreground">Selected: {date}</p>
                             </div>
-
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <Label>시간 입력</Label>
+                                    <TimeInput
+                                        value={time}
+                                        onChange={setTime}
+                                    />
+                                </div>
+                                <p className="text-sm text-muted-foreground">Selected: {time}</p>
+                            </div>
 
                         </CardContent>
                     </Card>
