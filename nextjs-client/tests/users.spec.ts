@@ -47,6 +47,9 @@ test.describe("User Management", () => {
         page.once('dialog', dialog => dialog.accept());
         await page.click('button:has-text("삭제")');
 
+        // Wait for success toast or stability
+        await page.waitForTimeout(1000);
+
         await expect(page.getByRole("cell", { name: userId })).not.toBeVisible({ timeout: 10000 });
     });
 });

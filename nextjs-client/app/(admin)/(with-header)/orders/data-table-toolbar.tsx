@@ -30,12 +30,7 @@ export function DataTableToolbar({
 }: DataTableToolbarProps) {
     const [custNm, setCustNm] = React.useState("");
     const [startDate, setStartDate] = React.useState(initialStartDate);
-    //    const [endDate, setEndDate] = React.useState(initialEndDate);
-    const [endDate, setEndDate] = React.useState(() => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - 1);
-        return formatDate(d);
-    });
+    const [endDate, setEndDate] = React.useState(initialEndDate);
 
     const [testTime, setTestTime] = React.useState(formatTime(new Date()));
 

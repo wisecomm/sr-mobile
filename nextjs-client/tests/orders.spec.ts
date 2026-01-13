@@ -47,6 +47,10 @@ test.describe("Order Management", () => {
             // Search and Verify in List
             await page.fill('input[placeholder="고객명 입력"]', custNm);
             await page.keyboard.press("Enter");
+
+            // Wait for search results to settle
+            await page.waitForTimeout(1000);
+
             await expect(page.getByRole("cell", { name: orderId })).toBeVisible();
             await expect(page.getByRole("cell", { name: orderNm })).toBeVisible();
         });
@@ -54,7 +58,14 @@ test.describe("Order Management", () => {
         // 2. Update Order
         await test.step("Update Order", async () => {
             // Select the row (assuming it's the first one after search)
-            await page.click(`tr:has-text("${orderId}")`);
+            // Use a more specific locator and ensure it's visible
+            const rowSelector = `tr:has-text("${orderId}")`;
+            await page.locator(rowSelector).first().waitFor({ state: "visible" });
+
+            // Add a small delay to ensure stability (prevent click detach)
+            await page.waitForTimeout(500);
+
+            await page.locator(rowSelector).first().click();
 
             await page.click('button:has-text("수정")');
             await expect(page.getByText("주문 수정")).toBeVisible();
@@ -70,13 +81,18 @@ test.describe("Order Management", () => {
             await page.fill('input[placeholder="고객명 입력"]', updatedCustNm);
             await page.keyboard.press("Enter");
 
+            await page.waitForTimeout(1000);
+
             // Verify Update in List
             await expect(page.getByRole("cell", { name: updatedCustNm })).toBeVisible();
         });
 
         // 3. Delete Order
         await test.step("Delete Order", async () => {
-            const row = page.locator(`tr:has-text("${orderId}")`);
+            const rowSelector = `tr:has-text("${orderId}")`;
+            const row = page.locator(rowSelector).first();
+            await row.waitFor({ state: "visible" });
+
             const dataState = await row.getAttribute("data-state");
             if (!dataState?.includes("selected")) {
                 await row.click();
