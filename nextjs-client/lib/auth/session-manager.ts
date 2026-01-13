@@ -15,6 +15,7 @@ const SESSION_KEYS = {
     REFRESH_TOKEN: 'refreshToken',
     USER_INFO: 'userInfo',
     LAST_ACTIVE: 'lastActive',
+    SAVED_ID: 'savedId',
 } as const;
 
 /**
@@ -64,7 +65,10 @@ class SessionManager {
 
         try {
             Object.values(SESSION_KEYS).forEach(key => {
-                localStorage.removeItem(key);
+                // 저장된 아이디는 세션 삭제 시에도 유지되어야 함
+                if (key !== SESSION_KEYS.SAVED_ID) {
+                    localStorage.removeItem(key);
+                }
             });
         } catch (error) {
             console.error('[SessionManager] Failed to clear session:', error);
@@ -196,6 +200,37 @@ class SessionManager {
     }
 
     /**
+     * 아이디 저장
+     */
+    setSavedId(id: string): void {
+        if (!this.isClient) return;
+        try {
+            localStorage.setItem(SESSION_KEYS.SAVED_ID, id);
+        } catch (error) {
+            console.error('[SessionManager] Failed to save id:', error);
+        }
+    }
+
+    /**
+     * 저장된 아이디 조회
+     */
+    getSavedId(): string | null {
+        return this.getItem(SESSION_KEYS.SAVED_ID);
+    }
+
+    /**
+     * 저장된 아이디 삭제
+     */
+    clearSavedId(): void {
+        if (!this.isClient) return;
+        try {
+            localStorage.removeItem(SESSION_KEYS.SAVED_ID);
+        } catch (error) {
+            console.error('[SessionManager] Failed to clear saved id:', error);
+        }
+    }
+
+    /**
      * 남은 세션 시간 (밀리초)
      */
     getRemainingTime(): number {
@@ -238,3 +273,6 @@ export const getAccessToken = () => sessionManager.getAccessToken();
 export const getRefreshToken = () => sessionManager.getRefreshToken();
 export const updateAccessToken = (token: string, refreshToken?: string) =>
     sessionManager.updateTokens(token, refreshToken);
+export const setSavedId = (id: string) => sessionManager.setSavedId(id);
+export const getSavedId = () => sessionManager.getSavedId();
+export const clearSavedId = () => sessionManager.clearSavedId();

@@ -19,6 +19,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useRouter } from 'next/navigation';
 import { useAppStore } from "@/store/use-app-store";
 import { cn } from "@/lib/utils";
+import { sessionManager } from "@/lib/auth/session-manager";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const accountFormSchema = z.object({
   userId: z.string().min(1, {
@@ -42,18 +44,33 @@ function Login() {
   const [isPending, startTransition] = useTransition();
   const setUser = useAppStore((state) => state.setUser);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberId, setRememberId] = useState(false);
 
-  useEffect(() => {
-    const token = getAccessToken();
-    if (token) {
-      router.replace("/users");
-    }
-  }, [router]);
-
+  // 폼 초기화
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    // 1. 이미 로그인 된 경우 리다이렉트
+    const token = getAccessToken();
+    if (token) {
+      router.replace("/users");
+      return;
+    }
+
+    // 2. 저장된 아이디 불러오기
+    const savedId = sessionManager.getSavedId();
+    if (savedId) {
+      form.setValue("userId", savedId);
+      setTimeout(() => setRememberId(true), 0);
+    } else {
+      // 저장된 아이디가 없을 때만 기본값 설정 (개발 편의성)
+      // form.setValue("userId", "admin");
+      // form.setValue("userPwd", "12345678");
+    }
+  }, [router, form]);
 
   const onSubmit = (data: AccountFormValues) => {
     startTransition(async () => {
@@ -71,6 +88,13 @@ function Login() {
             variant: "destructive",
           });
           return;
+        }
+
+        // 아이디 저장 처리
+        if (rememberId) {
+          sessionManager.setSavedId(data.userId);
+        } else {
+          sessionManager.clearSavedId();
         }
 
         setUser(loginResult.data.user);
@@ -180,12 +204,27 @@ function Login() {
                       </button>
                     </div>
                   </FormControl>
-                  <div className="flex justify-between items-center mt-1">
-                    <FormMessage />
-                    <a className="text-sm font-medium text-primary hover:text-primary/80 transition-colors ml-auto" href="#">
+
+                  {/* Password Utilities */}
+                  <div className="flex justify-between items-center mt-3 px-1">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="rememberId"
+                        checked={rememberId}
+                        onCheckedChange={(checked) => setRememberId(checked as boolean)}
+                      />
+                      <label
+                        htmlFor="rememberId"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground cursor-pointer"
+                      >
+                        아이디 저장
+                      </label>
+                    </div>
+                    <a className="text-sm font-medium text-primary hover:text-primary/80 transition-colors" href="#">
                       비밀번호 찾기
                     </a>
                   </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
