@@ -272,21 +272,4 @@ export const apiClient = new ApiClient();
  */
 export { api };
 
-/**
- * 기존 코드와의 호환성을 위한 개별 함수들
- * @deprecated apiClient 객체를 직접 사용하세요
- */
-export const apiGet = <T>(url: string, params?: Record<string, string | number | boolean | undefined>) =>
-    apiClient.get<T>(url, params);
 
-export const apiPost = <T>(url: string, data?: unknown) =>
-    apiClient.post<T>(url, data);
-
-export const apiPut = <T>(url: string, data?: unknown) =>
-    apiClient.put<T>(url, data);
-
-export const apiPatch = <T>(url: string, data?: unknown) =>
-    apiClient.patch<T>(url, data);
-
-export const apiDelete = <T>(url: string) =>
-    apiClient.delete<T>(url);

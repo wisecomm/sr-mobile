@@ -263,16 +263,4 @@ class SessionManager {
  */
 export const sessionManager = new SessionManager();
 
-/**
- * 기존 코드와의 호환성을 위한 함수들
- * @deprecated sessionManager 객체를 직접 사용하세요
- */
-export const setSession = (data: LoginData) => sessionManager.setSession(data);
-export const clearSession = () => sessionManager.clearSession();
-export const getAccessToken = () => sessionManager.getAccessToken();
-export const getRefreshToken = () => sessionManager.getRefreshToken();
-export const updateAccessToken = (token: string, refreshToken?: string) =>
-    sessionManager.updateTokens(token, refreshToken);
-export const setSavedId = (id: string) => sessionManager.setSavedId(id);
-export const getSavedId = () => sessionManager.getSavedId();
-export const clearSavedId = () => sessionManager.clearSavedId();
+
