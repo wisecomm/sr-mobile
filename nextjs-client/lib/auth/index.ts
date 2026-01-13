@@ -15,8 +15,6 @@ export type { LoginRequest, LogoutOptions } from './auth-service';
 
 export * from './types';
 
-// 기존 코드 호환성을 위한 re-export (제거됨)
 
-export { handleTokenRefresh } from './token-service';
 
-export { login, logout, handleUnauthorized } from './auth-service';
+

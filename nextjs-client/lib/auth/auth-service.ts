@@ -151,10 +151,4 @@ class AuthService {
  */
 export const authService = new AuthService();
 
-/**
- * 기존 코드 호환성을 위한 함수들
- * @deprecated authService를 직접 사용하세요
- */
-export const login = (formData: FormData) => authService.loginWithFormData(formData);
-export const logout = () => authService.logout();
-export const handleUnauthorized = (redirect?: boolean) => authService.handleUnauthorized(redirect);
+

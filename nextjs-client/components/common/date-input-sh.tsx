@@ -20,10 +20,9 @@ import {
 export interface DateInputProps {
     value: string;
     onChange: (value: string) => void;
-    onKeyDown?: (e: React.KeyboardEvent) => void; // 호환성을 위해 유지하되 사용하지 않음
     placeholder?: string;
     className?: string;
-    type?: string; // 호환성을 위해 유지
+    onKeyDown?: (event: React.KeyboardEvent) => void;
 }
 
 /**
@@ -34,6 +33,7 @@ export function DateInputSh({
     onChange,
     placeholder = "YYYY-MM-DD",
     className,
+    onKeyDown,
 }: DateInputProps) {
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
@@ -66,6 +66,7 @@ export function DateInputSh({
                         !value && "text-muted-foreground",
                         className
                     )}
+                    onKeyDown={onKeyDown}
                 >
                     {date ? format(date, "yyyy-MM-dd") : <span>{placeholder}</span>}
                     <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />

@@ -143,11 +143,4 @@ class TokenService {
  */
 export const tokenService = new TokenService();
 
-/**
- * 기존 코드 호환성을 위한 함수
- * @deprecated tokenService.refreshToken()을 사용하세요
- */
-export async function handleTokenRefresh(): Promise<string | null> {
-    const result = await tokenService.refreshToken();
-    return result.success ? result.token || null : null;
-}
+

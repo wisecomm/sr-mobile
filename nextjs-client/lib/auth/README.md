@@ -427,7 +427,6 @@ import { sessionManager, authService } from '@/lib/auth';
 import { useAuth } from '@/hooks/useAuth';
 ```
 
-호환성을 위해 기존 함수들도 여전히 사용 가능합니다.
 
 ## 📝 변경 이력
 
