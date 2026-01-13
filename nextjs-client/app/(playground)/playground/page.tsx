@@ -154,23 +154,27 @@ export default function PlaygroundPage() {
                             <CardDescription>Using DateInput</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2 " >
-                                <Label>캘리더 선택 </Label>
-                                <DateInput
-                                    value={date}
-                                    onChange={setDate}
-                                    placeholder="YYYY-MM-DD"
-                                />
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <Label>보이기 선택</Label>
+                                    <DateInput
+                                        value={date}
+                                        onChange={setDate}
+                                        placeholder="YYYY-MM-DD"
+                                    />
+                                </div>
                                 <p className="text-sm text-muted-foreground">Selected: {date}</p>
                             </div>
                             <div className="space-y-2">
-                                <Label>캘리더 입력 </Label>
-                                <DateInput
-                                    value={date}
-                                    onChange={setDate}
-                                    placeholder="YYYY-MM-DD"
-                                    variant="input"
-                                />
+                                <div className="flex items-center gap-2">
+                                    <Label>보이기 입력</Label>
+                                    <DateInput
+                                        value={date}
+                                        onChange={setDate}
+                                        placeholder="YYYY-MM-DD"
+                                        variant="input"
+                                    />
+                                </div>
                                 <p className="text-sm text-muted-foreground">Selected: {date}</p>
                             </div>
 

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import {
     Popover,
+    PopoverAnchor,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
@@ -124,14 +125,14 @@ export function DateInput({
                     <Button
                         variant={"outline"}
                         className={cn(
-                            "w-[140px] justify-start text-left font-normal",
+                            "w-[140px] justify-between text-left font-normal",
                             !value && "text-muted-foreground",
                             className
                         )}
                         onKeyDown={onKeyDown}
                     >
                         {dateObj ? format(dateObj, "yyyy-MM-dd") : <span>{placeholder}</span>}
-                        <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                        <CalendarIcon className="h-4 w-4 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -150,40 +151,40 @@ export function DateInput({
 
     // Variant: "input"
     return (
-        <div className={cn("relative w-[140px]", className)}>
-            <Input
-                type="text"
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => handleChange(e.target.value)}
-                onBlur={handleBlur}
-                onKeyDown={onKeyDown}
-                className="pr-8 w-full"
-                aria-invalid={isError}
-            />
-            <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center">
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+        <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverAnchor asChild>
+                <div className={cn("relative w-[140px]", className)}>
+                    <Input
+                        type="text"
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={(e) => handleChange(e.target.value)}
+                        onBlur={handleBlur}
+                        onKeyDown={onKeyDown}
+                        className="pr-8 w-full"
+                        aria-invalid={isError}
+                    />
                     <PopoverTrigger asChild>
                         <button
-                            className="bg-transparent border-0 p-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                            className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-transparent border-0 p-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                             type="button"
                         >
                             <CalendarIcon className="h-4 w-4" />
                         </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                        <Calendar
-                            mode="single"
-                            selected={dateObj}
-                            onSelect={handleSelect}
-                            captionLayout="dropdown"
-                            locale={ko}
-                            defaultMonth={dateObj || new Date()}
-                        />
-                    </PopoverContent>
-                </Popover>
-            </div>
-        </div>
+                </div>
+            </PopoverAnchor>
+            <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                    mode="single"
+                    selected={dateObj}
+                    onSelect={handleSelect}
+                    captionLayout="dropdown"
+                    locale={ko}
+                    defaultMonth={dateObj || new Date()}
+                />
+            </PopoverContent>
+        </Popover>
     );
 }
 
