@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { ActionButtons, toolbarButtonClass, TimeInputSh, DateInputSh, formatTime, formatDate } from "@/components/common";
+import { ActionButtons, toolbarButtonClass, DateInputSh } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
-import { DateInput } from "@/components/common/date-input";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
@@ -32,19 +31,9 @@ export function DataTableToolbar({
     const [startDate, setStartDate] = React.useState(initialStartDate);
     const [endDate, setEndDate] = React.useState(initialEndDate);
 
-    const [testTime, setTestTime] = React.useState(formatTime(new Date()));
-
-    const [testDate, setTestDate] = React.useState(() => {
-        const d = new Date();
-        d.setMonth(d.getMonth() - 1);
-        return formatDate(d);
-    });
-
     const { toast } = useToast();
 
     const handleSearch = () => {
-        // 콘솔로그 타임
-        console.log("testTime ㅌㅌㅌ=" + testTime);
         if (startDate && endDate && startDate > endDate) {
             toast({
                 title: "입력 오류",
@@ -89,15 +78,6 @@ export function DataTableToolbar({
                             onChange={setEndDate}
                             onKeyDown={handleKeyDown}
                         />
-                        <TimeInputSh
-                            value={testTime}
-                            onChange={setTestTime}
-                        />
-                        <DateInput
-                            value={testDate}
-                            onChange={setTestDate}
-                            onKeyDown={handleKeyDown}
-                        />
                     </div>
                     <Button
                         variant="outline"
@@ -106,7 +86,7 @@ export function DataTableToolbar({
                         disabled={isLoading}
                     >
                         <Search className="mr-2 h-4 w-4" />
-                        조회1
+                        조회
                     </Button>
                 </div>
 

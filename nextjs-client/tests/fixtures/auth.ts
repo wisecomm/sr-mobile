@@ -13,7 +13,7 @@ export const test = base.extend<{ authenticatedPage: void }>({
         await page.click('button[type="submit"]');
 
         // 로그인 완료 대기
-        await page.waitForURL(/\/(mainmenu|users|roles|menus)/);
+        await page.waitForURL(/\/(mainmenu|users|roles|menus|orders)/);
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
         await use();

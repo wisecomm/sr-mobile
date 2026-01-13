@@ -96,14 +96,12 @@ export function DataTableToolbar({
                             value={startDate}
                             onChange={setStartDate}
                             onKeyDown={handleKeyDown}
-                            className="w-[130px]"
                         />
                         <span>~</span>
                         <DateInputSh
                             value={endDate}
                             onChange={setEndDate}
                             onKeyDown={handleKeyDown}
-                            className="w-[130px]"
                         />
                     </div>
 
