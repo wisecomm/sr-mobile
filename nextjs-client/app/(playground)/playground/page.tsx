@@ -187,6 +187,17 @@ export default function PlaygroundPage() {
                                 </div>
                                 <p className="text-sm text-muted-foreground">Selected: {time}</p>
                             </div>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <Label>시간 입력</Label>
+                                    <TimeInput
+                                        value={time}
+                                        onChange={setTime}
+                                        format="HH:mm:ss"
+                                    />
+                                </div>
+                                <p className="text-sm text-muted-foreground">Selected: {time}</p>
+                            </div>
 
                         </CardContent>
                     </Card>
