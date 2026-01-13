@@ -183,6 +183,7 @@ export default function PlaygroundPage() {
                                     <TimeInput
                                         value={time}
                                         onChange={setTime}
+                                        use24Hour={false}
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground">Selected: {time}</p>
@@ -194,6 +195,7 @@ export default function PlaygroundPage() {
                                         value={time}
                                         onChange={setTime}
                                         format="HH:mm:ss"
+                                        use24Hour={false}
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground">Selected: {time}</p>
