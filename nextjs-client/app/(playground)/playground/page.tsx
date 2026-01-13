@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DateInputSh } from '@/components/common/date-input-sh';
+import { DateInput } from '@/components/common';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -150,19 +150,31 @@ export default function PlaygroundPage() {
 
                     <Card className="md:col-span-2">
                         <CardHeader>
-                            <CardTitle>Date & Time</CardTitle>
-                            <CardDescription>Using DateInputSh</CardDescription>
+                            <CardTitle>Date & Time 예제</CardTitle>
+                            <CardDescription>Using DateInput</CardDescription>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label>Date Selection</Label>
-                                <DateInputSh
+                            <div className="space-y-2 " >
+                                <Label>캘리더 선택 </Label>
+                                <DateInput
                                     value={date}
                                     onChange={setDate}
                                     placeholder="YYYY-MM-DD"
                                 />
                                 <p className="text-sm text-muted-foreground">Selected: {date}</p>
                             </div>
+                            <div className="space-y-2">
+                                <Label>캘리더 입력 </Label>
+                                <DateInput
+                                    value={date}
+                                    onChange={setDate}
+                                    placeholder="YYYY-MM-DD"
+                                    variant="input"
+                                />
+                                <p className="text-sm text-muted-foreground">Selected: {date}</p>
+                            </div>
+
+
                         </CardContent>
                     </Card>
                 </div>

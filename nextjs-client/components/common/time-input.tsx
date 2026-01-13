@@ -13,7 +13,7 @@ export interface TimeInputProps {
 }
 
 // shadcn ui time input 에서는 오전/오후 만 제공 24시간 제공시 따로 만들어야 함 
-export function TimeInputSh({
+export function TimeInput({
     value = "",
     onChange,
     className,

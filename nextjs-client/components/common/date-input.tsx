@@ -6,6 +6,8 @@ import { ko } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -24,7 +26,12 @@ export interface DateInputProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
     placeholder?: string;
     className?: string;
-    type?: "date" | "datetime-local" | "month" | "time";
+    /**
+     * 입력 방식
+     * - button: 버튼 클릭하여 달력 선택 (기본값)
+     * - input: 텍스트 입력 + 달력 아이콘
+     */
+    variant?: "button" | "input";
 }
 
 /**
@@ -45,16 +52,15 @@ function isValidDate(dateString: string): boolean {
 }
 
 /**
- * 날짜 입력 컴포넌트
- * 
- * 텍스트 입력 + 캘린더 아이콘 클릭 시 Shadcn Calendar Popover 표시
+ * 통합 날짜 입력 컴포넌트
  */
 export function DateInput({
     value,
     onChange,
     onKeyDown,
     placeholder = "YYYY-MM-DD",
-    className = "w-[140px]",
+    className,
+    variant = "button", // 기본값 변경: button
 }: DateInputProps) {
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
@@ -74,7 +80,7 @@ export function DateInput({
     // 문자열 날짜를 Date 객체로 변환 for Calendar
     const dateObj = React.useMemo(() => {
         if (!value) return undefined;
-        if (!isValidDate(value)) return undefined; // Reuse isValidDate which is now safe or check regex again
+        if (!isValidDate(value)) return undefined;
 
         const [year, month, day] = value.split('-').map(Number);
         return new Date(year, month - 1, day);
@@ -85,19 +91,20 @@ export function DateInput({
         if (newDate) {
             onChange(format(newDate, "yyyy-MM-dd"));
             setIsCalendarOpen(false); // 날짜 선택 시 팝오버 닫기
+        } else {
+            // Button variant might want to clear, but Input variant usually doesn't clear on deselect unless explicit
+            // Keeping behavior consistent: selection updates value.
         }
     };
 
+    // --- Input Variant Logic ---
     const handleChange = (newValue: string) => {
-        // 숫자와 하이픈만 허용
         const filteredValue = newValue.replace(/[^0-9-]/g, '');
         onChange(filteredValue);
     };
 
     const handleBlur = () => {
-        // 빈 값은 허용 (유효한 것으로 간주)
         if (!value) return;
-
         if (!isValidDate(value)) {
             toast({
                 title: "입력 오류",
@@ -108,8 +115,42 @@ export function DateInput({
         }
     };
 
+    // --- Render ---
+
+    if (variant === "button") {
+        return (
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-[140px] justify-start text-left font-normal",
+                            !value && "text-muted-foreground",
+                            className
+                        )}
+                        onKeyDown={onKeyDown}
+                    >
+                        {dateObj ? format(dateObj, "yyyy-MM-dd") : <span>{placeholder}</span>}
+                        <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={dateObj}
+                        onSelect={handleSelect}
+                        captionLayout="dropdown"
+                        locale={ko}
+                        defaultMonth={dateObj || new Date()}
+                    />
+                </PopoverContent>
+            </Popover>
+        );
+    }
+
+    // Variant: "input"
     return (
-        <div className={`relative ${className}`}>
+        <div className={cn("relative w-[140px]", className)}>
             <Input
                 type="text"
                 placeholder={placeholder}
@@ -117,7 +158,7 @@ export function DateInput({
                 onChange={(e) => handleChange(e.target.value)}
                 onBlur={handleBlur}
                 onKeyDown={onKeyDown}
-                className="pr-8"
+                className="pr-8 w-full"
                 aria-invalid={isError}
             />
             <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center">

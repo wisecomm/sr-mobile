@@ -13,7 +13,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import { useToast } from '@/hooks/use-toast';
 import { OrderDetail } from '../types';
-import { formatDate } from '@/components/common/date-input-sh';
+import { formatDate } from '@/components/common';
 
 /**
  * 검색 파라미터

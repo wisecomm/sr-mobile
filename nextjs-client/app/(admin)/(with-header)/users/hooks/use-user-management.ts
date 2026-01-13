@@ -15,7 +15,7 @@ import {
 } from './use-user-query';
 import { useToast } from '@/hooks/use-toast';
 import { UserDetail } from '../types';
-import { formatDate } from '@/components/common/date-input-sh';
+import { formatDate } from '@/components/common';
 
 /**
  * 검색 파라미터
