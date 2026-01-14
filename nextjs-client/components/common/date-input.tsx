@@ -153,7 +153,7 @@ export function DateInput({
     return (
         <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverAnchor asChild>
-                <div className={cn("relative w-[140px]", className)}>
+                <div className={cn("relative w-[150px]", className)}>
                     <Input
                         type="text"
                         placeholder={placeholder}

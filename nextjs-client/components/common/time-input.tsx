@@ -103,7 +103,7 @@ export function TimeInput({
                 disabled={disabled}
                 className={cn(
                     "bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
-                    includeSeconds ? "w-[120px]" : "w-[90px]"
+                    includeSeconds ? "w-[120px]" : "w-[100px]"
                 )}
             />
         </div>
