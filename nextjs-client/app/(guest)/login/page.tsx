@@ -99,8 +99,15 @@ function Login() {
 
         setUser(loginResult.data.user);
 
-        router.replace('/mainmenu', { scroll: false });
-        router.replace('/mainmobile', { scroll: false });
+        // 브라우저 확인 후 모바일이면 mainmobile, 아니면 mainmenu
+        const userAgent = navigator.userAgent;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+        if (isMobile) {
+          router.replace('/mainmobile', { scroll: false });
+        } else {
+          router.replace('/mainmenu', { scroll: false });
+        }
       } catch (error: unknown) {
         console.error("onSubmit error:", error);
         toast({

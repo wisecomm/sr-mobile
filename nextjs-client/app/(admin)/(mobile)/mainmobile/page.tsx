@@ -20,22 +20,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppStore } from "@/store/use-app-store";
 import { useEffect, useState } from "react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { logout } from "@/app/actions/auth-actions";
+import { useRouter } from "next/navigation";
 
 const menuItems = [
     { title: "재고 입고", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
     { title: "재고 조회", icon: Scan, color: "text-primary", href: "/stock/item" },
     { title: "재고 출고", icon: Boxes, color: "text-foreground", href: "/stock/outbound" },
-    { title: "재고 업무", icon: RotateCcw, color: "text-foreground", href: "/stock-tab" },
-    { title: "스캔 작업", icon: ClipboardList, color: "text-foreground", href: "/scan-work" },
+    { title: "탭 업무", icon: RotateCcw, color: "text-foreground", href: "/stock-tab" },
+    { title: "스캔 작업", icon: ClipboardList, color: "text-foreground", href: "/stock-test/item" },
     { title: "Stock Eagle", icon: Bird, color: "text-foreground", href: "/stock-eagle" },
-    { title: "로케이션 관리", icon: MapPin, color: "text-foreground", href: "/location-management" },
-    { title: "상품 등록", icon: PackagePlus, color: "text-foreground", href: "/products/add" },
-    { title: "상품 조회", icon: PackageSearch, color: "text-foreground", href: "/products" },
-    { title: "테스트", icon: Settings2, color: "text-foreground", href: "/tabtest" },
 ];
 
 export default function MainMenuPage() {
     const user = useAppStore((state) => state.user);
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -53,12 +60,33 @@ export default function MainMenuPage() {
             {/* Header */}
             <header className="flex items-center justify-between p-5 bg-background/80 backdrop-blur-md border-b sticky top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-11 w-11 border-2 border-background shadow-sm">
-                        <AvatarImage src="/images/avatar-placeholder.png" />
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                            {user?.userName?.[0] || '管'}
-                        </AvatarFallback>
-                    </Avatar>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div className="cursor-pointer">
+                                <Avatar className="h-11 w-11 border-2 border-background shadow-sm">
+                                    <AvatarImage src="/images/avatar-placeholder.png" />
+                                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                        {user?.userName?.[0] || 'U'}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>내 계정</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="text-destructive focus:text-destructive cursor-pointer gap-2"
+                                onClick={async () => {
+                                    await logout();
+                                    router.replace("/login");
+                                }}
+                            >
+                                <Power className="h-4 w-4" />
+                                <span>로그아웃</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <div className="flex flex-col">
                         <span className="text-xs text-muted-foreground font-medium">
                             {user?.roles?.includes('ROLE_ADMIN') ? '관리자' : '작업자'}

@@ -14,17 +14,17 @@ export default function StockTabs() {
 
     return (
         <div className="px-4 py-2 bg-white shrink-0 z-20 border-b border-slate-200">
-            <div className="flex h-10 w-full items-center justify-center rounded-lg bg-slate-100 p-1 border border-slate-200">
+            <div className="flex h-12 w-full items-center justify-center rounded-xl bg-slate-100 p-1.5 border border-slate-200">
                 {tabs.map((tab) => {
                     const isActive = pathname === tab.path;
                     return (
                         <Link
                             key={tab.value}
                             href={tab.path}
-                            className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-[4px] transition-all font-medium text-sm 
+                            className={`flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg transition-all text-base
                                 ${isActive
-                                    ? 'bg-white shadow-sm text-[#137fec] font-bold'
-                                    : 'text-slate-600 hover:text-slate-900'
+                                    ? 'bg-white shadow-md text-[#137fec] font-extrabold ring-1 ring-black/5'
+                                    : 'text-slate-500 hover:text-slate-900 font-medium'
                                 }`}
                         >
                             <span className="truncate">{tab.name}</span>
