@@ -18,7 +18,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/store/use-app-store";
-import { useEffect, useState } from "react";
 
 const menuItems = [
     { title: "반품 스캔", icon: Barcode, color: "text-primary", href: "/return-scan" },
@@ -35,14 +34,7 @@ const menuItems = [
 
 export default function MainMenuPage() {
     const user = useAppStore((state) => state.user);
-    const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setMounted(true), 0);
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (!mounted) return null;
 
     return (
         <div className="flex flex-col min-h-screen bg-muted text-foreground max-w-md mx-auto border-x shadow-sm">

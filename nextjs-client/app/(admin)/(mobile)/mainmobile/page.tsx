@@ -8,10 +8,6 @@ import {
     RotateCcw,
     ClipboardList,
     Bird,
-    MapPin,
-    PackagePlus,
-    PackageSearch,
-    Settings2,
     Power,
     Bell
 } from "lucide-react";
@@ -19,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppStore } from "@/store/use-app-store";
-import { useEffect, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,14 +38,6 @@ const menuItems = [
 export default function MainMenuPage() {
     const user = useAppStore((state) => state.user);
     const router = useRouter();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setMounted(true), 0);
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (!mounted) return null;
 
     return (
         <div className="flex flex-col min-h-screen bg-muted/30 text-foreground max-w-md mx-auto border-x shadow-2xl relative overflow-hidden">
@@ -96,8 +83,8 @@ export default function MainMenuPage() {
                         </span>
                     </div>
                 </div>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
-                    <Bell className="h-6 w-6" />
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" aria-label="알림">
+                    <Bell className="h-6 w-6" aria-hidden="true" />
                     <span className="absolute top-2 right-2 h-2.5 w-2.5 bg-destructive border-2 border-background rounded-full animate-pulse" />
                 </Button>
             </header>

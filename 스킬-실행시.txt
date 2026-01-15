@@ -1,0 +1,3 @@
+
+
+프로젝트 전체에 대해 React Best Practices의 모든 규칙을 적용해서 종합 진단해줘
