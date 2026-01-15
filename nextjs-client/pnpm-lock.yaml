@@ -83,6 +83,12 @@ importers:
       react-hook-form:
         specifier: ^7.69.0
         version: 7.69.0(react@19.2.0)
+      so-grid-core:
+        specifier: file:libs/so-grid-core-0.1.0.tgz
+        version: file:libs/so-grid-core-0.1.0.tgz
+      so-grid-react:
+        specifier: file:libs/so-grid-react-0.1.0.tgz
+        version: file:libs/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:libs/so-grid-core-0.1.0.tgz)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -2474,6 +2480,18 @@ packages:
   side-channel@1.1.0:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
+
+  so-grid-core@file:libs/so-grid-core-0.1.0.tgz:
+    resolution: {integrity: sha512-+rjclNx26Zxt7tKUVY+p6pMYPmJvlBRVZCDQKNF8Pw1XAtDkcAARZWMmqPD7Jo/FY60NmJSJ3LNfcatWsb/ssg==, tarball: file:libs/so-grid-core-0.1.0.tgz}
+    version: 0.1.0
+
+  so-grid-react@file:libs/so-grid-react-0.1.0.tgz:
+    resolution: {integrity: sha512-tnmAhsdcHFsltSQKO8+zUk3rFVNnG7RK1Yfj4DxVduu/y+ngpjl5MDGR06ySTuI7g/I5NbEOeZTZxKLHAmji1g==, tarball: file:libs/so-grid-react-0.1.0.tgz}
+    version: 0.1.0
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
+      so-grid-core: '>=0.1.0'
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -5180,6 +5198,17 @@ snapshots:
       side-channel-list: 1.0.0
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
+
+  so-grid-core@file:libs/so-grid-core-0.1.0.tgz:
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+
+  so-grid-react@file:libs/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:libs/so-grid-core-0.1.0.tgz):
+    dependencies:
+      '@tanstack/react-table': 8.21.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+      so-grid-core: file:libs/so-grid-core-0.1.0.tgz
 
   source-map-js@1.2.1: {}
 
