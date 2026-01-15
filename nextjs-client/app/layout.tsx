@@ -32,7 +32,6 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <QueryProvider>
           <ToastProvider>
-
             {children}
           </ToastProvider>
         </QueryProvider>
