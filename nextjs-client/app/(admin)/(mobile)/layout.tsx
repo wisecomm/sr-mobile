@@ -10,7 +10,7 @@ export default function AdminLayout({
     return (
         <div className="flex min-h-screen w-full bg-muted/40">
             <div className="flex flex-col flex-1 min-h-screen">
-                <main className="flex-1 bg-muted/50 dark:bg-card/50 py-4 px-6 overflow-y-auto">
+                <main className="flex-1 bg-muted/50 dark:bg-card/50">
                     {children}
                 </main>
             </div>

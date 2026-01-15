@@ -22,10 +22,10 @@ import { useAppStore } from "@/store/use-app-store";
 import { useEffect, useState } from "react";
 
 const menuItems = [
-    { title: "재고 스캔", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
+    { title: "재고 입고", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
     { title: "재고 조회", icon: Scan, color: "text-primary", href: "/stock/item" },
     { title: "재고 출고", icon: Boxes, color: "text-foreground", href: "/stock/outbound" },
-    { title: "재고 업무", icon: RotateCcw, color: "text-foreground", href: "/return-task" },
+    { title: "재고 업무", icon: RotateCcw, color: "text-foreground", href: "/stock-tab" },
     { title: "스캔 작업", icon: ClipboardList, color: "text-foreground", href: "/scan-work" },
     { title: "Stock Eagle", icon: Bird, color: "text-foreground", href: "/stock-eagle" },
     { title: "로케이션 관리", icon: MapPin, color: "text-foreground", href: "/location-management" },
