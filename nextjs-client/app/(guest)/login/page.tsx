@@ -98,7 +98,9 @@ function Login() {
         }
 
         setUser(loginResult.data.user);
+
         router.replace('/mainmenu', { scroll: false });
+        router.replace('/mainmobile', { scroll: false });
       } catch (error: unknown) {
         console.error("onSubmit error:", error);
         toast({
