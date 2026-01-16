@@ -2532,11 +2532,11 @@ packages:
     engines: {node: '>= 10'}
 
   so-grid-core@file:libs/so-grid-core-0.1.0.tgz:
-    resolution: {integrity: sha512-+rjclNx26Zxt7tKUVY+p6pMYPmJvlBRVZCDQKNF8Pw1XAtDkcAARZWMmqPD7Jo/FY60NmJSJ3LNfcatWsb/ssg==, tarball: file:libs/so-grid-core-0.1.0.tgz}
+    resolution: {integrity: sha512-B9rQPGv9JXEjF2Xr/DjFQXvrUWNjdTCxdFJ7Yqh6TfSheMrzpuvFV97ZUedBRFV/hEm7zuWBIwxDIOWiIEugcQ==, tarball: file:libs/so-grid-core-0.1.0.tgz}
     version: 0.1.0
 
   so-grid-react@file:libs/so-grid-react-0.1.0.tgz:
-    resolution: {integrity: sha512-tnmAhsdcHFsltSQKO8+zUk3rFVNnG7RK1Yfj4DxVduu/y+ngpjl5MDGR06ySTuI7g/I5NbEOeZTZxKLHAmji1g==, tarball: file:libs/so-grid-react-0.1.0.tgz}
+    resolution: {integrity: sha512-X5A/gfjvC1QNu3zOpxcaDQU4zNBkazlGZmp3wEMaadQNfxAT8aAdnraU0WVDQRMZgFqZCB8Dgm0wqzQeikegdA==, tarball: file:libs/so-grid-react-0.1.0.tgz}
     version: 0.1.0
     peerDependencies:
       react: '>=17.0.0'

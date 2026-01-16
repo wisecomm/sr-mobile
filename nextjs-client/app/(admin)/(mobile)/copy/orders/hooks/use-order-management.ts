@@ -10,10 +10,12 @@ import {
 } from './use-order-query';
 
 import { useState, useCallback, useEffect } from 'react';
-import { PaginationState } from '@tanstack/react-table';
 import { useToast } from '@/hooks/use-toast';
 import { OrderDetail } from '../types';
 import { formatDate } from '@/components/common';
+//import { PaginationState } from '@tanstack/react-table';
+import { PaginationState } from "so-grid-core";
+
 
 /**
  * 검색 파라미터
@@ -30,7 +32,7 @@ export interface OrderManagementSearchParams {
 export interface UseOrderManagementReturn {
     // 데이터
     orders: OrderDetail[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -57,7 +59,12 @@ export interface UseOrderManagementReturn {
 /**
  * 주문 관리 훅
  */
-export function useOrderManagement(): UseOrderManagementReturn {
+export interface UseOrderManagementOptions {
+    initialSearch?: Partial<OrderManagementSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
+export function useOrderManagement(options: UseOrderManagementOptions = {}): UseOrderManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
@@ -65,12 +72,14 @@ export function useOrderManagement(): UseOrderManagementReturn {
         custNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
+        ...options.initialSearch,
     });
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
@@ -189,7 +198,7 @@ export function useOrderManagement(): UseOrderManagementReturn {
 
     return {
         orders: ordersData?.list || [],
-        totalPages: ordersData?.pages || 0,
+        totalRows: ordersData?.total || 0,
         isLoading,
         pagination,
         onPaginationChange: setPagination,
