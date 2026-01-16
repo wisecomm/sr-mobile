@@ -82,15 +82,40 @@ export default function OrdersPage() {
      * Edit Button Handler (Toolbar)
      */
     const handleEdit = React.useCallback(() => {
-        return;
-    }, []);
+        // API를 통해 선택된 행들 가져오기
+        const selectedRows = gridApiRef.current?.getSelectedRows();
+
+        if (!selectedRows || selectedRows.length === 0) {
+            toast({
+                title: "알림",
+                description: "수정할 주문을 하나만 선택해주세요.",
+                variant: "default",
+            });
+            return;
+        }
+
+        const selectedData = selectedRows[0];
+        openDialog(selectedData);
+    }, [toast, openDialog]);
 
     /**
      * Delete Button Handler (Toolbar)
      */
     const handleDeleteClick = React.useCallback(async () => {
-        return;
-    }, []);
+        const selectedRows = gridApiRef.current?.getSelectedRows();
+
+        if (!selectedRows || selectedRows.length === 0) {
+            toast({
+                title: "알림",
+                description: "삭제할 주문을 선택해주세요.",
+                variant: "default",
+            });
+            return;
+        }
+
+        const orderIds = selectedRows.map(row => row.orderId);
+        await handleDelete(orderIds);
+    }, [handleDelete, toast]);
 
     return (
         <div className="w-full space-y-6">

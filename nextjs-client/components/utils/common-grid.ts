@@ -20,7 +20,7 @@ export class CommonGrid {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
-        }).format(date);
+        }).format(date).replace(/\.$/, '');
     }
 
     static formatDateTime({ value }: { value: string | Date }) {

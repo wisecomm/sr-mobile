@@ -13,35 +13,38 @@ export const getColumns = (): SOColumnDef<OrderDetail>[] => [
     {
         field: 'orderId',
         headerName: '주문번호',
-        maxWidth: 120,
+        maxWidth: 100,
         sortable: true,
     },
     {
         field: 'custNm',
         headerName: '고객명',
-        maxWidth: 150,
+        maxWidth: 130,
         sortable: true,
     },
     {
         field: 'orderNm',
         headerName: '주문명',
-        maxWidth: 200,
+        maxWidth: 150,
     },
     {
         field: 'orderStatus',
         headerName: '상태',
-        maxWidth: 100,
+        maxWidth: 50,
     },
     {
         field: 'orderAmt',
         headerName: '금액',
-        maxWidth: 120,
+        valueFormatter: CommonGrid.formatNumber,
+        cellStyle: { textAlign: 'right' },
+        maxWidth: 80,
     },
     {
         field: 'orderDate',
         headerName: '주문일시',
-        maxWidth: 180,
         valueFormatter: CommonGrid.formatDate,
+        cellStyle: { textAlign: 'center' },
+        maxWidth: 80,
     },
 
 ];
