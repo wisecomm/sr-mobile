@@ -23,7 +23,8 @@ public class OrderService {
 
     private final OrderMapper orderMapper;
 
-    public PageResponse<Order> getAllOrders(int page, int size, String custNm, String startDate, String endDate) {
+    public PageResponse<Order> getAllOrders(int page, int size, String custNm, String startDate, String endDate,
+            String sort) {
         PageHelper.startPage(page, size);
 
         if (startDate != null && !startDate.isEmpty()) {
@@ -33,7 +34,26 @@ public class OrderService {
             endDate = endDate + " 23:59:59";
         }
 
-        List<Order> orders = orderMapper.findAll(custNm, startDate, endDate);
+        // Convert sort format if needed (e.g. from "camelCase,asc" to "snake_case asc")
+        // Assuming sort comes as "colId,direction"
+        String sortClause = null;
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            if (parts.length == 2) {
+                // Simple conversion: camelCase to snake_case mapping could be done here if
+                // needed
+                // For now, assume colId matches DB column or rely on frontend to send correct
+                // column name
+                // To be safe against SQL injection, validate parts[1] is asc/desc
+                String col = parts[0];
+                String dir = parts[1].toLowerCase();
+                if ("asc".equals(dir) || "desc".equals(dir)) {
+                    sortClause = camelToSnake(col) + " " + dir;
+                }
+            }
+        }
+
+        List<Order> orders = orderMapper.findAll(custNm, startDate, endDate, sortClause);
         PageInfo<Order> pageInfo = new PageInfo<>(orders);
 
         return PageResponse.of(pageInfo, orders);
@@ -69,9 +89,12 @@ public class OrderService {
                 .custNm(request.getCustNm())
                 .orderNm(request.getOrderNm())
                 .orderStatus(request.getOrderStatus())
-                .orderAmt(request.getOrderAmt())
-                .orderDate(request.getOrderDate())
                 .useYn(request.getUseYn() != null ? request.getUseYn() : "1")
                 .build();
+    }
+
+    private String camelToSnake(String str) {
+        String result = str.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+        return result;
     }
 }

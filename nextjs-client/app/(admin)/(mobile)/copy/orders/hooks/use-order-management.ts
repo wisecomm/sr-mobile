@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { OrderDetail } from '../types';
 import { formatDate } from '@/components/common';
 //import { PaginationState } from '@tanstack/react-table';
-import { PaginationState } from "so-grid-core";
+import { PaginationState, SortModel } from "so-grid-core";
 
 
 /**
@@ -42,6 +42,7 @@ export interface UseOrderManagementReturn {
     // 검색
     searchParams: OrderManagementSearchParams;
     onSearch: (params: Partial<OrderManagementSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -75,6 +76,8 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         ...options.initialSearch,
     });
 
+    const [sort, setSort] = useState<string[] | undefined>(undefined);
+
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -90,6 +93,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const { data: ordersData, isLoading, isError, error } = useOrders({
         page: pagination.pageIndex,
         size: pagination.pageSize,
+        sort,
         ...searchParams,
     });
 
@@ -109,6 +113,12 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
 
     const onSearch = useCallback((params: Partial<OrderManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
@@ -204,6 +214,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         onPaginationChange: setPagination,
         searchParams,
         onSearch,
+        onSortChange,
         dialogOpen,
         selectedOrder,
         openDialog,

@@ -42,7 +42,14 @@
                 AND sys_insert_dtm &lt;= #{endDate}::timestamp
             </if>
         </where>
-        ORDER BY sys_insert_dtm DESC
+        <choose>
+            <when test="sort != null and sort != ''">
+                ORDER BY ${sort}
+            </when>
+            <otherwise>
+                ORDER BY sys_insert_dtm DESC
+            </otherwise>
+        </choose>
     </select>
 
     <insert id="insert">

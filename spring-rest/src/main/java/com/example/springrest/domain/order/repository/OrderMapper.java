@@ -10,7 +10,8 @@ import java.util.List;
 public interface OrderMapper {
     List<Order> findAll(@Param("custNm") String custNm,
             @Param("startDate") String startDate,
-            @Param("endDate") String endDate);
+            @Param("endDate") String endDate,
+            @Param("sort") String sort);
 
     Order findById(@Param("orderId") String orderId);
 

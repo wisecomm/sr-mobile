@@ -21,8 +21,9 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String custNm,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-        return ApiResponse.success(orderService.getAllOrders(page, size, custNm, startDate, endDate));
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String sort) {
+        return ApiResponse.success(orderService.getAllOrders(page, size, custNm, startDate, endDate, sort));
     }
 
     @GetMapping("/{orderId}")
