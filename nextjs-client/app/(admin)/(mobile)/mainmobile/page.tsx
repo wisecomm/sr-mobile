@@ -32,7 +32,7 @@ const menuItems = [
     { title: "재고 출고", icon: Boxes, color: "text-foreground", href: "/stock/outbound" },
     { title: "탭 업무", icon: RotateCcw, color: "text-foreground", href: "/stock-tab" },
     { title: "스캔 작업", icon: ClipboardList, color: "text-foreground", href: "/stock-test/item" },
-    { title: "Stock Eagle", icon: Bird, color: "text-foreground", href: "/stock-eagle" },
+    { title: "재고 그리드", icon: Bird, color: "text-foreground", href: "/copy/orders" },
 ];
 
 export default function MainMenuPage() {

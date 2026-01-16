@@ -17,20 +17,9 @@ export const getColumns = (): SOColumnDef<OrderDetail>[] => [
         sortable: true,
     },
     {
-        field: 'custNm',
-        headerName: '고객명',
-        maxWidth: 130,
-        sortable: true,
-    },
-    {
         field: 'orderNm',
         headerName: '주문명',
         maxWidth: 150,
-    },
-    {
-        field: 'orderStatus',
-        headerName: '상태',
-        maxWidth: 50,
     },
     {
         field: 'orderAmt',

@@ -56,16 +56,6 @@ export function DataTableToolbar({
             <CardContent className="p-4 flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex flex-1 items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">고객명</span>
-                        <Input
-                            placeholder="고객명 입력"
-                            value={custNm}
-                            onChange={(event) => setCustNm(event.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="w-[150px] lg:w-[200px]"
-                        />
-                    </div>
-                    <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">주문일</span>
                         <DateInput
                             value={startDate}
@@ -79,6 +69,9 @@ export function DataTableToolbar({
                             onKeyDown={handleKeyDown}
                         />
                     </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
                     <Button
                         variant="outline"
                         onClick={handleSearch}
@@ -88,9 +81,6 @@ export function DataTableToolbar({
                         <Search className="mr-2 h-4 w-4" />
                         조회
                     </Button>
-                </div>
-
-                <div className="flex items-center space-x-2">
                     <ActionButtons
                         onAdd={onAdd}
                         onEdit={onEdit}

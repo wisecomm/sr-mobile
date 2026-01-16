@@ -8,6 +8,8 @@ import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, History } from "lucide-react";
+import { useRouter } from "next/navigation";
 import 'so-grid-react/styles.css';
 import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
 import { PaginationState, SortModel } from "so-grid-core";
@@ -15,6 +17,7 @@ import { SOGrid, SOGridApi } from "so-grid-react";
 
 export default function OrdersPage() {
     const { toast } = useToast();
+    const router = useRouter();
 
     // Use management hook
     const {
@@ -119,6 +122,21 @@ export default function OrdersPage() {
 
     return (
         <div className="w-full space-y-6">
+            {/* Header */}
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 shrink-0 z-20">
+                <button
+                    onClick={() => router.replace('/mainmobile')}
+                    className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors -ml-2"
+                >
+                    <ArrowLeft className="w-6 h-6 text-slate-900" />
+                </button>
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight flex-1 text-center">출고 처리</h1>
+                <div className="w-12 flex items-center justify-end -mr-2">
+                    <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
+                        <History className="w-6 h-6 text-slate-900" />
+                    </button>
+                </div>
+            </header>
             <SearchPageLayout>
                 <DataTableToolbar
                     onAdd={handleAdd}
@@ -129,21 +147,21 @@ export default function OrdersPage() {
                     initialStartDate={searchParams.startDate}
                     initialEndDate={searchParams.endDate}
                 />
-                <SOGrid
-                    rowData={orders}
-                    columnDefs={columns}
-                    defaultColDef={DEFAULT_COL_DEF}
-                    pagination={true}
-                    PaginationComponent={CustomPaginationM}
-                    serverSide={true}
-                    totalRows={totalRows}
-                    paginationPageSize={5}
-                    onPaginationChange={handlePaginationChange}
-                    loading={isLoading}
-                    onSortChange={handleSortChange}
-                    onGridReady={onGridReady}
-                />
             </SearchPageLayout>
+            <SOGrid
+                rowData={orders}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPaginationM}
+                serverSide={true}
+                totalRows={totalRows}
+                paginationPageSize={5}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+            />
 
             <InputDialog
                 open={dialogOpen}
