@@ -2,7 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BoardsMaster } from "./use-board-master-query";
+import { BoardsMaster } from '../types';
 
 const boardFormSchema = z.object({
     brdId: z.string().min(1, "게시판 코드는 필수입니다.").max(20, "게시판 코드는 20자 이하여야 합니다."),

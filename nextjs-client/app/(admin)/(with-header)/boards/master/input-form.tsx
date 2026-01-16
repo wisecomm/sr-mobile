@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useInputForm } from "./hooks/use-input-form";
-import { BoardsMaster } from "./hooks/use-board-master-query";
+import { BoardsMaster } from './types';
 
 interface InputFormProps {
     board?: BoardsMaster | null;

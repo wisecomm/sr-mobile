@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { BoardsBoard } from "./hooks/use-board-query";
+import { BoardsBoard } from './types';
 import { TextCell, DateCell, NumberCell } from "@/components/data-table/cells";
 import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
 

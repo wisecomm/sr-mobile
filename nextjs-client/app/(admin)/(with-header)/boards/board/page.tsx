@@ -10,7 +10,7 @@ import { useDataTable } from "@/components/data-table/use-data-table";
 import { useSearchParams } from "next/navigation";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardManagement } from "./hooks/use-board-management";
-import { BoardsBoardSearchParams } from "./hooks/use-board-query";
+import { BoardsBoardSearchParams } from './types';
 
 export default function BoardsPage() {
     return (

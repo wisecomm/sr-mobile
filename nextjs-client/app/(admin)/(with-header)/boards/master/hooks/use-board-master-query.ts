@@ -8,33 +8,8 @@ import { apiClient } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
 import { createPaginatedQuery, createQuery, createMutation } from '@/hooks/query/factory';
 
-/**
- * 게시판 마스터 타입
- */
-export interface BoardsMaster {
-    brdId: string;
-    brdNm: string;
-    brdDesc?: string;
-    replyUseYn: string;
-    fileUseYn: string;
-    fileMaxCnt: number;
-    useYn: string;
-    sysInsertDtm?: string;
-    sysInsertUserId?: string;
-    sysUpdateDtm?: string;
-    sysUpdateUserId?: string;
-}
+import { BoardsMaster, BoardsMasterSearchParams } from '../types';
 
-/**
- * 게시판 마스터 검색 파라미터
- */
-export interface BoardsMasterSearchParams {
-    page: number;
-    size: number;
-    brdNm?: string;
-    startDate?: string;
-    endDate?: string;
-}
 
 /**
  * API 함수들

@@ -9,9 +9,8 @@ import {
     useCreateBoardsBoard,
     useUpdateBoardsBoard,
     useDeleteBoardsBoard,
-    BoardsBoard,
-    BoardsBoardSearchParams,
 } from './use-board-query';
+import { BoardsBoard, BoardsBoardSearchParams } from '../types';
 import { useToast } from '@/hooks/use-toast';
 
 /**

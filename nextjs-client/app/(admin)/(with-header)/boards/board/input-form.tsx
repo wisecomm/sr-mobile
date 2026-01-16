@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useInputForm } from "./hooks/use-input-form";
-import { BoardsBoard } from "./hooks/use-board-query";
+import { BoardsBoard } from './types';
 
 export interface InputFormProps {
     board?: BoardsBoard | null;

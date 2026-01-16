@@ -1,8 +1,10 @@
+
 import { useEffect, useState, useCallback } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BoardsBoard, BoardsBoardFile, useBoardsBoardDetail, boardsBoardApi } from "./use-board-query";
+import { BoardsBoard, BoardsBoardFile } from '../types';
+import { useBoardsBoardDetail, boardsBoardApi } from "./use-board-query";
 
 const boardFormSchema = z.object({
     brdId: z.string().min(1, "게시판을 선택해주세요."),

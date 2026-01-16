@@ -9,9 +9,8 @@ import {
     useCreateBoardsMaster,
     useUpdateBoardsMaster,
     useDeleteBoardsMaster,
-    BoardsMaster,
-    BoardsMasterSearchParams,
 } from './use-board-master-query';
+import { BoardsMaster, BoardsMasterSearchParams } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/components/common';
 

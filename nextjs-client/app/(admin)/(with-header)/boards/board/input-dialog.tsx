@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BoardsBoard } from "./hooks/use-board-query";
+import { BoardsBoard } from './types';
 import {
     Dialog,
     DialogContent,
