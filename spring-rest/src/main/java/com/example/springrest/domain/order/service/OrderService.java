@@ -89,6 +89,8 @@ public class OrderService {
                 .custNm(request.getCustNm())
                 .orderNm(request.getOrderNm())
                 .orderStatus(request.getOrderStatus())
+                .orderAmt(request.getOrderAmt())
+                .orderDate(request.getOrderDate())
                 .useYn(request.getUseYn() != null ? request.getUseYn() : "1")
                 .build();
     }
