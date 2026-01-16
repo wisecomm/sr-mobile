@@ -29,7 +29,6 @@ export interface UseBoardManagementReturn {
     // 검색
     searchParams: BoardsBoardSearchParams;
     onSearch: (params: Partial<BoardsBoardSearchParams>) => void;
-    setBoardId: (brdId: string) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -50,9 +49,8 @@ export interface UseBoardManagementReturn {
 export function useBoardManagement(initialBrdId?: string): UseBoardManagementReturn {
     const { toast } = useToast();
 
-    // 검색 상태
-    const [searchParams, setSearchParams] = useState<BoardsBoardSearchParams>({
-        brdId: initialBrdId || '',
+    // 검색 상태 (brdId는 props로 관리되므로 제외)
+    const [localSearchParams, setLocalSearchParams] = useState<Omit<BoardsBoardSearchParams, 'brdId'>>({
         page: 0,
         size: 10,
     });
@@ -67,9 +65,15 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedPost, setSelectedPost] = useState<BoardsBoard | null>(null);
 
+    // 실제 API 호출에 사용될 파라미터 구성
+    const queryParams: BoardsBoardSearchParams = {
+        ...(localSearchParams as Omit<BoardsBoardSearchParams, 'brdId'>),
+        brdId: initialBrdId || '',
+    } as BoardsBoardSearchParams;
+
     // API 훅
     const { data: postsData, isLoading, isError, error } = useBoardsBoardList({
-        ...searchParams,
+        ...queryParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
     });
@@ -89,18 +93,14 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
     const deleteMutation = useDeleteBoardsBoard();
 
     /**
-     * 게시판 ID 설정
-     */
-    const setBoardId = useCallback((brdId: string) => {
-        setSearchParams((prev: BoardsBoardSearchParams) => ({ ...prev, brdId }));
-        setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
-    }, []);
-
-    /**
      * 검색 핸들러
      */
     const handleSearch = useCallback((params: Partial<BoardsBoardSearchParams>) => {
-        setSearchParams((prev: BoardsBoardSearchParams) => ({ ...prev, ...params }));
+        // brdId를 제외한 나머지 파라미터만 업데이트
+        const newParams = { ...params };
+        delete newParams.brdId;
+
+        setLocalSearchParams((prev) => ({ ...prev, ...newParams }));
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
     }, []);
 
@@ -251,9 +251,8 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
         isLoading,
         pagination,
         onPaginationChange: setPagination,
-        searchParams,
+        searchParams: queryParams,
         onSearch: handleSearch,
-        setBoardId,
         dialogOpen,
         selectedPost,
         openDialog,

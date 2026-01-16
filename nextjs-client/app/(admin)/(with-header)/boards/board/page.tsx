@@ -34,7 +34,7 @@ function BoardsContent() {
         onPaginationChange,
         searchParams,
         onSearch,
-        setBoardId,
+        // setBoardId, // Unused
         dialogOpen,
         selectedPost,
         openDialog,
@@ -42,13 +42,6 @@ function BoardsContent() {
         handleSubmit,
         handleDelete,
     } = useBoardManagement(brdIdParam);
-
-    // Sync URL param with management hook
-    React.useEffect(() => {
-        if (brdIdParam && searchParams.brdId !== brdIdParam) {
-            setBoardId(brdIdParam);
-        }
-    }, [brdIdParam, searchParams.brdId, setBoardId]);
 
     const columns = React.useMemo(() => getColumns(), []);
 

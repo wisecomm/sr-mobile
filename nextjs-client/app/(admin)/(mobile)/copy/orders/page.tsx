@@ -49,21 +49,12 @@ export default function OrdersPage() {
         headerStyle: { textAlign: 'center' as const },
         resizable: true,
     };
-    // 이 부분은 적용되야 소트, 검색때 페이지가 처리가됨
+
+    // 그리드 API 참조
     const gridApiRef = React.useRef<SOGridApi<OrderDetail> | null>(null);
     const onGridReady = React.useCallback((api: SOGridApi<OrderDetail>) => {
         gridApiRef.current = api;
     }, []);
-
-    // paginationState 변경 시 그리드 페이지 동기화
-    React.useEffect(() => {
-        if (gridApiRef.current && typeof gridApiRef.current.setPage === 'function') {
-            // 현재 그리드의 페이지와 state가 다를 때만 호출하여 무한루프 방지
-            if (gridApiRef.current.getPage() !== pagination.pageIndex) {
-                gridApiRef.current.setPage(pagination.pageIndex);
-            }
-        }
-    }, [pagination.pageIndex]);
 
 
     const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
@@ -161,6 +152,7 @@ export default function OrdersPage() {
                 loading={isLoading}
                 onSortChange={handleSortChange}
                 onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
             />
 
             <InputDialog
