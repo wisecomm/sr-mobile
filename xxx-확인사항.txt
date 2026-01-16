@@ -62,3 +62,8 @@ Step 4: User Frontend (주문 시 쿠폰 적용) 구현
 Phase 3: Verification (검증)
 테스트 코드를 작성하거나, 실제 시나리오대로 동작하는지 확인 후 walkthrough.md에 결과를 정리하여 보고합니다.
 바로 시작해볼까요? 지금 바로 **"쿠폰 관리 시스템 기획해줘"**라고 말씀하시고, 생각하고 계신 **간략한 요구사항(예: 정률/정액 할인 필요, 상품별 쿠폰 등)**을 덧붙여 주시면 제가 Planning 단계부터 시작하겠습니다.
+
+
+# 두 패키지를 함께 설치해야 의존성이 올바르게 연결됩니다
+pnpm install ./libs/so-grid-core-0.1.0.tgz ./libs/so-grid-react-0.1.0.tgz
+   
