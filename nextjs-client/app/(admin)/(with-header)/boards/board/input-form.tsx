@@ -2,19 +2,14 @@
 
 import * as React from "react";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { FileUpload } from "@/components/ui/file-upload";
+    Button,
+    Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+    Input,
+    Textarea,
+    Switch,
+    FileUpload,
+} from "@/components/ui";
 import { useInputForm } from "./hooks/use-input-form";
 import { BoardsBoard } from './types';
 
