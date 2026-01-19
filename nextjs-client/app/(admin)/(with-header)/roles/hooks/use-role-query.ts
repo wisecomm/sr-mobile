@@ -16,6 +16,8 @@ export interface RoleSearchParams {
     page: number;
     size: number;
     searchId?: string;
+    sort?: string[];
+    [key: string]: unknown;
 }
 
 /**
@@ -25,11 +27,12 @@ const BASE_URL = '/v1/mgmt/roles';
 
 const roleApi = {
     search: (params: RoleSearchParams): Promise<ApiResponse<PageResponse<RoleInfo>>> => {
-        const queryParams: Record<string, string | number> = {
+        const queryParams: Record<string, string | number | string[]> = {
             page: params.page + 1,
             size: params.size,
         };
         if (params.searchId) queryParams.searchId = params.searchId;
+        if (params.sort) queryParams.sort = params.sort;
 
         return apiClient.get<PageResponse<RoleInfo>>(BASE_URL, queryParams);
     },
@@ -65,8 +68,8 @@ const roleApi = {
 export const roleKeys = {
     all: ['roles'] as const,
     lists: () => [...roleKeys.all, 'list'] as const,
-    list: (page: number, size: number, searchId?: string) =>
-        [...roleKeys.lists(), { page, size, searchId }] as const,
+    list: (page: number, size: number, searchId?: string, sort?: string[]) =>
+        [...roleKeys.lists(), { page, size, searchId, sort }] as const,
     detail: (id: string) => [...roleKeys.all, 'detail', id] as const,
     menus: (id: string) => [...roleKeys.detail(id), 'menus'] as const,
 };
@@ -78,9 +81,9 @@ export const roleKeys = {
 // 역할 목록 조회
 export const useRoles = createPaginatedQuery<
     PageResponse<RoleInfo>,
-    { page: number; size: number; searchId?: string }
+    { page: number; size: number; searchId?: string; sort?: string[] }
 >({
-    queryKey: (params) => roleKeys.list(params.page, params.size, params.searchId),
+    queryKey: (params) => roleKeys.list(params.page, params.size, params.searchId, params.sort),
     queryFn: (params) => roleApi.search(params),
 });
 

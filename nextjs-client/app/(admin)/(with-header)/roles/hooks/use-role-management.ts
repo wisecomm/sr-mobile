@@ -15,6 +15,7 @@ import {
 } from './use-role-query';
 import { useToast } from '@/hooks/use-toast';
 import { RoleInfo } from '../types';
+import { SortModel } from 'so-grid-core';
 
 /**
  * 역할 검색 파라미터
@@ -29,7 +30,7 @@ export interface RoleManagementSearchParams {
 export interface UseRoleManagementReturn {
     // 데이터
     roles: RoleInfo[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -39,6 +40,7 @@ export interface UseRoleManagementReturn {
     // 검색
     searchParams: RoleManagementSearchParams;
     onSearch: (params: Partial<RoleManagementSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -53,21 +55,30 @@ export interface UseRoleManagementReturn {
     handleSubmit: (data: Partial<RoleInfo>, menuIds: string[]) => Promise<void>;
 }
 
+export interface UseRoleManagementOptions {
+    initialSearch?: Partial<RoleManagementSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
 /**
  * 역할 관리 훅
  */
-export function useRoleManagement(): UseRoleManagementReturn {
+export function useRoleManagement(options: UseRoleManagementOptions = {}): UseRoleManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
     const [searchParams, setSearchParams] = useState<RoleManagementSearchParams>({
         searchId: undefined,
+        ...options.initialSearch,
     });
+
+    const [sort, setSort] = useState<string[] | undefined>(undefined);
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
@@ -78,7 +89,8 @@ export function useRoleManagement(): UseRoleManagementReturn {
     const { data: rolesData, isLoading, isError, error } = useRoles({
         page: pagination.pageIndex,
         size: pagination.pageSize,
-        searchId: searchParams.searchId,
+        sort,
+        ...searchParams,
     });
 
     useEffect(() => {
@@ -102,6 +114,12 @@ export function useRoleManagement(): UseRoleManagementReturn {
     const onSearch = useCallback((params: Partial<RoleManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
@@ -194,18 +212,11 @@ export function useRoleManagement(): UseRoleManagementReturn {
      */
     const handleDelete = useCallback(async (roleIds: string[]) => {
         if (roleIds.length === 0) {
-            toast({
-                title: '알림',
-                description: '삭제할 권한을 선택해주세요.',
-                variant: 'default',
-            });
+            toast({ title: '알림', description: '삭제할 권한을 선택해주세요.', variant: 'default', });
             return;
         }
 
-        const confirmed = window.confirm(
-            `선택한 ${roleIds.length}개의 권한을 삭제하시겠습니까?`
-        );
-
+        const confirmed = window.confirm(`선택한 ${roleIds.length}개의 권한을 삭제하시겠습니까?`);
         if (!confirmed) return;
 
         const results = await Promise.allSettled(
@@ -213,26 +224,10 @@ export function useRoleManagement(): UseRoleManagementReturn {
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.filter(r => r.status === 'rejected').length;
-
-        if (failed === 0) {
-            toast({
-                title: '삭제 완료',
-                description: `${succeeded}개의 권한이 삭제되었습니다.`,
-                variant: 'success',
-            });
-        } else if (succeeded === 0) {
-            toast({
-                title: '삭제 실패',
-                description: '권한 삭제에 실패했습니다.',
-                variant: 'destructive',
-            });
+        if (succeeded === roleIds.length) {
+            toast({ title: '삭제 완료', description: `${succeeded}개의 권한이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({
-                title: '부분 삭제',
-                description: `${succeeded}개 성공, ${failed}개 실패`,
-                variant: 'destructive',
-            });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${roleIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
     }, [deleteRoleMutation, toast]);
 
@@ -250,24 +245,17 @@ export function useRoleManagement(): UseRoleManagementReturn {
     return {
         // 데이터
         roles: rolesData?.list || [],
-        totalPages: rolesData?.pages || 0,
+        totalRows: rolesData?.total || 0,
         isLoading,
-
-        // 페이지네이션
         pagination,
         onPaginationChange: setPagination,
-
-        // 검색
         searchParams,
         onSearch,
-
-        // 다이얼로그
+        onSortChange,
         dialogOpen,
         selectedRole,
         openDialog,
         closeDialog,
-
-        // CRUD
         handleCreate,
         handleUpdate,
         handleDelete,

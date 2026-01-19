@@ -27,14 +27,14 @@ const BASE_URL = '/v1/mgmt/orders';
 
 const orderApi = {
     search: (params: OrderSearchParams): Promise<ApiResponse<PageResponse<OrderDetail>>> => {
-        const queryParams: Record<string, string | number> = {
+        const queryParams: Record<string, string | number | string[]> = {
             page: params.page + 1,
             size: params.size,
         };
         if (params.custNm) queryParams.custNm = params.custNm;
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
-        if (params.sort) queryParams.sort = params.sort.join(',');
+        if (params.sort) queryParams.sort = params.sort;
 
         return apiClient.get<PageResponse<OrderDetail>>(BASE_URL, queryParams);
     },

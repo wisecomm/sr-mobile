@@ -8,16 +8,13 @@ import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, History } from "lucide-react";
-import { useRouter } from "next/navigation";
 import 'so-grid-react/styles.css';
-import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
+import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
 
 export default function OrdersPage() {
     const { toast } = useToast();
-    const router = useRouter();
 
     // Use management hook
     const {
@@ -129,7 +126,7 @@ export default function OrdersPage() {
                 columnDefs={columns}
                 defaultColDef={DEFAULT_COL_DEF}
                 pagination={true}
-                PaginationComponent={CustomPaginationM}
+                PaginationComponent={CustomPagination}
                 serverSide={true}
                 totalRows={totalRows}
                 paginationPageSize={5}

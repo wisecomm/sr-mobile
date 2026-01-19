@@ -8,13 +8,16 @@
 
 import * as React from "react";
 import { getColumns } from "./columns";
-import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
-import { useRoleManagement, RoleManagementSearchParams } from "./hooks/use-role-management";
+import { useRoleManagement } from "./hooks/use-role-management";
 import { useToast } from "@/hooks/use-toast";
+import 'so-grid-react/styles.css';
+import { CustomPagination } from "@/components/utils/CustomPagination";
+import { PaginationState, SortModel } from "so-grid-core";
+import { SOGrid, SOGridApi } from "so-grid-react";
+import { RoleInfo } from "./types";
 
 export default function RolesPage() {
     const { toast } = useToast();
@@ -22,10 +25,11 @@ export default function RolesPage() {
     // 모든 비즈니스 로직을 커스텀 훅에서 관리
     const {
         roles,
-        totalPages,
+        totalRows,
         isLoading,
         pagination,
         onPaginationChange,
+        //        searchParams,
         onSearch,
         dialogOpen,
         selectedRole,
@@ -33,20 +37,32 @@ export default function RolesPage() {
         closeDialog,
         handleSubmit,
         handleDelete,
+        onSortChange,
     } = useRoleManagement();
 
     // 테이블 컬럼 설정
     const columns = React.useMemo(() => getColumns(), []);
 
-    // 테이블 인스턴스
-    const table = useDataTable({
-        data: roles,
-        columns,
-        pageCount: totalPages,
-        pagination,
-        onPaginationChange,
-        enableMultiRowSelection: false, // 단일 선택 모드
-    });
+    const DEFAULT_COL_DEF = {
+        headerStyle: { textAlign: 'center' as const },
+        resizable: true,
+    };
+
+    // 그리드 API 참조
+    const gridApiRef = React.useRef<SOGridApi<RoleInfo> | null>(null);
+    const onGridReady = React.useCallback((api: SOGridApi<RoleInfo>) => {
+        gridApiRef.current = api;
+    }, []);
+
+
+    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
+        onPaginationChange(pagination);
+    }, [onPaginationChange]);
+
+    const handleSortChange = React.useCallback((sort: SortModel[]) => {
+        onSortChange(sort);
+    }, [onSortChange]);
+
 
     /**
      * 추가 버튼 핸들러
@@ -56,38 +72,43 @@ export default function RolesPage() {
     }, [openDialog]);
 
     /**
-     * 수정 버튼 핸들러
+     * Edit Button Handler (Toolbar)
      */
     const handleEdit = React.useCallback(() => {
-        const selectedRows = table.getSelectedRowModel().rows;
+        // API를 통해 선택된 행들 가져오기
+        const selectedRows = gridApiRef.current?.getSelectedRows();
 
-        if (selectedRows.length !== 1) {
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "수정할 권한을 하나만 선택해주세요.",
+                description: "수정할 주문을 하나만 선택해주세요.",
                 variant: "default",
             });
             return;
         }
 
-        const role = selectedRows[0].original;
-        openDialog(role);
-    }, [table, toast, openDialog]);
+        const selectedData = selectedRows[0];
+        openDialog(selectedData);
+    }, [toast, openDialog]);
 
     /**
-     * 삭제 버튼 핸들러
+     * Delete Button Handler (Toolbar)
      */
     const handleDeleteClick = React.useCallback(async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const roleIds = selectedRows.map(row => row.original.roleId);
+        const selectedRows = gridApiRef.current?.getSelectedRows();
 
+        if (!selectedRows || selectedRows.length === 0) {
+            toast({
+                title: "알림",
+                description: "삭제할 주문을 선택해주세요.",
+                variant: "default",
+            });
+            return;
+        }
+
+        const roleIds = selectedRows.map(row => row.roleId);
         await handleDelete(roleIds);
-        table.resetRowSelection();
-    }, [table, handleDelete]);
-
-    const handleSearch = (params: Partial<RoleManagementSearchParams>) => {
-        onSearch(params);
-    };
+    }, [handleDelete, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -96,11 +117,25 @@ export default function RolesPage() {
                     onAdd={handleAdd}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
-                    onSearch={handleSearch}
+                    onSearch={onSearch}
                     isLoading={isLoading}
                 />
-                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
+            <SOGrid
+                rowData={roles}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPagination}
+                serverSide={true}
+                totalRows={totalRows}
+                paginationPageSize={5}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
+            />
 
             <InputDialog
                 open={dialogOpen}
