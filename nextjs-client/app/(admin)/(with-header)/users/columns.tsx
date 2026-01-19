@@ -38,7 +38,7 @@ export const getColumns = (): SOColumnDef<UserDetail>[] => [
         headerName: '사용',
         cellStyle: { textAlign: 'center' },
         maxWidth: 60,
-        valueFormatter: ({ value }) => (value === 1 ? 'Y' : 'N'),
+        valueFormatter: ({ value }) => (value === '1' ? 'Y' : 'N'),
     },
     {
         field: 'sysInsertDtm',
