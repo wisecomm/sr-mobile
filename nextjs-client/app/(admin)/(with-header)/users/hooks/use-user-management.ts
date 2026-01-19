@@ -16,6 +16,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { UserDetail } from '../types';
 import { formatDate } from '@/components/common';
+import { SortModel } from 'so-grid-core';
 
 /**
  * 검색 파라미터
@@ -32,7 +33,7 @@ export interface UserManagementSearchParams {
 export interface UseUserManagementReturn {
     // 데이터
     users: UserDetail[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -42,6 +43,7 @@ export interface UseUserManagementReturn {
     // 검색
     searchParams: UserManagementSearchParams;
     onSearch: (params: Partial<UserManagementSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -59,7 +61,12 @@ export interface UseUserManagementReturn {
 /**
  * 사용자 관리 훅
  */
-export function useUserManagement(): UseUserManagementReturn {
+export interface UseUserManagementOptions {
+    initialSearch?: Partial<UserManagementSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
+export function useUserManagement(options: UseUserManagementOptions = {}): UseUserManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
@@ -67,12 +74,16 @@ export function useUserManagement(): UseUserManagementReturn {
         userName: '',
         startDate: '',
         endDate: formatDate(new Date()),
+        ...options.initialSearch,
     });
+
+    const [sort, setSort] = useState<string[] | undefined>(undefined);
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
@@ -83,6 +94,7 @@ export function useUserManagement(): UseUserManagementReturn {
     const { data: usersData, isLoading, isError, error } = useUsers({
         page: pagination.pageIndex,
         size: pagination.pageSize,
+        sort,
         ...searchParams,
     });
 
@@ -109,6 +121,12 @@ export function useUserManagement(): UseUserManagementReturn {
      */
     const onSearch = useCallback((params: Partial<UserManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
@@ -202,18 +220,11 @@ export function useUserManagement(): UseUserManagementReturn {
      */
     const handleDelete = useCallback(async (userIds: string[]) => {
         if (userIds.length === 0) {
-            toast({
-                title: '알림',
-                description: '삭제할 사용자를 선택해주세요.',
-                variant: 'default',
-            });
+            toast({ title: '알림', description: '삭제할 사용자를 선택해주세요.', variant: 'default', });
             return;
         }
 
-        const confirmed = window.confirm(
-            `선택한 ${userIds.length}명의 사용자를 삭제하시겠습니까?`
-        );
-
+        const confirmed = window.confirm(`선택한 ${userIds.length}명의 사용자를 삭제하시겠습니까?`);
         if (!confirmed) return;
 
         const results = await Promise.allSettled(
@@ -221,26 +232,10 @@ export function useUserManagement(): UseUserManagementReturn {
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.filter(r => r.status === 'rejected').length;
-
-        if (failed === 0) {
-            toast({
-                title: '삭제 완료',
-                description: `${succeeded}명의 사용자가 삭제되었습니다.`,
-                variant: 'success',
-            });
-        } else if (succeeded === 0) {
-            toast({
-                title: '삭제 실패',
-                description: '사용자 삭제에 실패했습니다.',
-                variant: 'destructive',
-            });
+        if (succeeded === userIds.length) {
+            toast({ title: '삭제 완료', description: `${succeeded}개의 주문이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({
-                title: '부분 삭제',
-                description: `${succeeded}명 성공, ${failed}명 실패`,
-                variant: 'destructive',
-            });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${userIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
     }, [deleteUserMutation, toast]);
 
@@ -256,26 +251,18 @@ export function useUserManagement(): UseUserManagementReturn {
     }, [selectedUser, handleCreate, handleUpdate]);
 
     return {
-        // 데이터
         users: usersData?.list || [],
-        totalPages: usersData?.pages || 0,
+        totalRows: usersData?.total || 0,
         isLoading,
-
-        // 페이지네이션
         pagination,
         onPaginationChange: setPagination,
-
-        // 검색
         searchParams,
         onSearch,
-
-        // 다이얼로그
+        onSortChange,
         dialogOpen,
         selectedUser,
         openDialog,
         closeDialog,
-
-        // CRUD
         handleCreate,
         handleUpdate,
         handleDelete,

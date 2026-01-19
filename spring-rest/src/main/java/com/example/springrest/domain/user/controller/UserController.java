@@ -32,9 +32,11 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String userName,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String sort) {
+        log.info("getAllUsers called with sort: {}", sort);
         return ResponseEntity
-                .ok(ApiResponse.success(userService.getAllUsers(page, size, userName, startDate, endDate)));
+                .ok(ApiResponse.success(userService.getAllUsers(page, size, userName, startDate, endDate, sort)));
     }
 
     @Operation(summary = "사용자 상세 조회")

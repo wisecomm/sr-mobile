@@ -56,7 +56,14 @@
                 AND u.SYS_INSERT_DTM &lt;= #{endDate}::timestamp
             </if>
         </where>
-        ORDER BY u.USER_ID
+        <choose>
+            <when test="sort != null and sort != ''">
+                ORDER BY ${sort}
+            </when>
+            <otherwise>
+                ORDER BY u.USER_ID ASC
+            </otherwise>
+        </choose>
     </select>
 
     <select id="findRolesByUserId" resultType="com.example.springrest.domain.user.model.enums.UserRole">

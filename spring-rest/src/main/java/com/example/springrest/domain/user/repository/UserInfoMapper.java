@@ -14,7 +14,7 @@ public interface UserInfoMapper {
     UserInfo findById(@Param("userId") String userId);
 
     List<UserInfo> findAll(@Param("userName") String userName, @Param("startDate") String startDate,
-            @Param("endDate") String endDate);
+            @Param("endDate") String endDate, @Param("sort") String sort);
 
     int insert(UserInfo userInfo);
 

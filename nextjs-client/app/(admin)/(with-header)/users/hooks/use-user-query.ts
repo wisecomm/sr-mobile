@@ -18,6 +18,7 @@ export interface UserSearchParams {
     userName?: string;
     startDate?: string;
     endDate?: string;
+    sort?: string[];
     [key: string]: unknown;
 }
 
@@ -28,13 +29,14 @@ const BASE_URL = '/v1/mgmt/users';
 
 const userApi = {
     search: (params: UserSearchParams): Promise<ApiResponse<PageResponse<UserDetail>>> => {
-        const queryParams: Record<string, string | number> = {
+        const queryParams: Record<string, string | number | string[]> = {
             page: params.page + 1,
             size: params.size,
         };
         if (params.userName) queryParams.userName = params.userName;
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
+        if (params.sort) queryParams.sort = params.sort;
 
         return apiClient.get<PageResponse<UserDetail>>(BASE_URL, queryParams);
     },
@@ -70,8 +72,8 @@ const userApi = {
 export const userKeys = {
     all: ['users'] as const,
     lists: () => [...userKeys.all, 'list'] as const,
-    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string) =>
-        [...userKeys.lists(), { page, size, userName, startDate, endDate }] as const,
+    list: (page: number, size: number, userName?: string, startDate?: string, endDate?: string, sort?: string[]) =>
+        [...userKeys.lists(), { page, size, userName, startDate, endDate, sort }] as const,
     detail: (id: string) => [...userKeys.all, 'detail', id] as const,
     roles: (id: string) => [...userKeys.detail(id), 'roles'] as const,
 };
@@ -83,9 +85,9 @@ export const userKeys = {
 // 사용자 목록 조회
 export const useUsers = createPaginatedQuery<
     PageResponse<UserDetail>,
-    { page: number; size: number; userName?: string; startDate?: string; endDate?: string }
+    { page: number; size: number; userName?: string; startDate?: string; endDate?: string; sort?: string[] }
 >({
-    queryKey: (params) => userKeys.list(params.page, params.size, params.userName, params.startDate, params.endDate),
+    queryKey: (params) => userKeys.list(params.page, params.size, params.userName, params.startDate, params.endDate, params.sort),
     queryFn: (params) => userApi.search(params),
 });
 

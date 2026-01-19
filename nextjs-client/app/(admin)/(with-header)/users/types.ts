@@ -1,4 +1,4 @@
-export interface UserDetail {
+export interface User {
     userId: string;
     userEmail: string;
     userMobile: string;
@@ -13,3 +13,5 @@ export interface UserDetail {
     sysInsertDtm?: string;
     sysUpdateDtm?: string;
 }
+
+export type UserDetail = User;

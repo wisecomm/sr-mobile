@@ -7,16 +7,18 @@
  */
 
 import * as React from "react";
+import 'so-grid-react/styles.css';
 import { getColumns } from "./columns";
-import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
 import { useUserManagement } from "./hooks/use-user-management";
 import { useToast } from "@/hooks/use-toast";
 import { useExcel } from "@/hooks/use-excel";
 import { formatDate } from '@/components/common';
+import { PaginationState, SOGrid, SOGridApi, SortModel } from "so-grid-react";
+import { UserDetail } from "./types";
+import { CustomPagination } from "@/components/utils/CustomPagination";
 
 export default function UsersPage() {
     const { toast } = useToast();
@@ -25,7 +27,7 @@ export default function UsersPage() {
     // 모든 비즈니스 로직을 커스텀 훅에서 관리
     const {
         users,
-        totalPages,
+        totalRows,
         isLoading,
         pagination,
         onPaginationChange,
@@ -37,20 +39,22 @@ export default function UsersPage() {
         closeDialog,
         handleSubmit,
         handleDelete,
+        onSortChange,
     } = useUserManagement();
 
     // 테이블 컬럼 설정
     const columns = React.useMemo(() => getColumns(), []);
 
-    // 테이블 인스턴스
-    const table = useDataTable({
-        data: users,
-        columns,
-        pageCount: totalPages,
-        pagination,
-        onPaginationChange,
-        enableMultiRowSelection: false, // 단일 선택 모드
-    });
+    const DEFAULT_COL_DEF = {
+        headerStyle: { textAlign: 'center' as const },
+        resizable: true,
+    };
+
+    // 그리드 API 참조
+    const gridApiRef = React.useRef<SOGridApi<UserDetail> | null>(null);
+    const onGridReady = React.useCallback((api: SOGridApi<UserDetail>) => {
+        gridApiRef.current = api;
+    }, []);
 
     /**
      * 추가 버튼 핸들러
@@ -59,35 +63,52 @@ export default function UsersPage() {
         openDialog();
     }, [openDialog]);
 
+    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
+        onPaginationChange(pagination);
+    }, [onPaginationChange]);
+
+    const handleSortChange = React.useCallback((sort: SortModel[]) => {
+        onSortChange(sort);
+    }, [onSortChange]);
+
     /**
      * 수정 버튼 핸들러
      */
     const handleEdit = React.useCallback(() => {
-        const selectedRows = table.getSelectedRowModel().rows;
+        // API를 통해 선택된 행들 가져오기
+        const selectedRows = gridApiRef.current?.getSelectedRows();
 
-        if (selectedRows.length !== 1) {
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "수정할 사용자를 한 명만 선택해주세요.",
+                description: "수정할 주문을 하나만 선택해주세요.",
                 variant: "default",
             });
             return;
         }
 
-        const user = selectedRows[0].original;
-        openDialog(user);
-    }, [table, toast, openDialog]);
+        const selectedData = selectedRows[0];
+        openDialog(selectedData);
+    }, [toast, openDialog]);
 
     /**
      * 삭제 버튼 핸들러
      */
     const handleDeleteClick = React.useCallback(async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        const userIds = selectedRows.map(row => row.original.userId);
+        const selectedRows = gridApiRef.current?.getSelectedRows();
 
+        if (!selectedRows || selectedRows.length === 0) {
+            toast({
+                title: "알림",
+                description: "삭제할 주문을 선택해주세요.",
+                variant: "default",
+            });
+            return;
+        }
+
+        const userIds = selectedRows.map(row => row.userId);
         await handleDelete(userIds);
-        table.resetRowSelection();
-    }, [table, handleDelete]);
+    }, [handleDelete, toast]);
 
     /**
      * 엑셀 다운로드 핸들러
@@ -125,8 +146,21 @@ export default function UsersPage() {
                     onDownloadExcel={handleDownloadExcel}
                     onUploadExcel={handleUploadExcel}
                 />
-                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
+            <SOGrid
+                rowData={users}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPagination}
+                serverSide={true}
+                totalRows={totalRows}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
+            />
 
             <InputDialog
                 open={dialogOpen}

@@ -50,6 +50,19 @@ const createAxiosInstance = (): AxiosInstance => {
         headers: {
             'Content-Type': 'application/json',
         },
+        paramsSerializer: (params) => {
+            const searchParams = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== '') {
+                    if (Array.isArray(value)) {
+                        value.forEach(val => searchParams.append(key, String(val)));
+                    } else {
+                        searchParams.append(key, String(value));
+                    }
+                }
+            });
+            return searchParams.toString();
+        },
     });
 
     // Request Interceptor - 토큰 추가 및 Content-Type 처리
@@ -168,7 +181,7 @@ class ApiClient {
      */
     async get<T>(
         url: string,
-        params?: Record<string, string | number | boolean | undefined>,
+        params?: Record<string, string | number | boolean | undefined | string[] | number[]>,
         config?: AxiosRequestConfig
     ): Promise<ApiResponse<T>> {
         return handleRequest(
@@ -235,12 +248,16 @@ class ApiClient {
     /**
      * 파라미터를 URLSearchParams로 변환
      */
-    buildParams(params: Record<string, string | number | boolean | undefined>): URLSearchParams {
+    buildParams(params: Record<string, string | number | boolean | undefined | string[] | number[]>): URLSearchParams {
         const searchParams = new URLSearchParams();
 
         Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== '') {
-                searchParams.append(key, String(value));
+                if (Array.isArray(value)) {
+                    value.forEach(val => searchParams.append(key, String(val)));
+                } else {
+                    searchParams.append(key, String(value));
+                }
             }
         });
 
@@ -250,7 +267,7 @@ class ApiClient {
     /**
      * URL에 쿼리 파라미터를 추가
      */
-    buildUrl(baseUrl: string, params?: Record<string, string | number | boolean | undefined>): string {
+    buildUrl(baseUrl: string, params?: Record<string, string | number | boolean | undefined | string[] | number[]>): string {
         if (!params || Object.keys(params).length === 0) {
             return baseUrl;
         }
