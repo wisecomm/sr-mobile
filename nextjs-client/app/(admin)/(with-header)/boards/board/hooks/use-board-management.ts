@@ -12,6 +12,11 @@ import {
 } from './use-board-query';
 import { BoardsBoard, BoardsBoardSearchParams } from '../types';
 import { useToast } from '@/hooks/use-toast';
+import { SortModel } from 'so-grid-core';
+
+/**
+ * 게시물 검색 파라미터 (UI용)
+ */
 
 /**
  * 게시물 관리 훅 리턴 타입
@@ -19,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 export interface UseBoardManagementReturn {
     // 데이터
     posts: BoardsBoard[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -29,6 +34,7 @@ export interface UseBoardManagementReturn {
     // 검색
     searchParams: BoardsBoardSearchParams;
     onSearch: (params: Partial<BoardsBoardSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -46,24 +52,35 @@ export interface UseBoardManagementReturn {
 /**
  * 게시물 관리 훅
  */
-export function useBoardManagement(initialBrdId?: string): UseBoardManagementReturn {
+export interface UseBoardManagementOptions {
+    initialSearch?: Partial<BoardsBoardSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
+
+export function useBoardManagement(initialBrdId?: string, options: UseBoardManagementOptions = {}): UseBoardManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태 (brdId는 props로 관리되므로 제외)
     const [localSearchParams, setLocalSearchParams] = useState<Omit<BoardsBoardSearchParams, 'brdId'>>({
         page: 0,
         size: 10,
+        ...options.initialSearch,
     });
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedPost, setSelectedPost] = useState<BoardsBoard | null>(null);
+
+    // 정렬 상태
+    const [sort, setSort] = useState<string[] | undefined>();
 
     // 실제 API 호출에 사용될 파라미터 구성
     const queryParams: BoardsBoardSearchParams = {
@@ -76,6 +93,8 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
         ...queryParams,
         page: pagination.pageIndex,
         size: pagination.pageSize,
+        sort,
+        ...localSearchParams,
     });
 
     useEffect(() => {
@@ -95,13 +114,19 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
     /**
      * 검색 핸들러
      */
-    const handleSearch = useCallback((params: Partial<BoardsBoardSearchParams>) => {
+    const onSearch = useCallback((params: Partial<BoardsBoardSearchParams>) => {
         // brdId를 제외한 나머지 파라미터만 업데이트
         const newParams = { ...params };
         delete newParams.brdId;
 
         setLocalSearchParams((prev) => ({ ...prev, ...newParams }));
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
@@ -127,20 +152,12 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
         try {
             await createMutation.mutateAsync(data);
 
-            toast({
-                title: '등록 완료',
-                description: '새 게시물이 등록되었습니다.',
-                variant: 'success',
-            });
+            toast({ title: '등록 완료', description: '새 게시물이 등록되었습니다.', variant: 'success', });
 
             closeDialog();
         } catch (error) {
             const message = error instanceof Error ? error.message : '게시물 등록에 실패했습니다.';
-            toast({
-                title: '등록 실패',
-                description: message,
-                variant: 'destructive',
-            });
+            toast({ title: '등록 실패', description: message, variant: 'destructive', });
             throw error;
         }
     }, [createMutation, toast, closeDialog]);
@@ -182,18 +199,11 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
      */
     const handleDelete = useCallback(async (postIds: number[]) => {
         if (postIds.length === 0) {
-            toast({
-                title: '알림',
-                description: '삭제할 게시물을 선택해주세요.',
-                variant: 'default',
-            });
+            toast({ title: '알림', description: '삭제할 게시물을 선택해주세요.', variant: 'default' });
             return;
         }
 
-        const confirmed = window.confirm(
-            `선택한 ${postIds.length}개의 게시물을 삭제하시겠습니까?`
-        );
-
+        const confirmed = window.confirm(`선택한 ${postIds.length}개의 게시물을 삭제하시겠습니까?`);
         if (!confirmed) return;
 
         const results = await Promise.allSettled(
@@ -201,26 +211,10 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.filter(r => r.status === 'rejected').length;
-
-        if (failed === 0) {
-            toast({
-                title: '삭제 완료',
-                description: `${succeeded}개의 게시물이 삭제되었습니다.`,
-                variant: 'success',
-            });
-        } else if (succeeded === 0) {
-            toast({
-                title: '삭제 실패',
-                description: '게시물 삭제에 실패했습니다.',
-                variant: 'destructive',
-            });
+        if (succeeded === postIds.length) {
+            toast({ title: '삭제 완료', description: `${succeeded}개의 게시물이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({
-                title: '부분 삭제',
-                description: `${succeeded}개 성공, ${failed}개 실패`,
-                variant: 'destructive',
-            });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${postIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
     }, [deleteMutation, toast]);
 
@@ -247,12 +241,13 @@ export function useBoardManagement(initialBrdId?: string): UseBoardManagementRet
 
     return {
         posts: postsData?.list || [],
-        totalPages: postsData?.pages || 0,
+        totalRows: postsData?.total || 0,
         isLoading,
         pagination,
         onPaginationChange: setPagination,
         searchParams: queryParams,
-        onSearch: handleSearch,
+        onSearch,
+        onSortChange,
         dialogOpen,
         selectedPost,
         openDialog,

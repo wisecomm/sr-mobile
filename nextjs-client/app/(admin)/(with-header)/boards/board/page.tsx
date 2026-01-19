@@ -2,15 +2,17 @@
 
 import * as React from "react";
 import { getColumns } from "./columns";
-import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useDataTable } from "@/components/data-table/use-data-table";
 import { useSearchParams } from "next/navigation";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardManagement } from "./hooks/use-board-management";
-import { BoardsBoardSearchParams } from './types';
+import { BoardsBoard } from './types';
+import 'so-grid-react/styles.css';
+import { CustomPagination } from "@/components/utils/CustomPagination";
+import { PaginationState, SortModel } from "so-grid-core";
+import { SOGrid, SOGridApi } from "so-grid-react";
 
 export default function BoardsPage() {
     return (
@@ -28,69 +30,88 @@ function BoardsContent() {
     // Management hook
     const {
         posts,
-        totalPages,
+        totalRows,
         isLoading,
         pagination,
         onPaginationChange,
         searchParams,
         onSearch,
-        // setBoardId, // Unused
         dialogOpen,
         selectedPost,
         openDialog,
         closeDialog,
         handleSubmit,
         handleDelete,
+        onSortChange,
     } = useBoardManagement(brdIdParam);
 
     const columns = React.useMemo(() => getColumns(), []);
 
-    const table = useDataTable({
-        data: posts,
-        columns,
-        pageCount: totalPages || -1,
-        pagination,
-        onPaginationChange,
-        enableMultiRowSelection: false,
-    });
+    const DEFAULT_COL_DEF = {
+        headerStyle: { textAlign: 'center' as const },
+        resizable: true,
+    };
 
+    // 그리드 API 참조
+    const gridApiRef = React.useRef<SOGridApi<BoardsBoard> | null>(null);
+    const onGridReady = React.useCallback((api: SOGridApi<BoardsBoard>) => {
+        gridApiRef.current = api;
+    }, []);
+
+
+    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
+        onPaginationChange(pagination);
+    }, [onPaginationChange]);
+
+    const handleSortChange = React.useCallback((sort: SortModel[]) => {
+        onSortChange(sort);
+    }, [onSortChange]);
+
+    /**
+     * Add Button Handler
+     */
     const handleAdd = React.useCallback(() => {
         openDialog();
     }, [openDialog]);
 
+    /**
+     * Edit Button Handler (Toolbar)
+     */
     const handleEdit = React.useCallback(() => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        if (selectedRows.length !== 1) {
+        // API를 통해 선택된 행들 가져오기
+        const selectedRows = gridApiRef.current?.getSelectedRows();
+
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "수정할 게시물을 하나만 선택해주세요.",
+                description: "수정할 주문을 하나만 선택해주세요.",
                 variant: "default",
             });
             return;
         }
-        const board = selectedRows[0].original;
-        openDialog(board);
-    }, [table, toast, openDialog]);
 
+        const selectedData = selectedRows[0];
+        openDialog(selectedData);
+    }, [toast, openDialog]);
+
+    /**
+     * Delete Button Handler (Toolbar)
+     */
     const handleDeleteClick = React.useCallback(async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        if (selectedRows.length === 0) {
+        const selectedRows = gridApiRef.current?.getSelectedRows();
+
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "삭제할 게시물을 선택해주세요.",
+                description: "삭제할 주문을 선택해주세요.",
                 variant: "default",
             });
             return;
         }
 
-        const boardIds = selectedRows.map(row => row.original.boardId);
+        const boardIds = selectedRows.map(row => row.boardId);
         await handleDelete(boardIds);
-        table.resetRowSelection();
-    }, [table, handleDelete, toast]);
-
-    const handleSearch = (params: Partial<BoardsBoardSearchParams>) => {
-        onSearch(params);
-    };
+    }, [handleDelete, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -99,13 +120,27 @@ function BoardsContent() {
                     onAdd={handleAdd}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
-                    onSearch={handleSearch}
+                    onSearch={onSearch}
                     isLoading={isLoading}
                     initialStartDate={(searchParams.startDate as string) || ""}
                     initialEndDate={(searchParams.endDate as string) || ""}
                 />
-                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
+            <SOGrid
+                rowData={posts}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPagination}
+                serverSide={true}
+                totalRows={totalRows}
+                paginationPageSize={5}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
+            />
 
             <InputDialog
                 open={dialogOpen}

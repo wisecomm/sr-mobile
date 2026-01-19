@@ -1,55 +1,59 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { BoardsBoard } from './types';
-import { TextCell, DateCell, NumberCell } from "@/components/data-table/cells";
-import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
+import { SOColumnDef } from "so-grid-core";
+import { CommonGrid } from "@/components/utils/common-grid";
 
-export const getColumns = (): ColumnDef<BoardsBoard>[] => [
-    createSelectColumn(),
-    createColumn("boardId", "순번", {
-        sort: true,
-        size: 80,
-        cell: ({ row }) => <TextCell value={row.getValue("boardId")} />
-    }),
-    createColumn("title", "제목", {
-        sort: true,
-        size: 300,
-        cell: ({ row }) => <TextCell value={row.getValue("title")} align="left" />
-    }),
-    createColumn("userId", "작성자", {
-        sort: true,
-        size: 120,
-        cell: ({ row }) => <TextCell value={row.getValue("userId")} />
-    }),
-    createColumn("hitCnt", "조회수", {
-        sort: true,
-        size: 80,
-        cell: ({ row }) => <NumberCell value={row.getValue("hitCnt")} />
-    }),
-    createColumn("secretYn", "공개", {
-        sort: true,
-        size: 60,
-        cell: ({ row }) => (
-            <TextCell
-                value={row.getValue("secretYn") === "1" ? "비공개" : "공개"}
-                align="center"
-            />
-        )
-    }),
-    createColumn("useYn", "사용", {
-        sort: true,
-        size: 60,
-        cell: ({ row }) => (
-            <TextCell
-                value={row.getValue("useYn") === "Y" ? "사용" : "미사용"}
-                align="center"
-            />
-        )
-    }),
-    createColumn("sysInsertDtm", "등록일", {
-        sort: true,
-        size: 150,
-        cell: ({ row }) => <DateCell value={row.getValue("sysInsertDtm")} format="datetime" />
-    }),
+export const getColumns = (): SOColumnDef<BoardsBoard>[] => [
+    {
+        field: 'id',
+        headerName: '',
+        maxWidth: 30,               // 새로 설치 후 지우고 채크박스 사이즈 확인 필요
+        // pinned: 'left',
+        checkboxSelection: true,
+    },
+    {
+        field: 'boardId',
+        headerName: '순번',
+        maxWidth: 80,
+        sortable: true,
+    },
+    {
+        field: 'title',
+        headerName: '제목',
+        maxWidth: 300,
+        sortable: true,
+    },
+    {
+        field: 'userId',
+        headerName: '작성자',
+        maxWidth: 120,
+        sortable: true,
+    },
+    {
+        field: 'hitCnt',
+        headerName: '조회수',
+        maxWidth: 80,
+        sortable: true,
+    },
+    {
+        field: 'secretYn',
+        headerName: '공개',
+        maxWidth: 60,
+        sortable: true,
+    },
+    {
+        field: 'useYn',
+        headerName: '사용',
+        maxWidth: 60,
+        sortable: true,
+    },
+    {
+        field: 'sysInsertDtm',
+        headerName: '등록일',
+        valueFormatter: CommonGrid.formatDate,
+        cellStyle: { textAlign: 'center' },
+        maxWidth: 80,
+    },
+
 ];
