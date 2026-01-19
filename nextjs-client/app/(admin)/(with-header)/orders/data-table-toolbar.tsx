@@ -53,7 +53,7 @@ export function DataTableToolbar({
 
     return (
         <Card className="w-full">
-            <CardContent className="p-4 flex items-center justify-between gap-2 flex-wrap">
+            <CardContent className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex flex-1 items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">고객명</span>
