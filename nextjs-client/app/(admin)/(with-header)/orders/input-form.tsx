@@ -1,13 +1,19 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import {
-    Button,
-    Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
-    Input,
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui"
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useInputForm } from "./hooks/use-input-form"
 import { OrderDetail } from "./types"
+import { DateInput } from "@/components/common"
 
 
 interface InputFormProps {
@@ -113,13 +119,12 @@ export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
                             <FormItem>
                                 <FormLabel>주문 일시</FormLabel>
                                 <FormControl>
-                                    <Input
+                                    <DateInput
                                         {...field}
-                                        type="datetime-local"
                                         placeholder="주문 일시 선택"
-                                        value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
-                                        onChange={(e) => {
-                                            const date = new Date(e.target.value);
+                                        value={field.value ? new Date(field.value).toISOString().slice(0, 10) : ""}
+                                        onChange={(value) => {
+                                            const date = new Date(value);
                                             // Ensure valid date before setting
                                             if (!isNaN(date.getTime())) {
                                                 field.onChange(date.toISOString());

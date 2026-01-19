@@ -2,21 +2,27 @@
 
 import * as React from "react";
 import { getColumns } from "./columns";
-import { DataTable } from "@/components/data-table/data-table";
+import { OrderDetail } from "./types";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { useDataTable } from "@/components/data-table/use-data-table";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, History } from "lucide-react";
+import { useRouter } from "next/navigation";
+import 'so-grid-react/styles.css';
+import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
+import { PaginationState, SortModel } from "so-grid-core";
+import { SOGrid, SOGridApi } from "so-grid-react";
 
 export default function OrdersPage() {
     const { toast } = useToast();
+    const router = useRouter();
 
     // Use management hook
     const {
         orders,
-        totalPages,
+        totalRows,
         isLoading,
         pagination,
         onPaginationChange,
@@ -28,20 +34,36 @@ export default function OrdersPage() {
         closeDialog,
         handleSubmit,
         handleDelete,
-    } = useOrderManagement();
+        onSortChange,
+    } = useOrderManagement({
+        initialPagination: {
+            pageIndex: 0, // 0페이지부터 시작
+            pageSize: 5, // 한 페이지에 20개씩 표시
+        }
+    });
 
     // Define columns
     const columns = React.useMemo(() => getColumns(), []);
 
-    // Table instance
-    const table = useDataTable({
-        data: orders,
-        columns,
-        pageCount: totalPages,
-        pagination,
-        onPaginationChange,
-        enableMultiRowSelection: true,
-    });
+    const DEFAULT_COL_DEF = {
+        headerStyle: { textAlign: 'center' as const },
+        resizable: true,
+    };
+
+    // 그리드 API 참조
+    const gridApiRef = React.useRef<SOGridApi<OrderDetail> | null>(null);
+    const onGridReady = React.useCallback((api: SOGridApi<OrderDetail>) => {
+        gridApiRef.current = api;
+    }, []);
+
+
+    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
+        onPaginationChange(pagination);
+    }, [onPaginationChange]);
+
+    const handleSortChange = React.useCallback((sort: SortModel[]) => {
+        onSortChange(sort);
+    }, [onSortChange]);
 
     /**
      * Add Button Handler
@@ -54,9 +76,10 @@ export default function OrdersPage() {
      * Edit Button Handler (Toolbar)
      */
     const handleEdit = React.useCallback(() => {
-        const selectedRows = table.getSelectedRowModel().rows;
+        // API를 통해 선택된 행들 가져오기
+        const selectedRows = gridApiRef.current?.getSelectedRows();
 
-        if (selectedRows.length !== 1) {
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
                 description: "수정할 주문을 하나만 선택해주세요.",
@@ -65,16 +88,17 @@ export default function OrdersPage() {
             return;
         }
 
-        const order = selectedRows[0].original;
-        openDialog(order);
-    }, [table, toast, openDialog]);
+        const selectedData = selectedRows[0];
+        openDialog(selectedData);
+    }, [toast, openDialog]);
 
     /**
      * Delete Button Handler (Toolbar)
      */
     const handleDeleteClick = React.useCallback(async () => {
-        const selectedRows = table.getSelectedRowModel().rows;
-        if (selectedRows.length === 0) {
+        const selectedRows = gridApiRef.current?.getSelectedRows();
+
+        if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
                 description: "삭제할 주문을 선택해주세요.",
@@ -83,10 +107,9 @@ export default function OrdersPage() {
             return;
         }
 
-        const orderIds = selectedRows.map(row => row.original.orderId);
+        const orderIds = selectedRows.map(row => row.orderId);
         await handleDelete(orderIds);
-        table.resetRowSelection();
-    }, [table, handleDelete, toast]);
+    }, [handleDelete, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -100,8 +123,22 @@ export default function OrdersPage() {
                     initialStartDate={searchParams.startDate}
                     initialEndDate={searchParams.endDate}
                 />
-                <DataTable table={table} showSeparators={true} isLoading={isLoading} />
             </SearchPageLayout>
+            <SOGrid
+                rowData={orders}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPaginationM}
+                serverSide={true}
+                totalRows={totalRows}
+                paginationPageSize={5}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
+            />
 
             <InputDialog
                 open={dialogOpen}

@@ -16,6 +16,7 @@ export interface OrderSearchParams {
     custNm?: string;
     startDate?: string;
     endDate?: string;
+    sort?: string[];
     [key: string]: unknown;
 }
 
@@ -33,6 +34,7 @@ const orderApi = {
         if (params.custNm) queryParams.custNm = params.custNm;
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
+        if (params.sort) queryParams.sort = params.sort.join(',');
 
         return apiClient.get<PageResponse<OrderDetail>>(BASE_URL, queryParams);
     },
@@ -60,8 +62,8 @@ const orderApi = {
 export const orderKeys = {
     all: ['orders'] as const,
     lists: () => [...orderKeys.all, 'list'] as const,
-    list: (page: number, size: number, custNm?: string, startDate?: string, endDate?: string) =>
-        [...orderKeys.lists(), { page, size, custNm, startDate, endDate }] as const,
+    list: (page: number, size: number, custNm?: string, startDate?: string, endDate?: string, sort?: string[]) =>
+        [...orderKeys.lists(), { page, size, custNm, startDate, endDate, sort }] as const,
     detail: (id: string) => [...orderKeys.all, 'detail', id] as const,
 };
 
@@ -70,9 +72,9 @@ export const orderKeys = {
  */
 export const useOrders = createPaginatedQuery<
     PageResponse<OrderDetail>,
-    { page: number; size: number; custNm?: string; startDate?: string; endDate?: string }
+    { page: number; size: number; custNm?: string; startDate?: string; endDate?: string; sort?: string[] }
 >({
-    queryKey: (params) => orderKeys.list(params.page, params.size, params.custNm, params.startDate, params.endDate),
+    queryKey: (params) => orderKeys.list(params.page, params.size, params.custNm, params.startDate, params.endDate, params.sort),
     queryFn: (params) => orderApi.search(params),
 });
 

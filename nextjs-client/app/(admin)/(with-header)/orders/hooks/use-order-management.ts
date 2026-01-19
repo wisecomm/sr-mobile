@@ -10,10 +10,12 @@ import {
 } from './use-order-query';
 
 import { useState, useCallback, useEffect } from 'react';
-import { PaginationState } from '@tanstack/react-table';
 import { useToast } from '@/hooks/use-toast';
 import { OrderDetail } from '../types';
 import { formatDate } from '@/components/common';
+//import { PaginationState } from '@tanstack/react-table';
+import { PaginationState, SortModel } from "so-grid-core";
+
 
 /**
  * 검색 파라미터
@@ -30,7 +32,7 @@ export interface OrderManagementSearchParams {
 export interface UseOrderManagementReturn {
     // 데이터
     orders: OrderDetail[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -40,6 +42,7 @@ export interface UseOrderManagementReturn {
     // 검색
     searchParams: OrderManagementSearchParams;
     onSearch: (params: Partial<OrderManagementSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -57,7 +60,12 @@ export interface UseOrderManagementReturn {
 /**
  * 주문 관리 훅
  */
-export function useOrderManagement(): UseOrderManagementReturn {
+export interface UseOrderManagementOptions {
+    initialSearch?: Partial<OrderManagementSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
+export function useOrderManagement(options: UseOrderManagementOptions = {}): UseOrderManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
@@ -65,12 +73,16 @@ export function useOrderManagement(): UseOrderManagementReturn {
         custNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
+        ...options.initialSearch,
     });
+
+    const [sort, setSort] = useState<string[] | undefined>(undefined);
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
@@ -81,6 +93,7 @@ export function useOrderManagement(): UseOrderManagementReturn {
     const { data: ordersData, isLoading, isError, error } = useOrders({
         page: pagination.pageIndex,
         size: pagination.pageSize,
+        sort,
         ...searchParams,
     });
 
@@ -100,6 +113,12 @@ export function useOrderManagement(): UseOrderManagementReturn {
 
     const onSearch = useCallback((params: Partial<OrderManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
@@ -189,12 +208,13 @@ export function useOrderManagement(): UseOrderManagementReturn {
 
     return {
         orders: ordersData?.list || [],
-        totalPages: ordersData?.pages || 0,
+        totalRows: ordersData?.total || 0,
         isLoading,
         pagination,
         onPaginationChange: setPagination,
         searchParams,
         onSearch,
+        onSortChange,
         dialogOpen,
         selectedOrder,
         openDialog,
