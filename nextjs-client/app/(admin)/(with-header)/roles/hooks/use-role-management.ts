@@ -86,7 +86,7 @@ export function useRoleManagement(options: UseRoleManagementOptions = {}): UseRo
     const [selectedRole, setSelectedRole] = useState<RoleInfo | null>(null);
 
     // API 훅
-    const { data: rolesData, isLoading, isError, error } = useRoles({
+    const { data: rolesData, isLoading, isError, error, refetch } = useRoles({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         sort,
@@ -114,7 +114,8 @@ export function useRoleManagement(options: UseRoleManagementOptions = {}): UseRo
     const onSearch = useCallback((params: Partial<RoleManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, []);
+        refetch();
+    }, [refetch]);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);

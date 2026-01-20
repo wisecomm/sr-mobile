@@ -155,6 +155,7 @@ export default function UsersPage() {
                 PaginationComponent={CustomPagination}
                 serverSide={true}
                 totalRows={totalRows}
+                paginationPageSize={pagination.pageSize}
                 onPaginationChange={handlePaginationChange}
                 loading={isLoading}
                 onSortChange={handleSortChange}

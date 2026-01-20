@@ -91,7 +91,7 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
     // 정렬 상태
     const [sort, setSort] = useState<string[] | undefined>();
 
-    const { data: postsData, isLoading, isError, error } = useBoardsBoardList({
+    const { data: postsData, isLoading, isError, error, refetch } = useBoardsBoardList({
         brdId: initialBrdId || '',
         page: pagination.pageIndex,
         size: pagination.pageSize,
@@ -123,7 +123,8 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
 
         setLocalSearchParams((prev) => ({ ...prev, ...newParams }));
         setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
-    }, []);
+        refetch();
+    }, [refetch]);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);

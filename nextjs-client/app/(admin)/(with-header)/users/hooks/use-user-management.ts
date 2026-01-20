@@ -91,7 +91,7 @@ export function useUserManagement(options: UseUserManagementOptions = {}): UseUs
     const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
 
     // API 훅
-    const { data: usersData, isLoading, isError, error } = useUsers({
+    const { data: usersData, isLoading, isError, error, refetch } = useUsers({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         sort,
@@ -116,13 +116,11 @@ export function useUserManagement(options: UseUserManagementOptions = {}): UseUs
     /**
      * 검색 핸들러
      */
-    /**
-     * 검색 핸들러
-     */
     const onSearch = useCallback((params: Partial<UserManagementSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    }, []);
+        refetch();
+    }, [refetch]);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);

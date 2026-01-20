@@ -12,11 +12,10 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
                     queries: {
                         // With SSR, we usually want to set some default staleTime
                         // above 0 to avoid refetching immediately on the client
-                        // staleTime: 0,              // 0: 즉시 상한 데이터 취급 (매번 서버 조회)
                         staleTime: 60 * 1000,      // 1분: 데이터가 fresh로 유지되는 시간
                         gcTime: 5 * 60 * 1000,     // 5분: 미사용 데이터가 캐시에 유지되는 시간
                         retry: 1,
-                        refetchOnWindowFocus: true, // 윈도우 포커스가 변경되면 refetch
+                        refetchOnWindowFocus: true,
                     },
                 },
             })

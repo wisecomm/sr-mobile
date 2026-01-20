@@ -2530,7 +2530,7 @@ packages:
     version: 0.1.0
 
   so-grid-react@file:libs/so-grid-react-0.1.0.tgz:
-    resolution: {integrity: sha512-7xwiHvandBfDawe+Qg1PsPLHa48ccgvUBVhhJllVMMiGXBdgHq3lp+VsujS+yYdoFe2NOZAjDYDas+xUlfYnVQ==, tarball: file:libs/so-grid-react-0.1.0.tgz}
+    resolution: {integrity: sha512-ceQgWAIiLAWjqZ8VAbh9M0rfkNExW3xiSWZ/it0KhY55o0Wxv5LT0t4vvyE4/BYHB9XG9bdVHeNJp7mo/rdsKg==, tarball: file:libs/so-grid-react-0.1.0.tgz}
     version: 0.1.0
     peerDependencies:
       react: '>=17.0.0'

@@ -77,7 +77,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
     // API 훅
-    const { data: ordersData, isLoading, isError, error } = useOrders({
+    const { data: ordersData, isLoading, isError, error, refetch } = useOrders({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         sort,
@@ -101,7 +101,8 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const onSearch = useCallback((params: Partial<OrderSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-    }, []);
+        refetch();
+    }, [refetch]);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);

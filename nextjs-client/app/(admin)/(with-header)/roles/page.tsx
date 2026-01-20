@@ -129,7 +129,7 @@ export default function RolesPage() {
                 PaginationComponent={CustomPagination}
                 serverSide={true}
                 totalRows={totalRows}
-                paginationPageSize={5}
+                paginationPageSize={pagination.pageSize}
                 onPaginationChange={handlePaginationChange}
                 loading={isLoading}
                 onSortChange={handleSortChange}
