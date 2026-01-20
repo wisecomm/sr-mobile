@@ -32,12 +32,7 @@ export default function OrdersPage() {
         handleSubmit,
         handleDelete,
         onSortChange,
-    } = useOrderManagement({
-        initialPagination: {
-            pageIndex: 0,
-            pageSize: 5,
-        }
-    });
+    } = useOrderManagement();
 
     // Define columns
     const columns = React.useMemo(() => getColumns(), []);

@@ -18,13 +18,14 @@ const BASE_URL = '/v1/mgmt/boards/master';
 
 const boardsMasterApi = {
     search: (params: BoardsMasterSearchParams): Promise<ApiResponse<PageResponse<BoardsMaster>>> => {
-        const queryParams: Record<string, string | number> = {
+        const queryParams: Record<string, string | number | string[]> = {
             page: params.page + 1,
             size: params.size,
         };
         if (params.brdNm) queryParams.brdNm = params.brdNm;
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
+        if (params.sort) queryParams.sort = params.sort;
 
         return apiClient.get<PageResponse<BoardsMaster>>(BASE_URL, queryParams);
     },

@@ -24,4 +24,6 @@ export interface BoardsMasterSearchParams {
     brdNm?: string;
     startDate?: string;
     endDate?: string;
+    sort?: string[];
+    [key: string]: unknown;
 }

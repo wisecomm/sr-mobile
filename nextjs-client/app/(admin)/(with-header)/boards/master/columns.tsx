@@ -1,42 +1,49 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { BoardsMaster } from './types';
-import { TextCell, DateCell, UseYnCell, NumberCell } from "@/components/data-table/cells";
-import { createColumn, createSelectColumn } from "@/components/data-table/column-helper";
+import { CommonGrid } from "@/components/utils/common-grid";
+import { SOColumnDef } from "so-grid-core";
 
-export const getColumns = (): ColumnDef<BoardsMaster>[] => [
-    createSelectColumn(),
-    createColumn("brdId", "게시판 코드", {
-        sort: true,
-        size: 120,
-        cell: ({ row }) => <TextCell value={row.getValue("brdId")} />
-    }),
-    createColumn("brdNm", "게시판 명", {
-        sort: true,
-        size: 200,
-        cell: ({ row }) => <TextCell value={row.getValue("brdNm")} />
-    }),
-    createColumn("replyUseYn", "댓글", {
-        sort: true,
-        size: 80,
-        cell: ({ row }) => <UseYnCell value={row.getValue("replyUseYn")} />
-    }),
-    createColumn("fileUseYn", "파일첨부", {
-        size: 80,
-        cell: ({ row }) => <UseYnCell value={row.getValue("fileUseYn")} />
-    }),
-    createColumn("fileMaxCnt", "파일 수", {
-        size: 80,
-        cell: ({ row }) => <NumberCell value={row.getValue("fileMaxCnt")} />
-    }),
-    createColumn("useYn", "사용", {
-        size: 80,
-        cell: ({ row }) => <UseYnCell value={row.getValue("useYn")} />
-    }),
-    createColumn("sysInsertDtm", "등록일", {
-        sort: true,
-        size: 180,
-        cell: ({ row }) => <DateCell value={row.getValue("sysInsertDtm")} format="datetime" />
-    }),
+export const getColumns = (): SOColumnDef<BoardsMaster>[] => [
+    {
+        field: 'id',
+        headerName: '',
+        maxWidth: 30,               // 새로 설치 후 지우고 채크박스 사이즈 확인 필요
+        // pinned: 'left',
+        checkboxSelection: true,
+    },
+    {
+        field: 'brdId',
+        headerName: '게시판 코드',
+        maxWidth: 120,
+        sortable: true,
+    },
+    {
+        field: 'brdNm',
+        headerName: '게시판명',
+        maxWidth: 120,
+    },
+    {
+        field: 'fileUseYn',
+        headerName: '파일첨부',
+        maxWidth: 80,
+    },
+    {
+        field: 'fileMaxCnt',
+        headerName: '파일 수',
+        maxWidth: 80,
+    },
+    {
+        field: 'useYn',
+        headerName: '사용',
+        maxWidth: 80,
+        sortable: true,
+    },
+    {
+        field: 'sysInsertDtm',
+        headerName: '등록일',
+        valueFormatter: CommonGrid.formatDate,
+        cellStyle: { textAlign: 'center' },
+        maxWidth: 80,
+    },
 ];

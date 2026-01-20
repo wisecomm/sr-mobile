@@ -13,6 +13,7 @@ import {
 import { BoardsMaster, BoardsMasterSearchParams } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/components/common';
+import { SortModel } from 'so-grid-core';
 
 /**
  * 게시판 마스터 관리 훅 리턴 타입
@@ -20,7 +21,7 @@ import { formatDate } from '@/components/common';
 export interface UseBoardsMasterManagementReturn {
     // 데이터
     boards: BoardsMaster[];
-    totalPages: number;
+    totalRows: number;
     isLoading: boolean;
 
     // 페이지네이션
@@ -28,8 +29,9 @@ export interface UseBoardsMasterManagementReturn {
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
 
     // 검색
-    searchParams: BoardsMasterSearchParams;
+    searchParams: Partial<BoardsMasterSearchParams>;
     onSearch: (params: Partial<BoardsMasterSearchParams>) => void;
+    onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
     dialogOpen: boolean;
@@ -47,22 +49,30 @@ export interface UseBoardsMasterManagementReturn {
 /**
  * 게시판 마스터 관리 훅
  */
-export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
+export interface UseBoardsMasterManagementOptions {
+    initialSearch?: Partial<BoardsMasterSearchParams>;
+    initialPagination?: Partial<PaginationState>;
+}
+
+
+export function useBoardsMasterManagement(options: UseBoardsMasterManagementOptions = {}): UseBoardsMasterManagementReturn {
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<BoardsMasterSearchParams>({
+    const [searchParams, setSearchParams] = useState<Partial<BoardsMasterSearchParams>>({
         brdNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
-        page: 0,
-        size: 10,
+        ...options.initialSearch,
     });
+
+    const [sort, setSort] = useState<string[] | undefined>(undefined);
 
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
+        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
@@ -70,10 +80,11 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const [selectedBoard, setSelectedBoard] = useState<BoardsMaster | null>(null);
 
     // API 훅
-    const { data: boardsData, isLoading, isError, error } = useBoardsMasterList({
-        ...searchParams,
+    const { data: boardsData, isLoading, isError, error, refetch } = useBoardsMasterList({
         page: pagination.pageIndex,
         size: pagination.pageSize,
+        sort,
+        ...searchParams,
     });
 
     useEffect(() => {
@@ -96,6 +107,13 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
     const onSearch = useCallback((params: Partial<BoardsMasterSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        refetch();
+    }, [refetch]);
+
+    const onSortChange = useCallback((sortModel: SortModel[]) => {
+        const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
+        setSort(newSort.length > 0 ? newSort : undefined);
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
     /**
@@ -195,26 +213,10 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.filter(r => r.status === 'rejected').length;
-
-        if (failed === 0) {
-            toast({
-                title: '삭제 완료',
-                description: `${succeeded}개의 게시판이 삭제되었습니다.`,
-                variant: 'success',
-            });
-        } else if (succeeded === 0) {
-            toast({
-                title: '삭제 실패',
-                description: '게시판 삭제에 실패했습니다.',
-                variant: 'destructive',
-            });
+        if (succeeded === boardIds.length) {
+            toast({ title: '삭제 완료', description: `${succeeded}개의 게시판이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({
-                title: '부분 삭제',
-                description: `${succeeded}개 성공, ${failed}개 실패`,
-                variant: 'destructive',
-            });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${boardIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
     }, [deleteMutation, toast]);
 
@@ -231,12 +233,13 @@ export function useBoardsMasterManagement(): UseBoardsMasterManagementReturn {
 
     return {
         boards: boardsData?.list || [],
-        totalPages: boardsData?.pages || 0,
+        totalRows: boardsData?.total || 0,
         isLoading,
         pagination,
         onPaginationChange: setPagination,
         searchParams,
         onSearch,
+        onSortChange,
         dialogOpen,
         selectedBoard,
         openDialog,
