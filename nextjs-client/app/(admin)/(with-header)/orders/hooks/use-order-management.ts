@@ -1,13 +1,10 @@
-/**
- * useOrderManagement Hook
- */
-
 import {
     useOrders,
     useCreateOrder,
     useUpdateOrder,
     useDeleteOrder
 } from './use-order-query';
+import { OrderSearchParams } from '../types';
 
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -15,15 +12,6 @@ import { OrderDetail } from '../types';
 import { formatDate } from '@/components/common';
 import { PaginationState, SortModel } from "so-grid-core";
 
-
-/**
- * 검색 파라미터
- */
-export interface OrderManagementSearchParams {
-    custNm: string;
-    startDate: string;
-    endDate: string;
-}
 
 /**
  * 주문 관리 훅 리턴 타입
@@ -39,8 +27,8 @@ export interface UseOrderManagementReturn {
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
 
     // 검색
-    searchParams: OrderManagementSearchParams;
-    onSearch: (params: Partial<OrderManagementSearchParams>) => void;
+    searchParams: Partial<OrderSearchParams>;
+    onSearch: (params: Partial<OrderSearchParams>) => void;
     onSortChange: (sortModel: SortModel[]) => void;
 
     // 다이얼로그
@@ -60,7 +48,7 @@ export interface UseOrderManagementReturn {
  * 주문 관리 훅
  */
 export interface UseOrderManagementOptions {
-    initialSearch?: Partial<OrderManagementSearchParams>;
+    initialSearch?: Partial<OrderSearchParams>;
     initialPagination?: Partial<PaginationState>;
 }
 
@@ -68,7 +56,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<OrderManagementSearchParams>({
+    const [searchParams, setSearchParams] = useState<Partial<OrderSearchParams>>({
         custNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
@@ -110,7 +98,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const updateOrderMutation = useUpdateOrder();
     const deleteOrderMutation = useDeleteOrder();
 
-    const onSearch = useCallback((params: Partial<OrderManagementSearchParams>) => {
+    const onSearch = useCallback((params: Partial<OrderSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);

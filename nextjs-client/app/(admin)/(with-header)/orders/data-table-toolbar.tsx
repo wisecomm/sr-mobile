@@ -8,11 +8,13 @@ import { Search } from "lucide-react";
 import { ActionButtons, toolbarButtonClass, DateInput } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
 
+import { OrderSearchParams } from "./types";
+
 interface DataTableToolbarProps {
     onAdd: () => void;
     onEdit: () => void;
     onDelete: () => void;
-    onSearch: (params: { custNm: string; startDate: string; endDate: string }) => void;
+    onSearch: (params: Partial<OrderSearchParams>) => void;
     isLoading?: boolean;
     initialStartDate?: string;
     initialEndDate?: string;

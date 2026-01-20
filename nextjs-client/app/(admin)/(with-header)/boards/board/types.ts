@@ -40,5 +40,6 @@ export interface BoardsBoardSearchParams {
     keyword?: string;
     startDate?: string;
     endDate?: string;
+    sort?: string[];
     [key: string]: unknown;
 }

@@ -18,7 +18,7 @@ const BASE_URL = '/v1/boards/board';
 
 export const boardsBoardApi = {
     search: (params: BoardsBoardSearchParams): Promise<ApiResponse<PageResponse<BoardsBoard>>> => {
-        const queryParams: Record<string, string | number> = {
+        const queryParams: Record<string, string | number | string[]> = {
             page: params.page + 1,
             size: params.size,
             brdId: params.brdId,
@@ -27,6 +27,7 @@ export const boardsBoardApi = {
         if (params.keyword) queryParams.keyword = params.keyword;
         if (params.startDate) queryParams.startDate = params.startDate;
         if (params.endDate) queryParams.endDate = params.endDate;
+        if (params.sort) queryParams.sort = params.sort;
 
         return apiClient.get<PageResponse<BoardsBoard>>(BASE_URL, queryParams);
     },

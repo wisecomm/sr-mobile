@@ -40,6 +40,20 @@ public class BoardService {
             searchDto.setEndDate(searchDto.getEndDate() + " 23:59:59");
         }
 
+        // Sort handling
+        String sort = searchDto.getSort();
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            if (parts.length == 2) {
+                String col = parts[0];
+                String dir = parts[1].toLowerCase();
+                if ("asc".equals(dir) || "desc".equals(dir)) {
+                    // camelCase to snake_case conversion if using mybatis dynamic sql
+                    searchDto.setSort(camelToSnake(col) + " " + dir);
+                }
+            }
+        }
+
         List<Board> boards = boardMapper.findAll(searchDto);
         PageInfo<Board> pageInfo = new PageInfo<>(boards);
 
@@ -132,5 +146,10 @@ public class BoardService {
         // needed
         // For now, let's explicitly delete them logically using mapper
         boardFileMapper.deleteByBoardId(boardId);
+    }
+
+    private String camelToSnake(String str) {
+        String result = str.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+        return result;
     }
 }

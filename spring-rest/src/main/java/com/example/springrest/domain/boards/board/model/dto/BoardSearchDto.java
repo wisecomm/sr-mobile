@@ -15,6 +15,7 @@ public class BoardSearchDto {
     private String keyword; // 검색어
     private String startDate; // 시작일
     private String endDate; // 종료일
+    private String sort; // 정렬 (col,asc 형태)
 
     // Paging parameters passed separately usually, but can be here if passed to
     // mapper

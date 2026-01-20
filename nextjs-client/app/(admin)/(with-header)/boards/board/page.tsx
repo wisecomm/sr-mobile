@@ -134,7 +134,6 @@ function BoardsContent() {
                 PaginationComponent={CustomPagination}
                 serverSide={true}
                 totalRows={totalRows}
-                paginationPageSize={5}
                 onPaginationChange={handlePaginationChange}
                 loading={isLoading}
                 onSortChange={handleSortChange}

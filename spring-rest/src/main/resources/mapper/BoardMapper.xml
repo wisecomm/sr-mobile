@@ -55,7 +55,12 @@
                 AND SYS_INSERT_DTM &lt;= #{endDate}::timestamp
             </if>
         </where>
-        ORDER BY BOARD_ID DESC
+        <if test="sort != null and sort != ''">
+            ORDER BY ${sort}
+        </if>
+        <if test="sort == null or sort == ''">
+            ORDER BY BOARD_ID DESC
+        </if>
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="boardId">

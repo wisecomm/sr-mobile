@@ -68,6 +68,15 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
         ...options.initialSearch,
     });
 
+    // 실제 API 호출에 사용될 파라미터 구성
+    const queryParams: BoardsBoardSearchParams = {
+        ...(localSearchParams as Omit<BoardsBoardSearchParams, 'brdId'>),
+        brdId: initialBrdId || '',
+    } as BoardsBoardSearchParams;
+
+    // API 훅
+    const { page, size, ...restSearchParams } = localSearchParams;
+
     // 페이지네이션 상태
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -82,19 +91,12 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
     // 정렬 상태
     const [sort, setSort] = useState<string[] | undefined>();
 
-    // 실제 API 호출에 사용될 파라미터 구성
-    const queryParams: BoardsBoardSearchParams = {
-        ...(localSearchParams as Omit<BoardsBoardSearchParams, 'brdId'>),
-        brdId: initialBrdId || '',
-    } as BoardsBoardSearchParams;
-
-    // API 훅
     const { data: postsData, isLoading, isError, error } = useBoardsBoardList({
-        ...queryParams,
+        brdId: initialBrdId || '',
         page: pagination.pageIndex,
         size: pagination.pageSize,
         sort,
-        ...localSearchParams,
+        ...restSearchParams,
     });
 
     useEffect(() => {

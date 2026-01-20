@@ -4,21 +4,14 @@
 
 import { apiClient } from '@/lib/api-client';
 import { ApiResponse, PageResponse } from '@/types';
-import { OrderDetail } from '../types';
+import { OrderDetail, OrderSearchParams } from '../types';
 import { createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
 /**
- * 주문 검색 파라미터
+ * 주문 검색 파라미터 - types.ts 로 이동됨
  */
-export interface OrderSearchParams {
-    page: number;
-    size: number;
-    custNm?: string;
-    startDate?: string;
-    endDate?: string;
-    sort?: string[];
-    [key: string]: unknown;
-}
+// OrderSearchParams removed
+
 
 /**
  * API 함수들

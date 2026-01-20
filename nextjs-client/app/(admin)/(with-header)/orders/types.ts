@@ -17,3 +17,16 @@ export interface Order {
 }
 
 export type OrderDetail = Order;
+
+/**
+ * 주문 검색 파라미터
+ */
+export interface OrderSearchParams {
+    page: number;
+    size: number;
+    custNm?: string;
+    startDate?: string;
+    endDate?: string;
+    sort?: string[];
+    [key: string]: unknown;
+}
