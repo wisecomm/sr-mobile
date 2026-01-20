@@ -147,7 +147,7 @@ export default function OrdersPage() {
                 PaginationComponent={CustomPaginationM}
                 serverSide={true}
                 totalRows={totalRows}
-                paginationPageSize={5}
+                paginationPageSize={pagination.pageSize}
                 onPaginationChange={handlePaginationChange}
                 loading={isLoading}
                 onSortChange={handleSortChange}
