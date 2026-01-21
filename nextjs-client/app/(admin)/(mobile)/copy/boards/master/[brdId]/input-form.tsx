@@ -9,8 +9,8 @@ import {
     Textarea,
     Switch,
 } from "@/components/ui";
-import { useInputForm } from "./hooks/use-input-form";
-import { BoardsMaster } from './types';
+import { useInputForm } from "../hooks/use-input-form";
+import { BoardsMaster } from '../types';
 
 interface InputFormProps {
     board?: BoardsMaster | null;

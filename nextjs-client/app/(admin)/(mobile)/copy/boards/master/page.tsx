@@ -1,20 +1,21 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getColumns } from "./columns";
 import { DataTableToolbar } from "./data-table-toolbar";
-import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardsMasterManagement } from "./hooks/use-board-master-management";
 import { BoardsMaster } from './types';
 import 'so-grid-react/styles.css';
-import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
+import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
 
 export default function BoardsMasterPage() {
     const { toast } = useToast();
+    const router = useRouter();
 
     // Management hook
     const {
@@ -25,11 +26,6 @@ export default function BoardsMasterPage() {
         onPaginationChange,
         searchParams,
         onSearch,
-        dialogOpen,
-        selectedBoard,
-        openDialog,
-        closeDialog,
-        handleSubmit,
         handleDelete,
         onSortChange,
     } = useBoardsMasterManagement();
@@ -60,8 +56,8 @@ export default function BoardsMasterPage() {
      * Add Button Handler
      */
     const handleAdd = React.useCallback(() => {
-        openDialog();
-    }, [openDialog]);
+        router.push('/copy/boards/master/new');
+    }, [router]);
 
     /**
      * Edit Button Handler (Toolbar)
@@ -80,8 +76,8 @@ export default function BoardsMasterPage() {
         }
 
         const selectedData = selectedRows[0];
-        openDialog(selectedData);
-    }, [toast, openDialog]);
+        router.push(`/copy/boards/master/${selectedData.brdId}`);
+    }, [toast, router]);
 
     /**
      * Delete Button Handler (Toolbar)
@@ -103,8 +99,20 @@ export default function BoardsMasterPage() {
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full space-y-6">
-            <SearchPageLayout>
+        <div className="w-full max-w-[100vw] overflow-x-hidden h-screen flex flex-col">
+            {/* Header */}
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
+                <button
+                    onClick={() => router.replace('/mainmobile')}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
+                >
+                    <ArrowLeft className="w-6 h-6 text-slate-900" />
+                </button>
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight">주문 등록</h1>
+                <div className="w-10 h-10" />
+            </header>
+
+            <main className="flex-1 overflow-y-auto overflow-x-auto space-y-2 mt-2 mx-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
@@ -114,29 +122,22 @@ export default function BoardsMasterPage() {
                     initialStartDate={searchParams.startDate as string | undefined}
                     initialEndDate={searchParams.endDate as string | undefined}
                 />
-            </SearchPageLayout>
-            <SOGrid
-                rowData={boards}
-                columnDefs={columns}
-                defaultColDef={DEFAULT_COL_DEF}
-                pagination={true}
-                PaginationComponent={CustomPagination}
-                serverSide={true}
-                totalRows={totalRows}
-                paginationPageSize={pagination.pageSize}
-                onPaginationChange={handlePaginationChange}
-                loading={isLoading}
-                onSortChange={handleSortChange}
-                onGridReady={onGridReady}
-                pageIndex={pagination.pageIndex}
-            />
-
-            <InputDialog
-                open={dialogOpen}
-                onOpenChange={closeDialog}
-                board={selectedBoard}
-                onSubmit={handleSubmit}
-            />
+                <SOGrid
+                    rowData={boards}
+                    columnDefs={columns}
+                    defaultColDef={DEFAULT_COL_DEF}
+                    pagination={true}
+                    PaginationComponent={CustomPaginationM}
+                    serverSide={true}
+                    totalRows={totalRows}
+                    paginationPageSize={pagination.pageSize}
+                    onPaginationChange={handlePaginationChange}
+                    loading={isLoading}
+                    onSortChange={handleSortChange}
+                    onGridReady={onGridReady}
+                    pageIndex={pagination.pageIndex}
+                />
+            </main>
         </div>
     );
 }

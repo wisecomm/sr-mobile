@@ -77,4 +77,12 @@ public class SwaggerConfig {
                                 .pathsToMatch("/api/v1/mgmt/roles/**")
                                 .build();
         }
+
+        @Bean
+        public GroupedOpenApi boardApi() {
+                return GroupedOpenApi.builder()
+                                .group("06. 게시판 관리 (Board)")
+                                .pathsToMatch("/api/v1/mgmt/boards/**")
+                                .build();
+        }
 }

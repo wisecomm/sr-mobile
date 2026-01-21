@@ -26,6 +26,11 @@ management:
     health:
       show-details: when-authorized
 
+springdoc:
+  swagger-ui:
+    persist-authorization: true
+    groups-order: ASC
+
 # 기본 서버 설정
 server:
   port: 8080
