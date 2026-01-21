@@ -112,23 +112,18 @@ export default function OrdersPage() {
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full">
+        <div className="w-full max-w-[100vw] overflow-x-hidden">
             {/* Header */}
-            <header className="flex items-center justify-between px-4 py-3 bg-red-500 border-b border-red-600 shrink-0 z-20">
+            <header className="flex items-center justify-start gap-4 px-4 py-3 bg-red-500 border-b border-red-600 shrink-0 z-20 relative">
                 <button
                     onClick={() => router.replace('/mainmobile')}
                     className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors -ml-2 text-white"
                 >
                     <ArrowLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-lg font-bold text-white tracking-tight flex-1 text-center">출고 처리</h1>
-                <div className="w-12 flex items-center justify-end -mr-2">
-                    <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors text-white">
-                        <History className="w-6 h-6" />
-                    </button>
-                </div>
+                <h1 className="text-lg font-bold text-white tracking-tight">출고 처리</h1>
             </header>
-            <div className="w-full overflow-x-auto max-w-[calc(100vw-1rem)] space-y-2 mt-2">
+            <div className="overflow-x-auto space-y-2 mt-2 mx-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
