@@ -112,18 +112,20 @@ export default function OrdersPage() {
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full max-w-[100vw] overflow-x-hidden">
+        <div className="w-full max-w-[100vw] overflow-x-hidden h-screen flex flex-col">
             {/* Header */}
-            <header className="flex items-center justify-start gap-4 px-4 py-3 bg-red-500 border-b border-red-600 shrink-0 z-20 relative">
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
                 <button
                     onClick={() => router.replace('/mainmobile')}
-                    className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors -ml-2 text-white"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
                 >
-                    <ArrowLeft className="w-6 h-6" />
+                    <ArrowLeft className="w-6 h-6 text-slate-900" />
                 </button>
-                <h1 className="text-lg font-bold text-white tracking-tight">출고 처리</h1>
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight">주문 등록</h1>
+                <div className="w-10 h-10" />
             </header>
-            <div className="overflow-x-auto space-y-2 mt-2 mx-2">
+
+            <main className="flex-1 overflow-y-auto overflow-x-auto space-y-2 mt-2 mx-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
@@ -148,7 +150,7 @@ export default function OrdersPage() {
                     onGridReady={onGridReady}
                     pageIndex={pagination.pageIndex}
                 />
-            </div>
+            </main>
             <InputDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}

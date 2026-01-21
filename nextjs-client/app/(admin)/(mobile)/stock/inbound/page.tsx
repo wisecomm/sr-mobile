@@ -20,7 +20,7 @@ export default function StockInboundPage() {
     const [barcode, setBarcode] = useState("8809623451023");
 
     return (
-        <div className="flex flex-col h-screen bg-[#f6f7f8] text-slate-900 font-sans overflow-hidden">
+        <div className="w-full max-w-[100vw] overflow-x-hidden">
             {/* Header */}
             <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
                 <button
