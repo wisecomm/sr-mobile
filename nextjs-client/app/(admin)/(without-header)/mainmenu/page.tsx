@@ -55,7 +55,7 @@ export default function MainMenuPage() {
                     </div>
                 </div>
                 <div className="relative">
-                    <Button variant="ghost" size="icon" className="text-muted-foreground">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground active:scale-90 transition-transform">
                         <Bell className="h-6 w-6" />
                         <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-destructive border-2 border-background rounded-full" />
                     </Button>
@@ -72,7 +72,7 @@ export default function MainMenuPage() {
                             className="block"
                         >
                             <Card
-                                className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-[0.98]"
+                                className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer group active:scale-95 active:bg-accent/10"
                             >
                                 <CardContent className="flex flex-col items-center justify-center p-6 gap-3 min-h-[140px]">
                                     <div className={`${item.color} group-hover:scale-110 transition-transform`}>
@@ -91,7 +91,7 @@ export default function MainMenuPage() {
                 <div className="mt-4 pb-8">
                     <Button
                         variant="outline"
-                        className="w-full h-14 border-none shadow-sm text-destructive font-bold text-lg bg-background hover:bg-destructive/10 hover:text-destructive transition-colors gap-2"
+                        className="w-full h-14 border-none shadow-sm text-destructive font-bold text-lg bg-background hover:bg-destructive/10 hover:text-destructive transition-all gap-2 active:scale-95 active:bg-destructive/20"
                     >
                         <Power className="h-5 w-5" />
                         작업 종료

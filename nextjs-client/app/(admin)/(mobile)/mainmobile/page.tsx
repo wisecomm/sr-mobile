@@ -83,7 +83,7 @@ export default function MainMenuPage() {
                         </span>
                     </div>
                 </div>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative" aria-label="알림">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative active:scale-90 transition-transform" aria-label="알림">
                     <Bell className="h-6 w-6" aria-hidden="true" />
                     <span className="absolute top-2 right-2 h-2.5 w-2.5 bg-destructive border-2 border-background rounded-full animate-pulse" />
                 </Button>
@@ -99,7 +99,7 @@ export default function MainMenuPage() {
                             className="block group"
                         >
                             <Card
-                                className="border-none shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer active:scale-[0.97] bg-card h-full rounded-2xl overflow-hidden relative"
+                                className="border-none shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-95 active:bg-accent/10 bg-card h-full rounded-2xl overflow-hidden relative"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -124,7 +124,7 @@ export default function MainMenuPage() {
             <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-background to-transparent pointer-events-none flex justify-center max-w-md mx-auto z-10">
                 <Button
                     variant="destructive"
-                    className="w-full h-14 rounded-xl shadow-lg font-bold text-lg pointer-events-auto gap-2 hover:bg-destructive/90 transition-all active:scale-95"
+                    className="w-full h-14 rounded-xl shadow-lg font-bold text-lg pointer-events-auto gap-2 hover:bg-destructive/90 transition-all active:scale-90 active:bg-destructive/80"
                 >
                     <Power className="h-5 w-5" />
                     작업 종료
