@@ -18,13 +18,6 @@
             "request": "launch",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/nextjs-client"
-        },
-        {
-            "name": "Next.js: Server (Debug Terminal)",
-            "type": "node-terminal",
-            "request": "launch",
-            "command": "pnpm dev",
-            "cwd": "${workspaceFolder}/nextjs-client"
         }
     ]
 }
