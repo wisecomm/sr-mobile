@@ -2,25 +2,34 @@
 
 import * as React from "react";
 import { getColumns } from "./columns";
-import { OrderDetail } from "./types";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { InputDialog } from "./input-dialog";
-import { useOrderManagement } from "./hooks/use-order-management";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { SearchPageLayout } from "@/components/common/search-page-layout";
+import { useBoardManagement } from "./hooks/use-board-management";
+import { BoardsBoard } from './types';
 import 'so-grid-react/styles.css';
-import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
+import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
 
-export default function OrdersPage() {
-    const { toast } = useToast();
-    const router = useRouter();
+export default function BoardsPage() {
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            <BoardsContent />
+        </React.Suspense>
+    );
+}
 
-    // Use management hook
+function BoardsContent() {
+    const { toast } = useToast();
+    const searchParamsHook = useSearchParams();
+    const brdIdParam = searchParamsHook.get("brdId") || "";
+
+    // Management hook
     const {
-        orders,
+        posts,
         totalRows,
         isLoading,
         pagination,
@@ -28,20 +37,14 @@ export default function OrdersPage() {
         searchParams,
         onSearch,
         dialogOpen,
-        selectedOrder,
+        selectedPost,
         openDialog,
         closeDialog,
         handleSubmit,
         handleDelete,
         onSortChange,
-    } = useOrderManagement({
-        initialPagination: {
-            pageIndex: 0, // 0페이지부터 시작
-            pageSize: 5, // 한 페이지에 20개씩 표시
-        }
-    });
+    } = useBoardManagement(brdIdParam);
 
-    // Define columns
     const columns = React.useMemo(() => getColumns(), []);
 
     const DEFAULT_COL_DEF = {
@@ -50,8 +53,8 @@ export default function OrdersPage() {
     };
 
     // 그리드 API 참조
-    const gridApiRef = React.useRef<SOGridApi<OrderDetail> | null>(null);
-    const onGridReady = React.useCallback((api: SOGridApi<OrderDetail>) => {
+    const gridApiRef = React.useRef<SOGridApi<BoardsBoard> | null>(null);
+    const onGridReady = React.useCallback((api: SOGridApi<BoardsBoard>) => {
         gridApiRef.current = api;
     }, []);
 
@@ -106,54 +109,44 @@ export default function OrdersPage() {
             return;
         }
 
-        const orderIds = selectedRows.map(row => row.orderId);
-        await handleDelete(orderIds);
+        const boardIds = selectedRows.map(row => row.boardId);
+        await handleDelete(boardIds);
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full max-w-[100vw] overflow-x-hidden h-screen flex flex-col">
-            {/* Header */}
-            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
-                <button
-                    onClick={() => router.replace('/mainmobile')}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
-                >
-                    <ArrowLeft className="w-6 h-6 text-slate-900" />
-                </button>
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight">주문 등록</h1>
-                <div className="w-10 h-10" />
-            </header>
-
-            <main className="flex-1 overflow-y-auto overflow-x-auto space-y-2 mt-2 mx-2">
+        <div className="w-full space-y-6">
+            <SearchPageLayout>
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
                     onSearch={onSearch}
                     isLoading={isLoading}
-                    initialStartDate={searchParams.startDate}
-                    initialEndDate={searchParams.endDate}
+                    initialStartDate={(searchParams.startDate as string) || ""}
+                    initialEndDate={(searchParams.endDate as string) || ""}
                 />
-                <SOGrid
-                    rowData={orders}
-                    columnDefs={columns}
-                    defaultColDef={DEFAULT_COL_DEF}
-                    pagination={true}
-                    PaginationComponent={CustomPaginationM}
-                    serverSide={true}
-                    totalRows={totalRows}
-                    paginationPageSize={pagination.pageSize}
-                    onPaginationChange={handlePaginationChange}
-                    loading={isLoading}
-                    onSortChange={handleSortChange}
-                    onGridReady={onGridReady}
-                    pageIndex={pagination.pageIndex}
-                />
-            </main>
+            </SearchPageLayout>
+            <SOGrid
+                rowData={posts}
+                columnDefs={columns}
+                defaultColDef={DEFAULT_COL_DEF}
+                pagination={true}
+                PaginationComponent={CustomPagination}
+                serverSide={true}
+                totalRows={totalRows}
+                paginationPageSize={pagination.pageSize}
+                onPaginationChange={handlePaginationChange}
+                loading={isLoading}
+                onSortChange={handleSortChange}
+                onGridReady={onGridReady}
+                pageIndex={pagination.pageIndex}
+            />
+
             <InputDialog
                 open={dialogOpen}
-                onOpenChange={closeDialog}
-                item={selectedOrder}
+                onOpenChange={(open) => !open && closeDialog()}
+                board={selectedPost}
+                defaultBrdId={brdIdParam}
                 onSubmit={handleSubmit}
             />
         </div>
