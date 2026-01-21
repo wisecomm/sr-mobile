@@ -46,7 +46,15 @@ export function useLogin() {
         // 1. Redirect if already logged in
         const token = getAccessToken();
         if (token) {
-            router.replace("/users");
+            // Redirect based on device
+            const userAgent = navigator.userAgent;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+            if (isMobile) {
+                router.replace('/mainmobile', { scroll: false });
+            } else {
+                router.replace('/users', { scroll: false });
+            }
             return;
         }
 
@@ -92,7 +100,7 @@ export function useLogin() {
                 if (isMobile) {
                     router.replace('/mainmobile', { scroll: false });
                 } else {
-                    router.replace('/mainmenu', { scroll: false });
+                    router.replace('/users', { scroll: false });
                 }
             } catch (error: unknown) {
                 console.error("onSubmit error:", error);
