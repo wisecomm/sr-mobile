@@ -112,23 +112,23 @@ export default function OrdersPage() {
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full space-y-6">
+        <div className="w-full">
             {/* Header */}
-            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 shrink-0 z-20">
+            <header className="flex items-center justify-between px-4 py-3 bg-red-500 border-b border-red-600 shrink-0 z-20">
                 <button
                     onClick={() => router.replace('/mainmobile')}
-                    className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors -ml-2"
+                    className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors -ml-2 text-white"
                 >
-                    <ArrowLeft className="w-6 h-6 text-slate-900" />
+                    <ArrowLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight flex-1 text-center">출고 처리</h1>
+                <h1 className="text-lg font-bold text-white tracking-tight flex-1 text-center">출고 처리</h1>
                 <div className="w-12 flex items-center justify-end -mr-2">
-                    <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
-                        <History className="w-6 h-6 text-slate-900" />
+                    <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors text-white">
+                        <History className="w-6 h-6" />
                     </button>
                 </div>
             </header>
-            <SearchPageLayout>
+            <div className="w-full overflow-x-auto max-w-[calc(100vw-1rem)] space-y-2 mt-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
@@ -138,23 +138,22 @@ export default function OrdersPage() {
                     initialStartDate={searchParams.startDate}
                     initialEndDate={searchParams.endDate}
                 />
-            </SearchPageLayout>
-            <SOGrid
-                rowData={orders}
-                columnDefs={columns}
-                defaultColDef={DEFAULT_COL_DEF}
-                pagination={true}
-                PaginationComponent={CustomPaginationM}
-                serverSide={true}
-                totalRows={totalRows}
-                paginationPageSize={pagination.pageSize}
-                onPaginationChange={handlePaginationChange}
-                loading={isLoading}
-                onSortChange={handleSortChange}
-                onGridReady={onGridReady}
-                pageIndex={pagination.pageIndex}
-            />
-
+                <SOGrid
+                    rowData={orders}
+                    columnDefs={columns}
+                    defaultColDef={DEFAULT_COL_DEF}
+                    pagination={true}
+                    PaginationComponent={CustomPaginationM}
+                    serverSide={true}
+                    totalRows={totalRows}
+                    paginationPageSize={pagination.pageSize}
+                    onPaginationChange={handlePaginationChange}
+                    loading={isLoading}
+                    onSortChange={handleSortChange}
+                    onGridReady={onGridReady}
+                    pageIndex={pagination.pageIndex}
+                />
+            </div>
             <InputDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}
