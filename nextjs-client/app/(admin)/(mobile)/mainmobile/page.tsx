@@ -52,7 +52,7 @@ export default function MainMenuPage() {
                         <DropdownMenuTrigger asChild>
                             <div className="cursor-pointer">
                                 <Avatar className="h-11 w-11 border-2 border-background shadow-sm">
-                                    <AvatarImage src="/images/avatar-placeholder.png" />
+                                    <AvatarImage src="/images/lx-logo.svg" className="object-contain" />
                                     <AvatarFallback className="bg-primary/10 text-primary font-bold">
                                         {user?.userName?.[0] || 'U'}
                                     </AvatarFallback>

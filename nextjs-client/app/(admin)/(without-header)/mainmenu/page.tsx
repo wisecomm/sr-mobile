@@ -42,7 +42,7 @@ export default function MainMenuPage() {
             <header className="flex items-center justify-between p-4 bg-background border-b sticky top-0 z-10">
                 <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border">
-                        <AvatarImage src="/images/avatar-placeholder.png" />
+                        <AvatarImage src="/images/lx-logo.svg" className="object-contain" />
                         <AvatarFallback className="bg-primary/10 text-primary">
                             {user?.userName?.[0] || '管'}
                         </AvatarFallback>
