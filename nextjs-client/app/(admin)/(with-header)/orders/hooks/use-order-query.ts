@@ -36,12 +36,12 @@ const orderApi = {
         return apiClient.get<OrderDetail>(`${BASE_URL}/${id}`);
     },
 
-    create: (data: Partial<OrderDetail>): Promise<ApiResponse<OrderDetail>> => {
-        return apiClient.post<OrderDetail>(BASE_URL, data);
+    create: (data: Partial<OrderDetail>): Promise<ApiResponse<void>> => {
+        return apiClient.post<void>(BASE_URL, data);
     },
 
-    update: (id: string, data: Partial<OrderDetail>): Promise<ApiResponse<OrderDetail>> => {
-        return apiClient.put<OrderDetail>(`${BASE_URL}/${id}`, data);
+    update: (id: string, data: Partial<OrderDetail>): Promise<ApiResponse<void>> => {
+        return apiClient.put<void>(`${BASE_URL}/${id}`, data);
     },
 
     delete: (id: string): Promise<ApiResponse<void>> => {
@@ -74,12 +74,12 @@ export const useOrders = createPaginatedQuery<
 /**
  * Mutations
  */
-export const useCreateOrder = createMutation<OrderDetail, Partial<OrderDetail>>({
+export const useCreateOrder = createMutation<void, Partial<OrderDetail>>({
     mutationFn: (data) => orderApi.create(data),
     invalidateKeys: [orderKeys.all],
 });
 
-export const useUpdateOrder = createMutation<OrderDetail, { id: string; data: Partial<OrderDetail> }>({
+export const useUpdateOrder = createMutation<void, { id: string; data: Partial<OrderDetail> }>({
     mutationFn: ({ id, data }) => orderApi.update(id, data),
     invalidateKeys: [orderKeys.all],
 });
