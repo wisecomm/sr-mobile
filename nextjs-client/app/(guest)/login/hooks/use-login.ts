@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAppStore } from "@/store/use-app-store";
-import { login, getAccessToken } from "@/app/actions/auth-actions";
+import { login, getTokens } from "@/app/actions/auth-actions";
 import { sessionManager } from "@/lib/auth/session-manager";
 
 // Schema Definition
@@ -43,20 +43,27 @@ export function useLogin() {
 
     // Check login status & Load saved ID
     useEffect(() => {
-        // 1. Redirect if already logged in
-        const token = getAccessToken();
-        if (token) {
-            // Redirect based on device
-            const userAgent = navigator.userAgent;
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        // 1. Redirect if already logged in (Async Check using Server Action)
+        const checkLogin = async () => {
+            try {
+                const { accessToken } = await getTokens();
+                if (accessToken) {
+                    // Redirect based on device
+                    const userAgent = navigator.userAgent;
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 
-            if (isMobile) {
-                router.replace('/mainmobile', { scroll: false });
-            } else {
-                router.replace('/users', { scroll: false });
+                    if (isMobile) {
+                        router.replace('/mainmobile', { scroll: false });
+                    } else {
+                        router.replace('/users', { scroll: false });
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to check login status:", error);
             }
-            return;
-        }
+        };
+
+        checkLogin();
 
         // 2. Load saved ID
         const savedId = sessionManager.getSavedId();
@@ -70,8 +77,8 @@ export function useLogin() {
         startTransition(async () => {
             try {
                 const formData = new FormData();
-                formData.append('userid', data.userId);
-                formData.append('password', data.userPwd);
+                formData.append('userId', data.userId);
+                formData.append('userPwd', data.userPwd);
 
                 const loginResult = await login(formData);
 
@@ -92,6 +99,9 @@ export function useLogin() {
                 }
 
                 setUser(loginResult.data.user);
+
+                // Initialize session activity timer
+                sessionManager.updateLastActivity();
 
                 // Redirect based on device
                 const userAgent = navigator.userAgent;

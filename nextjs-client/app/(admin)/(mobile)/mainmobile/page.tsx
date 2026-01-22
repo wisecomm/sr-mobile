@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/app/actions/auth-actions";
 import { useRouter } from "next/navigation";
+import { sessionManager } from "@/lib/auth/session-manager";
 
 const menuItems = [
     { title: "재고 입고", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
@@ -66,6 +67,7 @@ export default function MainMenuPage() {
                                 className="text-destructive focus:text-destructive cursor-pointer gap-2"
                                 onClick={async () => {
                                     await logout();
+                                    sessionManager.clearSession();
                                     router.replace("/login");
                                 }}
                             >
@@ -125,6 +127,11 @@ export default function MainMenuPage() {
                 <Button
                     variant="destructive"
                     className="w-full h-14 rounded-xl shadow-lg font-bold text-lg pointer-events-auto gap-2 hover:bg-destructive/90 transition-all active:scale-90 active:bg-destructive/80"
+                    onClick={async () => {
+                        await logout();
+                        sessionManager.clearSession();
+                        router.replace("/login");
+                    }}
                 >
                     <Power className="h-5 w-5" />
                     작업 종료

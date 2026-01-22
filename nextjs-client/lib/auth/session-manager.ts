@@ -175,7 +175,9 @@ class SessionManager {
      * 세션 유효성 확인
      */
     isSessionValid(): boolean {
-        return !this.isSessionExpired() && this.getAccessToken() !== null;
+        // [Refactor] HttpOnly Cookie 전환으로 인해 클라이언트 측 토큰 유무는 체크하지 않음
+        // 오직 '활동이 있었는지'와 '타임아웃(30분)이 지났는지'만 체크
+        return !this.isSessionExpired();
     }
 
     /**

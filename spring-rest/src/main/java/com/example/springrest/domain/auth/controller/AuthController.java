@@ -117,5 +117,30 @@ public class AuthController {
         TokenValidationResponse response = authService.validateToken(request.getToken());
 
         return ResponseEntity.ok(ApiResponse.success(response));
+
+    /**
+     * 로그아웃 API
+     * 
+     * @param request HTTP 요청 (Authorization 헤더 추출용)
+     * @return 성공 응답
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
+        String token = resolveToken(request);
+        if (token != null) {
+            authService.logout(token);
+        }
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    /**
+     * Request Header에서 토큰 추출
+     */
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

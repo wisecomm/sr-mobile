@@ -124,6 +124,24 @@ public class AuthService {
     }
 
     /**
+     * 로그아웃 처리
+     * 현재는 Stateless JWT이므로 별도의 토큰 무효화 로직(예: Redis Blacklist)이 없다면
+     * 로그 기록 정도로만 사용됩니다.
+     * 
+     * @param token Access Token
+     */
+    public void logout(String token) {
+        try {
+            if (jwtTokenProvider.validateToken(token)) {
+                String userId = jwtTokenProvider.extractUserId(token);
+                log.info("User {} logged out", userId);
+            }
+        } catch (Exception e) {
+            log.warn("Logout process warning: {}", e.getMessage());
+        }
+    }
+
+    /**
      * JWT 토큰 검증
      * 
      * @param token JWT 토큰

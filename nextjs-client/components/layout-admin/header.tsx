@@ -3,9 +3,11 @@
 import { Bell, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { logout } from "@/app/actions/auth-actions";
 import { useAppStore } from "@/store/use-app-store";
+import { sessionManager } from "@/lib/auth/session-manager";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,18 +30,22 @@ export function Header() {
     const [mounted, setMounted] = useState(false);
     const user = useAppStore((state) => state.user);
     const clearUser = useAppStore((state) => state.clearUser);
+    const router = useRouter();
 
     useEffect(() => {
-        // Use setTimeout to avoid "synchronous setState in useEffect" lint error
+        // ... existing useEffect
         const timer = setTimeout(() => {
             setMounted(true);
         }, 0);
         return () => clearTimeout(timer);
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        setIsLogoutDialogOpen(false);
+        await logout();
         clearUser();
-        logout();
+        sessionManager.clearSession();
+        router.replace('/login');
     };
 
     return (

@@ -3,48 +3,22 @@
  * 
  * 중앙화된 API 호출 및 에러 처리를 제공합니다.
  * 모든 API 요청은 이 레이어를 통해 처리되어야 합니다.
+ * 
+ * [Refactor Note]: Server-Side Token Authentication (Cookies)으로 전환됨에 따라
+ * 클라이언트 측에서의 토큰 주입 및 갱신 로직이 제거되었습니다.
+ * 이제 Next.js Proxy (`app/api/[...path]/route.ts`)가 자동으로 쿠키에서 토큰을 읽어 주입합니다.
  */
 
 import axios, { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios';
 import { ApiResponse } from '@/types';
-import { getAccessToken, getRefreshToken, updateAccessToken, logout } from '@/app/actions/auth-actions';
-
-/**
- * 토큰 갱신 상태 관리 (중복 갱신 방지)
- */
-let isRefreshing = false;
-let refreshPromise: Promise<string | null> | null = null;
-
-/**
- * 토큰 갱신 함수 (싱글톤 패턴)
- */
-async function refreshAccessToken(): Promise<string | null> {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) return null;
-
-    try {
-        const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL || '/api'}/v1/auth/refresh`,
-            { refreshToken }
-        );
-
-        const newToken = response.data?.data?.accessToken;
-        if (newToken) {
-            updateAccessToken(newToken);
-            return newToken;
-        }
-        return null;
-    } catch (error) {
-        console.error('[API] Token refresh failed:', error);
-        return null;
-    }
-}
 
 /**
  * Axios 인스턴스 생성
  */
 const createAxiosInstance = (): AxiosInstance => {
     const instance = axios.create({
+        // Next.js Proxy 사용 (app/api/[...path]/route.ts 참고)
+        // 개발/운영 환경 모두 /api 경로로 요청하면 Manual Proxy가 백엔드로 전달합니다.
         baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
         timeout: 30000,
         headers: {
@@ -65,13 +39,10 @@ const createAxiosInstance = (): AxiosInstance => {
         },
     });
 
-    // Request Interceptor - 토큰 추가 및 Content-Type 처리
+    // Request Interceptor
     instance.interceptors.request.use(
         (config) => {
-            const token = getAccessToken();
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
+            // [Modified] 토큰 주입 로직 제거 (Proxy가 쿠키 기반으로 처리)
 
             // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동으로 multipart/form-data 및 boundary 설정)
             if (config.data instanceof FormData) {
@@ -83,40 +54,19 @@ const createAxiosInstance = (): AxiosInstance => {
         (error) => Promise.reject(error)
     );
 
-    // Response Interceptor - 토큰 갱신 및 에러 처리
+    // Response Interceptor
     instance.interceptors.response.use(
         (response) => response.data,
         async (error: AxiosError) => {
-            const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
-
-            // 401 에러 시 토큰 갱신 시도
-            if (error.response?.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true;
-
-                // 이미 갱신 중이면 기존 Promise 재사용
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    refreshPromise = refreshAccessToken();
-                }
-
-                try {
-                    const newToken = await refreshPromise;
-
-                    if (newToken) {
-                        if (originalRequest.headers) {
-                            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                        }
-                        return instance(originalRequest);
-                    }
-
-                    logout();
-                    return Promise.reject(error);
-                } finally {
-                    isRefreshing = false;
-                    refreshPromise = null;
+            // [Modified] 토큰 갱신 로직 제거 (Proxy가 처리)
+            // 401 에러가 여기까지 도달했다는 것은 Proxy에서의 갱신도 실패했다는 의미입니다.
+            // (예: 리프레시 토큰 만료)
+            if (error.response?.status === 401) {
+                if (typeof window !== 'undefined') {
+                    // 세션 만료 시 로그인 페이지로 이동
+                    window.location.href = '/login';
                 }
             }
-
             return Promise.reject(error);
         }
     );
@@ -288,5 +238,3 @@ export const apiClient = new ApiClient();
  * Raw axios 인스턴스 (특수한 경우에만 사용)
  */
 export { api };
-
-
