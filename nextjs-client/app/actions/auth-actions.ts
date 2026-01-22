@@ -9,7 +9,8 @@ import {
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
 
-const API_URL = 'http://localhost:8080';
+// Backend API URL (without /api suffix for direct auth calls)
+const API_URL = process.env.BACKEND_API_URL?.replace('/api', '') || 'http://localhost:8080';
 
 /**
  * Get tokens from cookies (Server Side)

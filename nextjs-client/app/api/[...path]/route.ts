@@ -5,8 +5,8 @@ import {
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
 
-// Point to the actual Spring Boot Backend (localhost:8080)
-export const API_URL = 'http://localhost:8080/api';
+// Backend API URL from environment variable
+export const API_URL = process.env.BACKEND_API_URL || 'http://localhost:8080/api';
 
 async function proxyRequest(request: NextRequest, path: string) {
     // Read tokens from HttpOnly Cookies
