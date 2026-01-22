@@ -117,6 +117,7 @@ public class AuthController {
         TokenValidationResponse response = authService.validateToken(request.getToken());
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     /**
      * 로그아웃 API
