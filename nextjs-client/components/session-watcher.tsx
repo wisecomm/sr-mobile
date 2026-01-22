@@ -26,7 +26,7 @@ export function SessionWatcher() {
 
         // 세션이 유효하지 않으면 로그인 페이지로 이동
         if (!isValid) {
-            console.warn('[SessionWatcher] Session invalid or expired, redirecting to login');
+            console.warn('[SessionWatcher] Session invalid or expired, redirecting to login. isValid:', isValid);
             authService.handleUnauthorized();
         }
         return isValid;

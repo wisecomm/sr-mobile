@@ -64,7 +64,12 @@ const createAxiosInstance = (): AxiosInstance => {
             if (error.response?.status === 401) {
                 if (typeof window !== 'undefined') {
                     // 세션 만료 시 로그인 페이지로 이동
-                    window.location.href = '/login';
+                    console.warn('[ApiClient] 401 Unauthorized detected. Executing logout...');
+
+                    // Circular Dependency 방지를 위해 dynamic import 사용
+                    import('@/lib/auth/auth-service').then(({ authService }) => {
+                        authService.handleUnauthorized();
+                    });
                 }
             }
             return Promise.reject(error);

@@ -3,6 +3,9 @@
  * 
  * 세션 및 토큰 관리를 위한 중앙화된 클래스
  * localStorage 직접 접근을 캡슐화하고 타입 안전성을 제공합니다.
+ * 
+ * [Refactor Note]: HttpOnly Cookie 기반 인증으로 전환됨에 따라
+ * 클라이언트 측에서의 토큰 저장(localStorage) 로직이 제거되었습니다.
  */
 
 import { LoginData, UserInfo } from './types';
@@ -11,8 +14,6 @@ import { LoginData, UserInfo } from './types';
  * 세션 스토리지 키 정의
  */
 const SESSION_KEYS = {
-    ACCESS_TOKEN: 'accessToken',
-    REFRESH_TOKEN: 'refreshToken',
     USER_INFO: 'userInfo',
     LAST_ACTIVE: 'lastActive',
     SAVED_ID: 'savedId',
@@ -30,8 +31,6 @@ console.log('[SessionManager] Initialized with timeout:', SESSION_TIMEOUT_MS, 'm
  * 세션 데이터 타입
  */
 export interface SessionData {
-    accessToken: string;
-    refreshToken: string;
     userInfo: UserInfo;
     lastActive: number;
 }
@@ -51,9 +50,8 @@ class SessionManager {
         if (!this.isClient) return;
 
         try {
-            localStorage.setItem(SESSION_KEYS.ACCESS_TOKEN, data.token);
-            localStorage.setItem(SESSION_KEYS.REFRESH_TOKEN, data.refreshToken);
-            localStorage.setItem(SESSION_KEYS.USER_INFO, JSON.stringify(data.user));
+            // 토큰은 HttpOnly 쿠키로 관리되므로 localStorage에 저장하지 않음
+            if (data.user) localStorage.setItem(SESSION_KEYS.USER_INFO, JSON.stringify(data.user));
             this.updateLastActivity();
         } catch (error) {
             console.error('[SessionManager] Failed to set session:', error);
@@ -79,31 +77,6 @@ class SessionManager {
     }
 
     /**
-     * 액세스 토큰 조회
-     * 세션 타임아웃 체크 포함
-     */
-    getAccessToken(): string | null {
-        if (!this.isClient) return null;
-
-        // 세션 타임아웃 체크
-        if (this.isSessionExpired()) {
-            console.warn('[SessionManager] Session expired');
-            this.clearSession();
-            return null;
-        }
-
-        return this.getItem(SESSION_KEYS.ACCESS_TOKEN);
-    }
-
-    /**
-     * 리프레시 토큰 조회
-     */
-    getRefreshToken(): string | null {
-        if (!this.isClient) return null;
-        return this.getItem(SESSION_KEYS.REFRESH_TOKEN);
-    }
-
-    /**
      * 사용자 정보 조회
      */
     getUserInfo(): UserInfo | null {
@@ -117,23 +90,6 @@ class SessionManager {
         } catch (error) {
             console.error('[SessionManager] Failed to parse user info:', error);
             return null;
-        }
-    }
-
-    /**
-     * 토큰 업데이트 (토큰 갱신 시 사용)
-     */
-    updateTokens(accessToken: string, refreshToken?: string): void {
-        if (!this.isClient) return;
-
-        try {
-            localStorage.setItem(SESSION_KEYS.ACCESS_TOKEN, accessToken);
-            if (refreshToken) {
-                localStorage.setItem(SESSION_KEYS.REFRESH_TOKEN, refreshToken);
-            }
-            this.updateLastActivity();
-        } catch (error) {
-            console.error('[SessionManager] Failed to update tokens:', error);
         }
     }
 
@@ -186,18 +142,14 @@ class SessionManager {
      * 전체 세션 데이터 조회
      */
     getSessionData(): SessionData | null {
-        const accessToken = this.getAccessToken();
-        const refreshToken = this.getRefreshToken();
         const userInfo = this.getUserInfo();
         const lastActive = this.getLastActivity();
 
-        if (!accessToken || !refreshToken || !userInfo || !lastActive) {
+        if (!userInfo || !lastActive) {
             return null;
         }
 
         return {
-            accessToken,
-            refreshToken,
             userInfo,
             lastActive,
         };
