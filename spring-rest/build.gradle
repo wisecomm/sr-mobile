@@ -80,39 +80,4 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-def frontendDir = "$projectDir/../nextjs-client"
 
-task buildFrontend(type: Exec) {
-    group = 'build'
-    description = 'Builds the Next.js frontend and copies it to the static resources directory.'
-
-    workingDir frontendDir
-    
-    // Enable static export for production build
-    environment 'STATIC_EXPORT', 'true'
-    
-    // Check if we should use pnpm or npm
-    def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
-    def pnpmCmd = isWindows ? 'cmd /c pnpm' : 'pnpm'
-    
-    // Determine build command based on profile
-    def profile = project.hasProperty('profile') ? project.property('profile') : 'prod'
-    def buildCmd = (profile == 'dev') ? 'run build:dev' : 'build'
-    
-    if (isWindows) {
-        commandLine 'cmd', '/c', "pnpm install && pnpm ${buildCmd}"
-    } else {
-        commandLine 'sh', '-c', "pnpm install && pnpm ${buildCmd}"
-    }
-}
-
-task copyFrontend(type: Copy) {
-    dependsOn buildFrontend
-    from "${frontendDir}/out"
-    into "${projectDir}/src/main/resources/static"
-}
-
-processResources.dependsOn copyFrontend
-clean.doFirst {
-    delete "${projectDir}/src/main/resources/static"
-}

@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 정적 빌드: STATIC_EXPORT=true npm run build
-  output: process.env.STATIC_EXPORT === 'true' ? 'export' : undefined,
+
   images: {
     unoptimized: true,
     remotePatterns: [
