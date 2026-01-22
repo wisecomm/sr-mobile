@@ -19,9 +19,12 @@ const SESSION_KEYS = {
 } as const;
 
 /**
- * 세션 타임아웃 설정 (30분)
+ * 세션 타임아웃 설정
+ * 환경 변수에서 시간을 가져오거나 기본값(30분) 사용
  */
-export const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+const TIMEOUT_ENV = process.env.NEXT_PUBLIC_SESSION_TIMEOUT_MS;
+export const SESSION_TIMEOUT_MS = TIMEOUT_ENV ? parseInt(TIMEOUT_ENV, 10) : 30 * 60 * 1000;
+console.log('[SessionManager] Initialized with timeout:', SESSION_TIMEOUT_MS, 'ms', '(Env:', TIMEOUT_ENV, ')');
 
 /**
  * 세션 데이터 타입
@@ -168,6 +171,7 @@ class SessionManager {
         if (!lastActive) return false;
 
         const inactiveTime = Date.now() - lastActive;
+        console.log('[SessionManager] Inactive time:', Math.floor(inactiveTime / 1000), 's', 'Timeout:', Math.floor(SESSION_TIMEOUT_MS / 1000), 's');
         return inactiveTime > SESSION_TIMEOUT_MS;
     }
 
@@ -175,8 +179,6 @@ class SessionManager {
      * 세션 유효성 확인
      */
     isSessionValid(): boolean {
-        // [Refactor] HttpOnly Cookie 전환으로 인해 클라이언트 측 토큰 유무는 체크하지 않음
-        // 오직 '활동이 있었는지'와 '타임아웃(30분)이 지났는지'만 체크
         return !this.isSessionExpired();
     }
 

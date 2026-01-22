@@ -1,7 +1,7 @@
 "use client";
 
 
-import { SessionManager } from "@/components/session-manager";
+import { SessionWatcher } from "@/components/session-watcher";
 
 export default function AdminLayout({
     children,
@@ -12,7 +12,7 @@ export default function AdminLayout({
 
     return (
         <>
-            <SessionManager />
+            <SessionWatcher />
             {children}
         </>
     );

@@ -27,6 +27,8 @@ export interface LogoutOptions {
     redirectUrl?: string;
 }
 
+import { logout as logoutAction } from '@/app/actions/auth-actions';
+
 /**
  * AuthService 클래스
  */
@@ -72,10 +74,9 @@ class AuthService {
         const { redirect = true, redirectUrl = '/login' } = options;
 
         try {
-            // 서버에 로그아웃 요청 (선택적)
-            // await apiClient.post('/v1/auth/logout');
-
             console.log('[AuthService] Logging out...');
+            // 서버 쿠키 삭제 (Server Action)
+            await logoutAction();
         } catch (error) {
             console.error('[AuthService] Logout error:', error);
             // 에러가 있어도 로컬 세션은 삭제
@@ -120,8 +121,15 @@ class AuthService {
     /**
      * 인증 실패 처리 (401 Unauthorized)
      */
-    handleUnauthorized(redirect: boolean = true): void {
+    async handleUnauthorized(redirect: boolean = true): Promise<void> {
         console.warn('[AuthService] Unauthorized access detected');
+
+        try {
+            // 서버 쿠키 삭제 (Server Action)
+            await logoutAction();
+        } catch (error) {
+            console.error('[AuthService] Failed to clear server cookies:', error);
+        }
 
         // 세션 클리어
         sessionManager.clearSession();
