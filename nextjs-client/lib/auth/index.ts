@@ -7,13 +7,20 @@
 export { sessionManager, SESSION_TIMEOUT_MS } from './session-manager';
 export type { SessionData } from './session-manager';
 
-export { tokenService } from './token-service';
-export type { TokenRefreshResult } from './token-service';
-
 export { authService } from './auth-service';
 export type { LoginRequest, LogoutOptions } from './auth-service';
 
 export * from './types';
+
+export {
+    getTokensFromCookies,
+    setSessionCookies,
+    updateAccessTokenCookie,
+    clearSessionCookies,
+    COOKIE_ACCESS_TOKEN,
+    COOKIE_REFRESH_TOKEN,
+    COOKIE_OPTIONS,
+} from './cookie-utils';
 
 
 

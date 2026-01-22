@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteSession, getTokens, createSession } from '@/app/actions/auth-actions';
+import {
+    getTokensFromCookies,
+    setSessionCookies,
+    clearSessionCookies,
+} from '@/lib/auth/cookie-utils';
 
 // Point to the actual Spring Boot Backend (localhost:8080)
 export const API_URL = 'http://localhost:8080/api';
 
 async function proxyRequest(request: NextRequest, path: string) {
     // Read tokens from HttpOnly Cookies
-    const { accessToken } = await getTokens();
+    const { accessToken } = await getTokensFromCookies();
 
     // 1. 요청 URL 재구성
     const targetUrl = `${API_URL}/${path}${request.nextUrl.search}`;
@@ -81,7 +85,7 @@ async function proxyRequest(request: NextRequest, path: string) {
 }
 
 async function handleTokenRefresh(originalRequest: NextRequest, path: string) {
-    const { refreshToken } = await getTokens();
+    const { refreshToken } = await getTokensFromCookies();
 
     if (!refreshToken) {
         return NextResponse.json({ code: '401', message: 'Unauthorized', data: null }, { status: 401 });
@@ -112,8 +116,8 @@ async function handleTokenRefresh(originalRequest: NextRequest, path: string) {
             throw new Error('Invalid refresh response');
         }
 
-        // 2. 쿠키 갱신 (Server Action)
-        await createSession(newAccessToken, newRefreshToken);
+        // 2. 쿠키 갱신
+        await setSessionCookies(newAccessToken, newRefreshToken);
 
         // 3. 원래 요청 재시도
         const targetUrl = `${API_URL}/${path}${originalRequest.nextUrl.search}`;
@@ -148,8 +152,8 @@ async function handleTokenRefresh(originalRequest: NextRequest, path: string) {
 
     } catch (error) {
         console.error('Token Refresh Error:', error);
-        // 리프레시 실패 시 세션 삭제 및 401 반환
-        await deleteSession();
+        // 리프레시 실패 시 쿠키 삭제 및 401 반환
+        await clearSessionCookies();
         return NextResponse.json({ code: '401', message: 'Session expired', data: null }, { status: 401 });
     }
 }

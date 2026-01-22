@@ -6,7 +6,6 @@
 
 import { apiClient } from '@/lib/api-client';
 import { sessionManager } from './session-manager';
-import { tokenService } from './token-service';
 import { useAppStore } from '@/store/use-app-store';
 import { ApiResponse } from '@/types';
 import { LoginData } from './types';
@@ -112,10 +111,19 @@ class AuthService {
 
     /**
      * 토큰 갱신
+     * Note: HttpOnly 쿠키 기반에서는 프록시가 401 시 자동 갱신함
+     * 이 메소드는 명시적 갱신이 필요한 경우에만 사용
      */
     async refreshToken(): Promise<boolean> {
-        const result = await tokenService.refreshToken();
-        return result.success;
+        try {
+            const response = await fetch('/api/v1/auth/refresh', {
+                method: 'POST',
+                credentials: 'include',
+            });
+            return response.ok;
+        } catch {
+            return false;
+        }
     }
 
     /**

@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -10,14 +9,6 @@ const nextConfig: NextConfig = {
         hostname: "picsum.photos",
       },
     ],
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:8080/api/:path*",
-      },
-    ];
   },
 };
 
