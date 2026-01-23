@@ -25,7 +25,6 @@ const SESSION_KEYS = {
  */
 const TIMEOUT_ENV = process.env.NEXT_PUBLIC_SESSION_TIMEOUT_MS;
 export const SESSION_TIMEOUT_MS = TIMEOUT_ENV ? parseInt(TIMEOUT_ENV, 10) : 30 * 60 * 1000;
-console.log('[SessionManager] Initialized with timeout:', SESSION_TIMEOUT_MS, 'ms', '(Env:', TIMEOUT_ENV, ')');
 
 /**
  * 세션 데이터 타입
@@ -127,7 +126,6 @@ class SessionManager {
         if (!lastActive) return false;
 
         const inactiveTime = Date.now() - lastActive;
-        console.log('[SessionManager] Inactive time:', Math.floor(inactiveTime / 1000), 's', 'Timeout:', Math.floor(SESSION_TIMEOUT_MS / 1000), 's');
         return inactiveTime > SESSION_TIMEOUT_MS;
     }
 

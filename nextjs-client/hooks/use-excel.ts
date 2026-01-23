@@ -51,41 +51,34 @@ export function useExcel() {
             return;
         }
 
-        try {
-            setIsUploading(true);
-            const formData = new FormData();
-            formData.append('file', file);
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
 
-            const response = await apiClient.post(url, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        const response = await apiClient.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 
-            // apiClient catches errors and returns an ApiResponse with error details
-            // We should check the response code or message
-            if (response.code !== '200') {
-                throw new Error(response.message || '엑셀 업로드 중 오류가 발생했습니다.');
-            }
+        setIsUploading(false);
 
-            toast({
-                title: '업로드 완료',
-                description: '엑셀 데이터가 성공적으로 처리되었습니다.',
-                variant: 'success',
-            });
-
-            if (onSuccess) onSuccess();
-        } catch (error) {
-            console.error('Excel upload failed', error);
-            const message = error instanceof Error ? error.message : '엑셀 업로드 중 오류가 발생했습니다.';
+        if (response.code !== '200') {
             toast({
                 title: '업로드 실패',
-                description: message,
+                description: response.message || '엑셀 업로드 중 오류가 발생했습니다.',
                 variant: 'destructive',
             });
-        } finally {
-            setIsUploading(false);
+            return;
         }
+
+        toast({
+            title: '업로드 완료',
+            description: '엑셀 데이터가 성공적으로 처리되었습니다.',
+            variant: 'success',
+        });
+
+        onSuccess?.()
     }, [toast]);
 
     return {

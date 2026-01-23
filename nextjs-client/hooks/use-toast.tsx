@@ -57,53 +57,44 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     return (
-        <ToastContext.Provider value= {{ toasts, toast, dismiss }
-}>
-    { children }
-    < ToastContainer toasts = { toasts } dismiss = { dismiss } />
+        <ToastContext.Provider value={{ toasts, toast, dismiss }}>
+            {children}
+            <ToastContainer toasts={toasts} dismiss={dismiss} />
         </ToastContext.Provider>
     )
 }
 
 function ToastContainer({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: string) => void }) {
     return (
-        <div className= "fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-md" >
-        {
-            toasts.map((toast) => (
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-md">
+            {toasts.map((toast) => (
                 <div
-                    key= { toast.id }
-                    className = {
-                    cn(
+                    key={toast.id}
+                    className={cn(
                         "relative flex items-start gap-3 p-4 rounded-lg shadow-lg border backdrop-blur-sm",
                         "animate-in slide-in-from-bottom-5 fade-in duration-300",
                         toast.variant === "destructive" && "bg-red-500/90 text-white border-red-600",
-                    toast.variant === "success" && "bg-green-500/90 text-white border-green-600",
-                    toast.variant === "default" && "bg-slate-900/90 text-white border-slate-700 dark:bg-slate-800/90"
-                    )
-        }
-        >
-        <div className="flex-1" >
-        {
-            toast.title && (
-                <p className="font-semibold text-sm"> { toast.title } </p>
-                        )
-        }
-    {
-        toast.description && (
-            <p className="text-sm opacity-90 mt-1" > { toast.description } </p>
-                        )
-    }
-    </div>
-        < button
-    onClick = {() => dismiss(toast.id)
-}
-className = "p-1 rounded-md hover:bg-white/20 transition-colors"
-    >
-    <X className="h-4 w-4" />
-        </button>
-        </div>
+                        toast.variant === "success" && "bg-green-500/90 text-white border-green-600",
+                        toast.variant === "default" && "bg-slate-900/90 text-white border-slate-700 dark:bg-slate-800/90"
+                    )}
+                >
+                    <div className="flex-1">
+                        {toast.title && (
+                            <p className="font-semibold text-sm">{toast.title}</p>
+                        )}
+                        {toast.description && (
+                            <p className="text-sm opacity-90 mt-1">{toast.description}</p>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => dismiss(toast.id)}
+                        className="p-1 rounded-md hover:bg-white/20 transition-colors"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
             ))}
-</div>
+        </div>
     )
 }
 
