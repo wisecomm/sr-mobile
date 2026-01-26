@@ -5,7 +5,6 @@ import { LoginData } from '@/lib/auth/types';
 import {
     getTokensFromCookies,
     setSessionCookies,
-    updateAccessTokenCookie,
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
 
@@ -24,13 +23,6 @@ export async function getTokens() {
  */
 export async function createSession(accessToken: string, refreshToken: string) {
     return setSessionCookies(accessToken, refreshToken);
-}
-
-/**
- * Update access token only
- */
-export async function updateAccessToken(token: string, refreshToken?: string) {
-    return updateAccessTokenCookie(token, refreshToken);
 }
 
 /**

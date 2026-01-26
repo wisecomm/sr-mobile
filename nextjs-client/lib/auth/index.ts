@@ -15,7 +15,6 @@ export * from './types';
 export {
     getTokensFromCookies,
     setSessionCookies,
-    updateAccessTokenCookie,
     clearSessionCookies,
     COOKIE_ACCESS_TOKEN,
     COOKIE_REFRESH_TOKEN,

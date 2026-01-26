@@ -46,25 +46,6 @@ export async function setSessionCookies(accessToken: string, refreshToken: strin
 }
 
 /**
- * Access Token만 업데이트
- */
-export async function updateAccessTokenCookie(token: string, refreshToken?: string) {
-    const cookieStore = await cookies();
-
-    cookieStore.set(COOKIE_ACCESS_TOKEN, token, {
-        ...COOKIE_OPTIONS,
-        maxAge: 24 * 60 * 60,
-    });
-
-    if (refreshToken) {
-        cookieStore.set(COOKIE_REFRESH_TOKEN, refreshToken, {
-            ...COOKIE_OPTIONS,
-            maxAge: 7 * 24 * 60 * 60,
-        });
-    }
-}
-
-/**
  * 쿠키에서 세션 삭제
  */
 export async function clearSessionCookies() {
