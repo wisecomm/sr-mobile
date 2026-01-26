@@ -31,24 +31,6 @@ export const getColumns = (): SOColumnDef<BoardsBoard>[] => [
         sortable: true,
     },
     {
-        field: 'hitCnt',
-        headerName: '조회수',
-        maxWidth: 80,
-        sortable: true,
-    },
-    {
-        field: 'secretYn',
-        headerName: '공개',
-        maxWidth: 60,
-        sortable: true,
-    },
-    {
-        field: 'useYn',
-        headerName: '사용',
-        maxWidth: 60,
-        sortable: true,
-    },
-    {
         field: 'sysInsertDtm',
         headerName: '등록일',
         valueFormatter: CommonGrid.formatDate,

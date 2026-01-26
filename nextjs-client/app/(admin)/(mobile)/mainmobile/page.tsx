@@ -32,7 +32,8 @@ const menuItems = [
     { title: "재고 조회", icon: Scan, color: "text-primary", href: "/stock/item" },
     { title: "재고 출고", icon: Boxes, color: "text-foreground", href: "/stock/outbound" },
     { title: "탭 업무", icon: RotateCcw, color: "text-foreground", href: "/stock-tab" },
-    { title: "보드 작업", icon: ClipboardList, color: "text-foreground", href: "/copy/boards/master" },
+    //    { title: "보드 작업", icon: ClipboardList, color: "text-foreground", href: "/copy/boards/master" },
+    { title: "보드 작업", icon: ClipboardList, color: "text-foreground", href: "/copy/boards/board" },
     { title: "재고 그리드", icon: Bird, color: "text-foreground", href: "/copy/orders" },
 ];
 

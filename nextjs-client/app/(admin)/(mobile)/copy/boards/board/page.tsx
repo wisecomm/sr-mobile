@@ -6,13 +6,14 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "next/navigation";
-import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { useBoardManagement } from "./hooks/use-board-management";
 import { BoardsBoard } from './types';
 import 'so-grid-react/styles.css';
-import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
 
 export default function BoardsPage() {
     return (
@@ -24,6 +25,8 @@ export default function BoardsPage() {
 
 function BoardsContent() {
     const { toast } = useToast();
+    const router = useRouter();
+
     const searchParamsHook = useSearchParams();
     const brdIdParam = searchParamsHook.get("brdId") || "";
 
@@ -114,8 +117,20 @@ function BoardsContent() {
     }, [handleDelete, toast]);
 
     return (
-        <div className="w-full space-y-6">
-            <SearchPageLayout>
+        <div className="w-full max-w-[100vw] overflow-x-hidden h-screen flex flex-col">
+            {/* Header */}
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
+                <button
+                    onClick={() => router.replace('/mainmobile')}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
+                >
+                    <ArrowLeft className="w-6 h-6 text-slate-900" />
+                </button>
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight">주문 등록</h1>
+                <div className="w-10 h-10" />
+            </header>
+
+            <main className="flex-1 overflow-y-auto overflow-x-auto space-y-2 mt-2 mx-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
@@ -125,22 +140,22 @@ function BoardsContent() {
                     initialStartDate={(searchParams.startDate as string) || ""}
                     initialEndDate={(searchParams.endDate as string) || ""}
                 />
-            </SearchPageLayout>
-            <SOGrid
-                rowData={posts}
-                columnDefs={columns}
-                defaultColDef={DEFAULT_COL_DEF}
-                pagination={true}
-                PaginationComponent={CustomPagination}
-                serverSide={true}
-                totalRows={totalRows}
-                paginationPageSize={pagination.pageSize}
-                onPaginationChange={handlePaginationChange}
-                loading={isLoading}
-                onSortChange={handleSortChange}
-                onGridReady={onGridReady}
-                pageIndex={pagination.pageIndex}
-            />
+                <SOGrid
+                    rowData={posts}
+                    columnDefs={columns}
+                    defaultColDef={DEFAULT_COL_DEF}
+                    pagination={true}
+                    PaginationComponent={CustomPaginationM}
+                    serverSide={true}
+                    totalRows={totalRows}
+                    paginationPageSize={pagination.pageSize}
+                    onPaginationChange={handlePaginationChange}
+                    loading={isLoading}
+                    onSortChange={handleSortChange}
+                    onGridReady={onGridReady}
+                    pageIndex={pagination.pageIndex}
+                />
+            </main>
 
             <InputDialog
                 open={dialogOpen}

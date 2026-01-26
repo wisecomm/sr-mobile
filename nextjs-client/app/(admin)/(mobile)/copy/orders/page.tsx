@@ -34,12 +34,7 @@ export default function OrdersPage() {
         handleSubmit,
         handleDelete,
         onSortChange,
-    } = useOrderManagement({
-        initialPagination: {
-            pageIndex: 0, // 0페이지부터 시작
-            pageSize: 5, // 한 페이지에 20개씩 표시
-        }
-    });
+    } = useOrderManagement();
 
     // Define columns
     const columns = React.useMemo(() => getColumns(), []);
