@@ -8,8 +8,8 @@ import {
     clearSessionCookies,
 } from '@/lib/auth/cookie-utils';
 
-// Backend API URL (without /api suffix for direct auth calls)
-const API_URL = process.env.BACKEND_API_URL?.replace('/api', '') || 'http://localhost:8080';
+// Backend API URL (Use directly, consistent with route.ts)
+const API_URL = process.env.BACKEND_API_URL || 'http://localhost:8080/api';
 
 /**
  * Get tokens from cookies (Server Side)
@@ -34,7 +34,8 @@ export async function deleteSession() {
     if (accessToken) {
         try {
             // 서버 로그아웃 호출 (토큰 무효화/로그 기록)
-            await fetch(`${API_URL}/api/v1/auth/logout`, {
+            // [Standardized] Base URL ends with /api, so we append /v1/...
+            await fetch(`${API_URL}/v1/auth/logout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -60,7 +61,7 @@ export async function login(formData: FormData): Promise<ApiResponse<LoginData>>
         // Form Data to JSON
         const data = Object.fromEntries(formData.entries());
 
-        const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+        const response = await fetch(`${API_URL}/v1/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),

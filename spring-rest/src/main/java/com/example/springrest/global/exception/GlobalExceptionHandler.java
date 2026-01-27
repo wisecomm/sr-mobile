@@ -65,6 +65,17 @@ public class GlobalExceptionHandler {
         }
 
         /**
+         * 리소스를 찾을 수 없음 (Spring Boot 3.2+ NoResourceFoundException)
+         */
+        @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+        public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(
+                        org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(ApiResponse.error(ErrorCode.NOT_FOUND.getCode(), ex.getMessage()));
+        }
+
+        /**
          * IllegalArgumentException 처리
          */
         @ExceptionHandler(IllegalArgumentException.class)
@@ -87,6 +98,7 @@ public class GlobalExceptionHandler {
                 return ResponseEntity
                                 .status(HttpStatus.OK)
                                 .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getCode(),
-                                                "Internal server error"));
+                                                // "Internal server error"));
+                                                ex.toString())); // 디버깅용: 실제 에러 메시지 반환
         }
 }

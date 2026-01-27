@@ -116,11 +116,8 @@ class AuthService {
      */
     async refreshToken(): Promise<boolean> {
         try {
-            const response = await fetch('/api/v1/auth/refresh', {
-                method: 'POST',
-                credentials: 'include',
-            });
-            return response.ok;
+            await apiClient.post('/v1/auth/refresh');
+            return true;
         } catch {
             return false;
         }

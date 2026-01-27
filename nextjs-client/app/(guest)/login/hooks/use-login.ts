@@ -81,7 +81,12 @@ export function useLogin() {
                 formData.append('userPwd', data.userPwd);
 
                 const loginResult = await login(formData);
-
+                /*
+                // Debug: 메시지 박스로 응답 데이터 확인
+                if (typeof window !== 'undefined') {
+                    window.alert(JSON.stringify(loginResult, null, 2));
+                }
+                */
                 if (loginResult.code !== '200' || !loginResult.data) {
                     toast({
                         title: "로그인 실패",
