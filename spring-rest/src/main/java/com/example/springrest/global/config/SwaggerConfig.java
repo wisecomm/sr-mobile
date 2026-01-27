@@ -23,6 +23,15 @@ public class SwaggerConfig {
         @Bean
         public OpenAPI openAPI() {
                 return new OpenAPI()
+                                .servers(java.util.Arrays.asList(
+                                                new io.swagger.v3.oas.models.servers.Server()
+                                                                .url("http://{host}:8080")
+                                                                .description("Backend Port 8080")
+                                                                .variables(new io.swagger.v3.oas.models.servers.ServerVariables()
+                                                                                .addServerVariable("host",
+                                                                                                new io.swagger.v3.oas.models.servers.ServerVariable()
+                                                                                                                ._default("134.185.106.168")
+                                                                                                                .description("Server IP")))))
                                 .info(new Info()
                                                 .title("Spring REST API")
                                                 .version("v1.0.0")
