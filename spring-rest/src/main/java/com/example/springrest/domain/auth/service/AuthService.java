@@ -1,10 +1,9 @@
 package com.example.springrest.domain.auth.service;
 
+import com.example.springrest.domain.auth.model.AuthUser;
 import com.example.springrest.domain.auth.model.LoginRequest;
 import com.example.springrest.domain.auth.model.LoginResponse;
 import com.example.springrest.domain.auth.model.TokenValidationResponse;
-import com.example.springrest.domain.user.model.entity.UserInfo;
-import com.example.springrest.domain.user.repository.UserInfoMapper;
 import com.example.springrest.domain.user.model.enums.UserRole;
 import com.example.springrest.global.security.JwtTokenProvider;
 import com.example.springrest.global.exception.AuthenticationException;
@@ -24,10 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserInfoMapper userInfoMapper;
+    private final UserDetailsProvider userDetailsProvider;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final com.example.springrest.domain.user.model.mapper.UserMapper userMapper;
 
     /**
      * 사용자 로그인
@@ -42,19 +40,17 @@ public class AuthService {
     public LoginResponse login(LoginRequest request, String ipAddress, String userAgent) {
         String userId = request.getUserId();
 
-        // 사용자 조회 (USER_ID 사용)
-        UserInfo user = userInfoMapper.findById(userId);
-        if (user == null) {
-            throw new AuthenticationException("Invalid User ID or password");
-        }
+        // 사용자 조회 (Provider 사용)
+        AuthUser user = userDetailsProvider.findByUserId(userId)
+                .orElseThrow(() -> new AuthenticationException("Invalid User ID or password"));
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {
             throw new AuthenticationException("Invalid User ID or password");
         }
 
-        // JWT 토큰 생성 (매핑 테이블에서 가져온 역할 정보 사용)
-        String token = jwtTokenProvider.generateToken(user.getUserId(), user.getRoles());
+        // JWT 토큰 생성
+        String token = jwtTokenProvider.generateToken(user.getUserId(), new java.util.HashSet<>(user.getRoles()));
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
         Long expiresIn = jwtTokenProvider.getExpirationMs();
 
@@ -65,7 +61,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(userMapper.toResponse(user))
+                .user(toUserResponse(user))
                 .build();
     }
 
@@ -87,13 +83,11 @@ public class AuthService {
         String userId = jwtTokenProvider.extractUserId(refreshToken);
 
         // 사용자 조회
-        UserInfo user = userInfoMapper.findById(userId);
-        if (user == null) {
-            throw new JwtException("User not found");
-        }
+        AuthUser user = userDetailsProvider.findByUserId(userId)
+                .orElseThrow(() -> new JwtException("User not found"));
 
         // 새로운 토큰 생성
-        String newToken = jwtTokenProvider.generateToken(user.getUserId(), user.getRoles());
+        String newToken = jwtTokenProvider.generateToken(user.getUserId(), new java.util.HashSet<>(user.getRoles()));
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
         Long expiresIn = jwtTokenProvider.getExpirationMs();
 
@@ -104,24 +98,22 @@ public class AuthService {
                 .refreshToken(newRefreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(userMapper.toResponse(user))
+                .user(toUserResponse(user))
                 .build();
     }
 
     /**
      * 현재 인증된 사용자 정보 조회
      * 
-     * @param username 사용자명 (JWT에서 추출)
+     * @param userId 사용자 아이디
      * @return 사용자 정보
      * @throws IllegalArgumentException 사용자를 찾을 수 없을 때
      */
     public com.example.springrest.domain.user.model.dto.UserResponse getCurrentUser(String userId) {
-        UserInfo user = userInfoMapper.findById(userId);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found: " + userId);
-        }
+        AuthUser user = userDetailsProvider.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        return userMapper.toResponse(user);
+        return toUserResponse(user);
     }
 
     /**
@@ -168,5 +160,14 @@ public class AuthService {
             log.error("Unexpected error during token validation", e);
             return TokenValidationResponse.invalid("Token validation failed");
         }
+    }
+
+    private com.example.springrest.domain.user.model.dto.UserResponse toUserResponse(AuthUser user) {
+        return com.example.springrest.domain.user.model.dto.UserResponse.builder()
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .userEmail(user.getEmail())
+                .roles(new java.util.HashSet<>(user.getRoles()))
+                .build();
     }
 }
