@@ -35,44 +35,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            // log.debug("Authorization Header: {}", bearerToken); // 필요한 경우 주석 해제
-            String jwt = extractJwtFromRequest(request);
-            log.debug("Extracted JWT: {}",
-                    (jwt != null ? jwt.substring(0, Math.min(10, jwt.length())) + "..." : "null"));
+            try {
+                // log.debug("Authorization Header: {}", bearerToken); // 필요한 경우 주석 해제
+                String jwt = extractJwtFromRequest(request);
+                log.debug("Extracted JWT: {}",
+                        (jwt != null ? jwt.substring(0, Math.min(10, jwt.length())) + "..." : "null"));
 
-            if (StringUtils.hasText(jwt)) {
-                if (jwtTokenProvider.validateToken(jwt)) {
-                    String userId = jwtTokenProvider.extractUserId(jwt);
+                if (StringUtils.hasText(jwt)) {
+                    if (jwtTokenProvider.validateToken(jwt)) {
+                        String userId = jwtTokenProvider.extractUserId(jwt);
+                        org.slf4j.MDC.put("userId", userId);
 
-                    // UserDetails 생성 (간소화된 버전 - 실제로는 DB 조회 필요)
-                    UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                            .username(userId)
-                            .password("") // JWT 검증 후이므로 비밀번호 불필요
-                            .authorities(jwtTokenProvider.extractRoles(jwt).stream()
-                                    .map(role -> new SimpleGrantedAuthority(role.name()))
-                                    .collect(Collectors.toList()))
-                            .build();
+                        // UserDetails 생성 (간소화된 버전 - 실제로는 DB 조회 필요)
+                        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                                .username(userId)
+                                .password("") // JWT 검증 후이므로 비밀번호 불필요
+                                .authorities(jwtTokenProvider.extractRoles(jwt).stream()
+                                        .map(role -> new SimpleGrantedAuthority(role.name()))
+                                        .collect(Collectors.toList()))
+                                .build();
 
-                    // Spring Security 인증 객체 생성
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        // Spring Security 인증 객체 생성
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // SecurityContext에 인증 정보 설정
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        // SecurityContext에 인증 정보 설정
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    log.debug("JWT authentication successful for user: {}", userId);
+                        log.debug("JWT authentication successful for user: {}", userId);
+                    } else {
+                        log.debug("JWT token validation failed");
+                    }
                 } else {
-                    log.debug("JWT token validation failed");
+                    log.debug("No JWT token found in request");
                 }
-            } else {
-                log.debug("No JWT token found in request");
+            } catch (Exception e) {
+                log.error("JWT authentication failed: {}", e.getMessage(), e);
             }
-        } catch (Exception e) {
-            log.error("JWT authentication failed: {}", e.getMessage(), e);
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } finally {
+            org.slf4j.MDC.remove("userId");
+        }
     }
 
     /**

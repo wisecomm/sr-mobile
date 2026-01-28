@@ -30,8 +30,8 @@ public class RequestIdFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            // UUID 기반 요청 ID 생성
-            String requestId = UUID.randomUUID().toString();
+            // UUID 기반 요청 ID 생성 (8자리)
+            String requestId = UUID.randomUUID().toString().substring(0, 8);
 
             // MDC에 저장 (로그에 자동 포함)
             MDC.put(REQUEST_ID, requestId);

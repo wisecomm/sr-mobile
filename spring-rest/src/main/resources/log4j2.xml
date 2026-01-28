@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
     <Properties>
-        <Property name="LOG_PATTERN">%d{ISO8601} [%t] %-5level [%X{requestId}] %logger{36} - %msg%n</Property>
+        <Property name="LOG_PATTERN">%d{ISO8601} [%t] %-5level [%X{requestId}][%X{userId}] %logger{36} - %msg%n</Property>
     </Properties>
 
     <Appenders>
