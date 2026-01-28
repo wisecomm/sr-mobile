@@ -86,6 +86,16 @@ class AuthService {
             // Zustand 스토어 클리어
             if (typeof window !== 'undefined') {
                 useAppStore.getState().clearUser();
+
+                // [Add] Android Bridge Logout
+                if (window.AndroidBridge) {
+                    try {
+                        window.AndroidBridge.logout();
+                        console.log('[AuthService] Android Bridge logout called');
+                    } catch (e) {
+                        console.error('[AuthService] Android Bridge logout failed', e);
+                    }
+                }
             }
 
             // 리다이렉트
