@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { UserInfo } from "@/lib/auth/types";
+
 
 interface AppState {
-  user: UserInfo | null;
-  setUser: (user: UserInfo) => void;
-  clearUser: () => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
 }
@@ -13,9 +10,6 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      user: null,
-      setUser: (user) => set({ user }),
-      clearUser: () => set({ user: null }),
       theme: "light",
       toggleTheme: () => set((state) => ({ theme: state.theme === "light" ? "dark" : "light" })),
     }),

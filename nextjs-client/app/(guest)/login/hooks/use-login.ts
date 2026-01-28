@@ -4,7 +4,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useAppStore } from "@/store/use-app-store";
 import { login, getTokens } from "@/app/actions/auth-actions";
 import { sessionManager } from "@/lib/auth/session-manager";
 
@@ -29,7 +28,6 @@ export function useLogin() {
     const { toast } = useToast();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const setUser = useAppStore((state) => state.setUser);
 
     // UI State
     const [showPassword, setShowPassword] = useState(false);
@@ -103,7 +101,7 @@ export function useLogin() {
                     sessionManager.clearSavedId();
                 }
 
-                setUser(loginResult.data.user);
+                sessionManager.setSession(loginResult.data);
 
                 // Initialize session activity timer
                 sessionManager.updateLastActivity();

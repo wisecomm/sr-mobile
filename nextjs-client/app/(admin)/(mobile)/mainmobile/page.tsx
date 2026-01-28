@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useCurrentUser, useLogout } from "@/hooks/use-auth-query";
 import {
     Barcode,
     Scan,
@@ -14,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAppStore } from "@/store/use-app-store";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,9 +23,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/app/actions/auth-actions";
 import { useRouter } from "next/navigation";
-import { sessionManager } from "@/lib/auth/session-manager";
 
 const menuItems = [
     { title: "재고 입고", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
@@ -37,9 +35,10 @@ const menuItems = [
     { title: "재고 그리드", icon: Bird, color: "text-foreground", href: "/copy/orders" },
 ];
 
-export default function MainMenuPage() {
-    const user = useAppStore((state) => state.user);
+export default function MainMobilePage() {
     const router = useRouter();
+    const { data: user } = useCurrentUser();
+    const logoutMutation = useLogout();
 
     return (
         <div className="flex flex-col min-h-screen bg-muted/30 text-foreground max-w-md mx-auto border-x shadow-2xl relative overflow-hidden">
@@ -66,11 +65,7 @@ export default function MainMenuPage() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 className="text-destructive focus:text-destructive cursor-pointer gap-2"
-                                onClick={async () => {
-                                    await logout();
-                                    sessionManager.clearSession();
-                                    router.replace("/login");
-                                }}
+                                onClick={() => logoutMutation.mutate()}
                             >
                                 <Power className="h-4 w-4" />
                                 <span>로그아웃</span>
@@ -128,11 +123,7 @@ export default function MainMenuPage() {
                 <Button
                     variant="destructive"
                     className="w-full h-14 rounded-xl shadow-lg font-bold text-lg pointer-events-auto gap-2 hover:bg-destructive/90 transition-all active:scale-90 active:bg-destructive/80"
-                    onClick={async () => {
-                        await logout();
-                        sessionManager.clearSession();
-                        router.replace("/login");
-                    }}
+                    onClick={() => logoutMutation.mutate()}
                 >
                     <Power className="h-5 w-5" />
                     작업 종료

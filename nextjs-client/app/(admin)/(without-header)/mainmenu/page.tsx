@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCurrentUser, useLogout } from "@/hooks/use-auth-query";
 import {
     Barcode,
     Scan,
@@ -33,7 +35,9 @@ const menuItems = [
 ];
 
 export default function MainMenuPage() {
-    const user = useAppStore((state) => state.user);
+    const router = useRouter();
+    const { data: user } = useCurrentUser();
+    const logoutMutation = useLogout();
 
 
     return (
@@ -92,6 +96,7 @@ export default function MainMenuPage() {
                     <Button
                         variant="outline"
                         className="w-full h-14 border-none shadow-sm text-destructive font-bold text-lg bg-background hover:bg-destructive/10 hover:text-destructive transition-all gap-2 active:scale-95 active:bg-destructive/20"
+                        onClick={() => logoutMutation.mutate()}
                     >
                         <Power className="h-5 w-5" />
                         작업 종료

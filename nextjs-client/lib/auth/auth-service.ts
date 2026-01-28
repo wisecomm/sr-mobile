@@ -6,7 +6,7 @@
 
 import { apiClient } from '@/lib/api-client';
 import { sessionManager } from './session-manager';
-import { useAppStore } from '@/store/use-app-store';
+
 import { ApiResponse } from '@/types';
 import { LoginData } from './types';
 
@@ -46,10 +46,7 @@ class AuthService {
             if (response.code === '200' && response.data) {
                 sessionManager.setSession(response.data);
 
-                // Zustand 스토어에도 사용자 정보 저장
-                if (typeof window !== 'undefined') {
-                    useAppStore.getState().setUser(response.data.user);
-                }
+
 
                 console.log('[AuthService] Login successful');
             }
@@ -83,18 +80,13 @@ class AuthService {
             // 세션 삭제
             sessionManager.clearSession();
 
-            // Zustand 스토어 클리어
-            if (typeof window !== 'undefined') {
-                useAppStore.getState().clearUser();
-
-                // [Add] Android Bridge Logout
-                if (window.AndroidBridge) {
-                    try {
-                        window.AndroidBridge.logout();
-                        console.log('[AuthService] Android Bridge logout called');
-                    } catch (e) {
-                        console.error('[AuthService] Android Bridge logout failed', e);
-                    }
+            // [Add] Android Bridge Logout
+            if (typeof window !== 'undefined' && window.AndroidBridge) {
+                try {
+                    window.AndroidBridge.logout();
+                    console.log('[AuthService] Android Bridge logout called');
+                } catch (e) {
+                    console.error('[AuthService] Android Bridge logout failed', e);
                 }
             }
 
@@ -149,12 +141,8 @@ class AuthService {
         // 세션 클리어
         sessionManager.clearSession();
 
-        // Zustand 스토어 클리어
-        if (typeof window !== 'undefined') {
-            useAppStore.getState().clearUser();
-            if (redirect) {
-                window.location.href = '/login';
-            }
+        if (typeof window !== 'undefined' && redirect) {
+            window.location.href = '/login';
         }
     }
 

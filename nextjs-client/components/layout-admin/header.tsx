@@ -5,9 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { logout } from "@/app/actions/auth-actions";
-import { useAppStore } from "@/store/use-app-store";
-import { sessionManager } from "@/lib/auth/session-manager";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,12 +21,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { useCurrentUser, useLogout } from "@/hooks/use-auth-query";
+import { usePathname } from "next/navigation";
 
 export function Header() {
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const user = useAppStore((state) => state.user);
-    const clearUser = useAppStore((state) => state.clearUser);
+    const pathname = usePathname();
+    const { data: user } = useCurrentUser();
+    const logoutMutation = useLogout();
     const router = useRouter();
 
     useEffect(() => {
@@ -40,12 +40,9 @@ export function Header() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
         setIsLogoutDialogOpen(false);
-        await logout();
-        clearUser();
-        sessionManager.clearSession();
-        router.replace('/login');
+        logoutMutation.mutate();
     };
 
     return (
