@@ -38,4 +38,10 @@ public interface UserMapper {
     @Mapping(target = "userPwd", ignore = true)
     @Mapping(target = "roles", ignore = true)
     UserInfo toEntityForUpdate(UserInfoRequest request);
+
+    /**
+     * Entity -> Excel DTO
+     */
+    @Mapping(target = "userPwd", ignore = true) // 엑셀 다운로드 시 비밀번호 제외
+    com.example.springrest.domain.user.model.dto.UserExcelDto toExcelDto(UserInfo entity);
 }

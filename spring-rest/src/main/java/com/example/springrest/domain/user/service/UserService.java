@@ -151,13 +151,7 @@ public class UserService {
         List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, null);
 
         List<com.example.springrest.domain.user.model.dto.UserExcelDto> excelData = users.stream()
-                .map(u -> com.example.springrest.domain.user.model.dto.UserExcelDto.builder()
-                        .userId(u.getUserId())
-                        .userName(u.getUserName())
-                        .userEmail(u.getUserEmail())
-                        .userNick(u.getUserNick())
-                        .useYn(u.getUseYn())
-                        .build())
+                .map(userMapper::toExcelDto)
                 .collect(java.util.stream.Collectors.toList());
 
         Workbook workbook = com.example.springrest.common.excel.ExcelUtils
