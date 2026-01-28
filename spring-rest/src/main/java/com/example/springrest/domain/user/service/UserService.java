@@ -1,8 +1,10 @@
 package com.example.springrest.domain.user.service;
 
 import com.example.springrest.domain.user.model.dto.UserInfoRequest;
+import com.example.springrest.domain.user.model.dto.UserResponse;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import com.example.springrest.domain.user.model.entity.UserRoleMap;
+import com.example.springrest.domain.user.model.mapper.UserMapper;
 import com.example.springrest.domain.user.repository.UserInfoMapper;
 import com.example.springrest.domain.user.repository.UserRoleMapper;
 import com.example.springrest.global.model.dto.PageResponse;
@@ -29,7 +31,9 @@ public class UserService {
     private final UserRoleMapper userRoleMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public PageResponse<UserInfo> getAllUsers(int page, int size, String userName, String startDate, String endDate,
+    private final UserMapper userMapper;
+
+    public PageResponse<UserResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
             String sort) {
         PageHelper.startPage(page, size);
 
@@ -60,9 +64,22 @@ public class UserService {
         }
 
         List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, sortClause);
-        PageInfo<UserInfo> pageInfo = new PageInfo<>(users);
+        List<UserResponse> userResponses = userMapper.toResponseList(users);
 
-        return PageResponse.of(pageInfo, users);
+        // PageHelper returns a Page<E> which extends ArrayList<E>. If we map it to a
+        // new list, we lose page info unless we manually copy it.
+        // Better approach with PageHelper:
+        PageInfo<UserInfo> originalPageInfo = new PageInfo<>(users);
+
+        PageInfo<UserResponse> responsePageInfo = new PageInfo<>();
+        responsePageInfo.setList(userResponses);
+        responsePageInfo.setTotal(originalPageInfo.getTotal());
+        responsePageInfo.setPageNum(originalPageInfo.getPageNum());
+        responsePageInfo.setPageSize(originalPageInfo.getPageSize());
+        responsePageInfo.setPages(originalPageInfo.getPages());
+        // Copy other necessary fields if PageResponse uses them.
+
+        return PageResponse.of(responsePageInfo, userResponses);
     }
 
     private String camelToSnake(String str) {
@@ -70,9 +87,9 @@ public class UserService {
         return result;
     }
 
-    public UserInfo getUserById(String userId) {
+    public UserResponse getUserById(String userId) {
         UserInfo user = userInfoMapper.findById(userId);
-        return user;
+        return userMapper.toResponse(user);
     }
 
     @Transactional
@@ -80,17 +97,20 @@ public class UserService {
         if (userInfoMapper.findById(request.getUserId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 사용자 ID입니다: " + request.getUserId());
         }
-        UserInfo user = convertToEntity(request);
+        UserInfo user = userMapper.toEntity(request);
         user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
         userInfoMapper.insert(user);
     }
 
     @Transactional
     public void updateUser(UserInfoRequest request) {
-        UserInfo user = convertToEntity(request);
+        // Update logic via MapStruct
+        UserInfo user = userMapper.toEntityForUpdate(request);
+
         if (request.getUserPwd() != null && !request.getUserPwd().isEmpty()) {
             user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
         }
+
         userInfoMapper.update(user);
     }
 
@@ -117,22 +137,6 @@ public class UserService {
         return userRoleMapper.findByUserId(userId).stream()
                 .map(UserRoleMap::getRoleId)
                 .toList();
-    }
-
-    private UserInfo convertToEntity(UserInfoRequest request) {
-        return UserInfo.builder()
-                .userId(request.getUserId())
-                .userEmail(request.getUserEmail())
-                .userMobile(request.getUserMobile())
-                .userName(request.getUserName())
-                .userNick(request.getUserNick())
-                .userPwd(request.getUserPwd())
-                .userMsg(request.getUserMsg())
-                .userDesc(request.getUserDesc())
-                .userStatCd(request.getUserStatCd())
-                .userSnsid(request.getUserSnsid())
-                .useYn(request.getUseYn())
-                .build();
     }
 
     public void downloadExcel(jakarta.servlet.http.HttpServletResponse response, String userName, String startDate,

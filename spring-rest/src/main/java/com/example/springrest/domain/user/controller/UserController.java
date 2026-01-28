@@ -2,7 +2,7 @@ package com.example.springrest.domain.user.controller;
 
 import com.example.springrest.global.model.dto.ApiResponse;
 import com.example.springrest.domain.user.model.dto.UserInfoRequest;
-import com.example.springrest.domain.user.model.entity.UserInfo;
+
 import com.example.springrest.global.model.dto.PageResponse;
 import com.example.springrest.domain.user.model.dto.UserRoleAssignRequest;
 import com.example.springrest.domain.user.service.UserService;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.example.springrest.domain.user.model.dto.UserResponse;
+
 @Tag(name = "User - User Management", description = "사용자 계정 관리 API")
 @Slf4j
 @RestController
@@ -27,7 +29,7 @@ public class UserController {
 
     @Operation(summary = "사용자 목록 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<UserInfo>>> getAllUsers(
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getAllUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String userName,
@@ -41,8 +43,8 @@ public class UserController {
 
     @Operation(summary = "사용자 상세 조회")
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserInfo>> getUserById(@PathVariable String userId) {
-        UserInfo user = userService.getUserById(userId);
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String userId) {
+        UserResponse user = userService.getUserById(userId);
         return user != null ? ResponseEntity.ok(ApiResponse.success(user)) : ResponseEntity.notFound().build();
     }
 
