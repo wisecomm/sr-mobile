@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useAppStore } from "@/store/use-app-store";
+
 
 const menuItems = [
     { title: "반품 스캔", icon: Barcode, color: "text-primary", href: "/return-scan" },

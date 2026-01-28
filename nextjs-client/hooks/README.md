@@ -29,7 +29,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useUsers } from '@/hooks/use-user-query';
 
 // ⚠️ 레거시 (하위 호환성 - deprecated)
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 ```
 
 ## 🎯 주요 훅

@@ -47,7 +47,7 @@ if (response.code === '200') {
 }
 
 // 방법 2: useAuth Hook 사용 (권장)
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 
 function LoginPage() {
     const { login, isLoading } = useAuth();
@@ -230,7 +230,7 @@ function useRequireGuest(redirectTo?: string): {
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -276,7 +276,7 @@ export default function LoginPage() {
 ```typescript
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 
 export function UserProfile() {
     const { user, remainingMinutes, logout } = useAuth();
@@ -299,7 +299,7 @@ export function UserProfile() {
 ```typescript
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 
@@ -424,7 +424,7 @@ import { getAccessToken, login, logout } from '@/app/actions/auth-actions';
 // After
 import { sessionManager, authService } from '@/lib/auth';
 // or
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 ```
 
 

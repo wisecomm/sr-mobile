@@ -5,7 +5,7 @@
  */
 
 // Auth
-export * from './use-auth';
+
 export * from './use-auth-query';
 
 // Entity Management
