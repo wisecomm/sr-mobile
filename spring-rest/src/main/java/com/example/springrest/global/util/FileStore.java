@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -21,6 +20,12 @@ public class FileStore {
 
     @Value("${app.file.upload-dir}")
     private String fileDir;
+
+    private final FileUploadValidator fileUploadValidator;
+
+    public FileStore(FileUploadValidator fileUploadValidator) {
+        this.fileUploadValidator = fileUploadValidator;
+    }
 
     public String getFullPath(String filename) {
         return fileDir + filename;
@@ -45,8 +50,9 @@ public class FileStore {
             return null;
         }
 
+        // Validate and get safe filename
+        String storeFileName = fileUploadValidator.validateAndSanitize(multipartFile);
         String originalFilename = multipartFile.getOriginalFilename();
-        String storeFileName = createStoreFileName(originalFilename);
         String subPath = "/board/"; // Can be dynamic based on requirements
 
         // Ensure directory exists
@@ -67,12 +73,6 @@ public class FileStore {
                 .mimeType(multipartFile.getContentType())
                 .useYn("1")
                 .build();
-    }
-
-    private String createStoreFileName(String originalFilename) {
-        String ext = extractExt(originalFilename);
-        String uuid = UUID.randomUUID().toString();
-        return uuid + "." + ext;
     }
 
     private String extractExt(String originalFilename) {

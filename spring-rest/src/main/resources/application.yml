@@ -16,6 +16,8 @@ app:
     allowed-origins: http://localhost:3000,http://localhost:8080,http://134.185.106.168,http://134.185.106.168:8080
   file:
     upload-dir: /uploads/
+    allowed-extensions: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx
+    max-size: 50MB
 
 # Actuator 설정
 management:
