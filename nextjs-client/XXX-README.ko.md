@@ -514,7 +514,7 @@ Arcjet은 두 가지 주요 기능인 봇 탐지와 Arcjet Shield WAF로 구성�
 - [봇 탐지](https://docs.arcjet.com/bot-protection/concepts)는 검색 엔진, Slack 및 Twitter 미리보기와 같은 미리보기 링크 생성기, 일반적인 가동 시간 모니터링 서비스를 허용하도록 구성되어 있습니다. 스크래퍼 및 AI 크롤러와 같은 다른 모든 봇은 차단됩니다. 허용하거나 차단할 [추가 봇 유형을 구성](https://docs.arcjet.com/bot-protection/identifying-bots)할 수 있습니다.
 - [Arcjet Shield WAF](https://docs.arcjet.com/shield/concepts)는 SQL 인젝션, 크로스 사이트 스크립팅 및 기타 OWASP Top 10 취약점과 같은 일반적인 공격을 탐지하고 차단합니다.
 
-Arcjet은 Shield WAF 규칙을 포함하는 `src/libs/Arcjet.ts`의 중앙 클라이언트와 함께 구성됩니다. `proxy.ts`에서 Arcjet이 호출될 때 추가 규칙이 적용됩니다.
+Arcjet은 Shield WAF 규칙을 포함하는 `src/packages/Arcjet.ts`의 중앙 클라이언트와 함께 구성됩니다. `proxy.ts`에서 Arcjet이 호출될 때 추가 규칙이 적용됩니다.
 
 ### 유용한 명령어
 

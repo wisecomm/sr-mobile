@@ -84,11 +84,11 @@ importers:
         specifier: ^7.69.0
         version: 7.71.1(react@19.2.0)
       so-grid-core:
-        specifier: file:libs/so-grid-core-0.1.0.tgz
-        version: file:libs/so-grid-core-0.1.0.tgz
+        specifier: file:packages/so-grid-core-0.1.0.tgz
+        version: file:packages/so-grid-core-0.1.0.tgz
       so-grid-react:
-        specifier: file:libs/so-grid-react-0.1.0.tgz
-        version: file:libs/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:libs/so-grid-core-0.1.0.tgz)
+        specifier: file:packages/so-grid-react-0.1.0.tgz
+        version: file:packages/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:packages/so-grid-core-0.1.0.tgz)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -2525,12 +2525,12 @@ packages:
     resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
     engines: {node: '>= 10'}
 
-  so-grid-core@file:libs/so-grid-core-0.1.0.tgz:
-    resolution: {integrity: sha512-SefBhgUcmhseH1IxssOCVWRY/qd3UgQBnpMAZl84IWxcJc2l3gNjuTBG+p+eiMDqdT2m4BLwb+bbn86204BV0w==, tarball: file:libs/so-grid-core-0.1.0.tgz}
+  so-grid-core@file:packages/so-grid-core-0.1.0.tgz:
+    resolution: {integrity: sha512-SefBhgUcmhseH1IxssOCVWRY/qd3UgQBnpMAZl84IWxcJc2l3gNjuTBG+p+eiMDqdT2m4BLwb+bbn86204BV0w==, tarball: file:packages/so-grid-core-0.1.0.tgz}
     version: 0.1.0
 
-  so-grid-react@file:libs/so-grid-react-0.1.0.tgz:
-    resolution: {integrity: sha512-ceQgWAIiLAWjqZ8VAbh9M0rfkNExW3xiSWZ/it0KhY55o0Wxv5LT0t4vvyE4/BYHB9XG9bdVHeNJp7mo/rdsKg==, tarball: file:libs/so-grid-react-0.1.0.tgz}
+  so-grid-react@file:packages/so-grid-react-0.1.0.tgz:
+    resolution: {integrity: sha512-ceQgWAIiLAWjqZ8VAbh9M0rfkNExW3xiSWZ/it0KhY55o0Wxv5LT0t4vvyE4/BYHB9XG9bdVHeNJp7mo/rdsKg==, tarball: file:packages/so-grid-react-0.1.0.tgz}
     version: 0.1.0
     peerDependencies:
       react: '>=17.0.0'
@@ -5291,16 +5291,16 @@ snapshots:
       mrmime: 2.0.1
       totalist: 3.0.1
 
-  so-grid-core@file:libs/so-grid-core-0.1.0.tgz:
+  so-grid-core@file:packages/so-grid-core-0.1.0.tgz:
     dependencies:
       '@tanstack/table-core': 8.21.3
 
-  so-grid-react@file:libs/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:libs/so-grid-core-0.1.0.tgz):
+  so-grid-react@file:packages/so-grid-react-0.1.0.tgz(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(so-grid-core@file:packages/so-grid-core-0.1.0.tgz):
     dependencies:
       '@tanstack/react-table': 8.21.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-      so-grid-core: file:libs/so-grid-core-0.1.0.tgz
+      so-grid-core: file:packages/so-grid-core-0.1.0.tgz
 
   source-map-js@1.2.1: {}
 
