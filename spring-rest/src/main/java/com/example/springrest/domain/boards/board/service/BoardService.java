@@ -1,6 +1,7 @@
 package com.example.springrest.domain.boards.board.service;
 
 import com.example.springrest.domain.boards.board.model.dto.BoardRequest;
+import com.example.springrest.domain.boards.board.model.dto.BoardResponse;
 import com.example.springrest.domain.boards.board.model.dto.BoardSearchDto;
 import com.example.springrest.domain.boards.board.model.entity.Board;
 import com.example.springrest.domain.boards.board.repository.BoardMapper;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springrest.domain.boards.board.model.entity.BoardFile;
 import com.example.springrest.domain.boards.board.repository.BoardFileMapper;
+import com.example.springrest.domain.boards.board.model.mapper.BoardDtoMapper;
 import com.example.springrest.global.util.FileStore;
+import com.example.springrest.global.util.SortValidator;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
@@ -28,11 +31,11 @@ public class BoardService {
     private final BoardMapper boardMapper;
     private final BoardFileMapper boardFileMapper;
     private final FileStore fileStore;
-    private final com.example.springrest.domain.boards.board.model.mapper.BoardDtoMapper boardDtoMapper;
+    private final BoardDtoMapper boardDtoMapper;
 
-    private final com.example.springrest.global.util.SortValidator sortValidator;
+    private final SortValidator sortValidator;
 
-    public PageResponse<Board> getBoardList(int page, int size, BoardSearchDto searchDto) {
+    public PageResponse<BoardResponse> getBoardList(int page, int size, BoardSearchDto searchDto) {
         PageHelper.startPage(page, size);
 
         // Date handling if needed (adding time if only date provided)
@@ -57,16 +60,16 @@ public class BoardService {
         List<Board> boards = boardMapper.findAll(searchDto);
         PageInfo<Board> pageInfo = new PageInfo<>(boards);
 
-        return PageResponse.of(pageInfo, boards);
+        return PageResponse.of(pageInfo, boardDtoMapper.toResponseList(boards));
     }
 
-    public Board getBoard(Integer boardId) {
+    public BoardResponse getBoard(Integer boardId) {
         // TODO: Hit count increment
         Board board = boardMapper.findById(boardId);
         if (board != null) {
             board.setFileList(boardFileMapper.findByBoardId(boardId));
         }
-        return board;
+        return boardDtoMapper.toResponse(board);
     }
 
     public BoardFile getBoardFile(Integer fileId) {

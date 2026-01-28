@@ -17,7 +17,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UserInfoResponse {
     private String userId; // 사용자_아이디
     private Set<UserRole> roles; // 사용자_역할 목록
     private String userEmail; // 사용자_이메일

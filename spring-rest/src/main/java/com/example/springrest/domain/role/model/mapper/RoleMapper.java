@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 /**
  * 역할 정보 매퍼 (DTO <-> Entity)
  */
@@ -22,4 +24,9 @@ public interface RoleMapper {
      * Entity -> Response DTO
      */
     RoleInfoResponse toResponse(RoleInfo entity);
+
+    /**
+     * Entity List -> Response DTO List
+     */
+    List<RoleInfoResponse> toResponseList(List<RoleInfo> entities);
 }

@@ -2,7 +2,7 @@ package com.example.springrest.domain.boards.master.controller;
 
 import com.example.springrest.global.model.dto.ApiResponse;
 import com.example.springrest.domain.boards.master.model.dto.BoardMasterRequest;
-import com.example.springrest.domain.boards.master.model.entity.BoardMaster;
+import com.example.springrest.domain.boards.master.model.dto.BoardMasterResponse;
 import com.example.springrest.global.model.dto.PageResponse;
 import com.example.springrest.domain.boards.master.service.BoardMasterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +24,7 @@ public class BoardMasterController {
 
     @Operation(summary = "게시판 목록 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<BoardMaster>>> getAllBoards(
+    public ResponseEntity<ApiResponse<PageResponse<BoardMasterResponse>>> getAllBoards(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String brdNm,
@@ -36,8 +36,8 @@ public class BoardMasterController {
 
     @Operation(summary = "게시판 상세 조회")
     @GetMapping("/{brdId}")
-    public ResponseEntity<ApiResponse<BoardMaster>> getBoardById(@PathVariable String brdId) {
-        BoardMaster board = boardMasterService.getBoardById(brdId);
+    public ResponseEntity<ApiResponse<BoardMasterResponse>> getBoardById(@PathVariable String brdId) {
+        BoardMasterResponse board = boardMasterService.getBoardById(brdId);
         return board != null ? ResponseEntity.ok(ApiResponse.success(board)) : ResponseEntity.notFound().build();
     }
 

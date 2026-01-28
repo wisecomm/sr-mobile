@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.domain.boards.master.model.dto.BoardMasterResponse;
+import com.example.springrest.domain.boards.master.model.mapper.BoardMasterDtoMapper;
 
 /**
  * 게시판 마스터 서비스
@@ -24,14 +26,14 @@ import com.example.springrest.global.common.service.BaseService;
 public class BoardMasterService extends BaseService<BoardMaster, String, BoardMasterMapper> {
 
     private final BoardMasterMapper boardMasterMapper;
-    private final com.example.springrest.domain.boards.master.model.mapper.BoardMasterDtoMapper boardMasterDtoMapper;
+    private final BoardMasterDtoMapper boardMasterDtoMapper;
 
     @Override
     protected BoardMasterMapper getMapper() {
         return boardMasterMapper;
     }
 
-    public PageResponse<BoardMaster> getAllBoards(int page, int size, String brdNm, String startDate, String endDate) {
+    public PageResponse<BoardMasterResponse> getAllBoards(int page, int size, String brdNm, String startDate, String endDate) {
         PageHelper.startPage(page, size, "BRD_ID ASC");
 
         if (startDate != null && !startDate.isEmpty()) {
@@ -44,11 +46,11 @@ public class BoardMasterService extends BaseService<BoardMaster, String, BoardMa
         List<BoardMaster> boards = boardMasterMapper.findAll(brdNm, startDate, endDate);
         PageInfo<BoardMaster> pageInfo = new PageInfo<>(boards);
 
-        return PageResponse.of(pageInfo, boards);
+        return PageResponse.of(pageInfo, boardMasterDtoMapper.toResponseList(boards));
     }
 
-    public BoardMaster getBoardById(String brdId) {
-        return super.findById(brdId);
+    public BoardMasterResponse getBoardById(String brdId) {
+        return boardMasterDtoMapper.toResponse(super.findById(brdId));
     }
 
     @Transactional

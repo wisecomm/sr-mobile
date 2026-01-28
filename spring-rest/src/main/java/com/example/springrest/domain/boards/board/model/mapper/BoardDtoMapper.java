@@ -1,10 +1,13 @@
 package com.example.springrest.domain.boards.board.model.mapper;
 
 import com.example.springrest.domain.boards.board.model.dto.BoardRequest;
+import com.example.springrest.domain.boards.board.model.dto.BoardResponse;
 import com.example.springrest.domain.boards.board.model.entity.Board;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+
+import java.util.List;
 
 /**
  * 게시글 매퍼 (DTO <-> Entity)
@@ -18,4 +21,14 @@ public interface BoardDtoMapper {
     @Mapping(target = "secretYn", defaultValue = "0")
     @Mapping(target = "useYn", defaultValue = "1")
     Board toEntity(BoardRequest request);
+
+    /**
+     * Entity -> Response
+     */
+    BoardResponse toResponse(Board entity);
+
+    /**
+     * Entity List -> Response List
+     */
+    List<BoardResponse> toResponseList(List<Board> entities);
 }

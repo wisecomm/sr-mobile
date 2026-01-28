@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.domain.role.model.mapper.RoleMapper;
 
 /**
  * 역할 정보 서비스
@@ -29,7 +29,7 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
 
     private final RoleInfoMapper roleInfoMapper;
     private final RoleMenuMapper roleMenuMapper;
-    private final com.example.springrest.domain.role.model.mapper.RoleMapper roleMapper;
+    private final RoleMapper roleMapper;
 
     @Override
     protected RoleInfoMapper getMapper() {
@@ -37,9 +37,7 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
     }
 
     public List<RoleInfoResponse> getAllRoles() {
-        return roleInfoMapper.findAll().stream()
-                .map(roleMapper::toResponse)
-                .collect(Collectors.toList());
+        return roleMapper.toResponseList(roleInfoMapper.findAll());
     }
 
     public PageResponse<RoleInfoResponse> getRolesWithPagination(int page, int size, String searchId) {
@@ -48,9 +46,7 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
         List<RoleInfo> roles = roleInfoMapper.findAllWithSearch(searchId);
         PageInfo<RoleInfo> pageInfo = new PageInfo<>(roles);
 
-        List<RoleInfoResponse> content = roles.stream()
-                .map(roleMapper::toResponse)
-                .collect(Collectors.toList());
+        List<RoleInfoResponse> content = roleMapper.toResponseList(roles);
 
         return PageResponse.of(pageInfo, content);
     }
@@ -63,7 +59,7 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
     public List<String> getMenuIdsByRoleId(String roleId) {
         return roleMenuMapper.findByRoleId(roleId).stream()
                 .map(RoleMenuMap::getMenuId)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

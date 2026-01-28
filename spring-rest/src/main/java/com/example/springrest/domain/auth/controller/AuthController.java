@@ -8,6 +8,8 @@ import com.example.springrest.domain.auth.model.TokenValidationRequest;
 import com.example.springrest.domain.auth.model.TokenValidationResponse;
 
 import com.example.springrest.domain.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * 인증 컨트롤러
  * 로그인, 토큰 검증 등 인증 관련 API 엔드포인트 제공
  */
+@Tag(name = "Auth - Authentication", description = "인증 관련 API")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,6 +39,7 @@ public class AuthController {
      * @param httpRequest HTTP 요청 (IP, User-Agent 추출용)
      * @return 로그인 응답 (JWT 토큰, 사용자 정보)
      */
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request,
@@ -59,6 +63,7 @@ public class AuthController {
      * @param request 토큰 갱신 요청 (refreshToken)
      * @return 새로운 토큰 정보
      */
+    @Operation(summary = "토큰 갱신")
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<LoginResponse>> refresh(
             @Valid @RequestBody TokenRefreshRequest request) {
@@ -90,14 +95,15 @@ public class AuthController {
      * 
      * @return 인증된 사용자 정보
      */
+    @Operation(summary = "현재 사용자 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<com.example.springrest.domain.user.model.dto.UserResponse>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<com.example.springrest.domain.user.model.dto.UserInfoResponse>> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
         log.info("Get current user info: {}", userId);
 
-        com.example.springrest.domain.user.model.dto.UserResponse response = authService.getCurrentUser(userId);
+        com.example.springrest.domain.user.model.dto.UserInfoResponse response = authService.getCurrentUser(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -108,6 +114,7 @@ public class AuthController {
      * @param request 토큰 검증 요청
      * @return 토큰 검증 결과
      */
+    @Operation(summary = "토큰 검증")
     @PostMapping("/validate")
     public ResponseEntity<ApiResponse<TokenValidationResponse>> validateToken(
             @Valid @RequestBody TokenValidationRequest request) {
@@ -125,6 +132,7 @@ public class AuthController {
      * @param request HTTP 요청 (Authorization 헤더 추출용)
      * @return 성공 응답
      */
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
         String token = resolveToken(request);

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import com.example.springrest.domain.user.model.dto.UserResponse;
+import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 
 @Tag(name = "User - User Management", description = "사용자 계정 관리 API")
 @Slf4j
@@ -29,7 +29,7 @@ public class UserController {
 
     @Operation(summary = "사용자 목록 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getAllUsers(
+    public ResponseEntity<ApiResponse<PageResponse<UserInfoResponse>>> getAllUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String userName,
@@ -43,8 +43,8 @@ public class UserController {
 
     @Operation(summary = "사용자 상세 조회")
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String userId) {
-        UserResponse user = userService.getUserById(userId);
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getUserById(@PathVariable String userId) {
+        UserInfoResponse user = userService.getUserById(userId);
         return user != null ? ResponseEntity.ok(ApiResponse.success(user)) : ResponseEntity.notFound().build();
     }
 

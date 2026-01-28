@@ -1,7 +1,7 @@
 package com.example.springrest.domain.user.service;
 
 import com.example.springrest.domain.user.model.dto.UserInfoRequest;
-import com.example.springrest.domain.user.model.dto.UserResponse;
+import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import com.example.springrest.domain.user.model.entity.UserRoleMap;
 import com.example.springrest.domain.user.model.mapper.UserMapper;
@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.global.util.SortValidator;
 
 /**
  * 사용자 정보 서비스
@@ -41,9 +42,9 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
 
     private final UserMapper userMapper;
 
-    private final com.example.springrest.global.util.SortValidator sortValidator;
+    private final SortValidator sortValidator;
 
-    public PageResponse<UserResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
+    public PageResponse<UserInfoResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
             String sort) {
         PageHelper.startPage(page, size);
 
@@ -64,11 +65,11 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
         }
 
         List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, sortClause);
-        List<UserResponse> userResponses = userMapper.toResponseList(users);
+        List<UserInfoResponse> userResponses = userMapper.toResponseList(users);
 
         PageInfo<UserInfo> originalPageInfo = new PageInfo<>(users);
 
-        PageInfo<UserResponse> responsePageInfo = new PageInfo<>();
+        PageInfo<UserInfoResponse> responsePageInfo = new PageInfo<>();
         responsePageInfo.setList(userResponses);
         responsePageInfo.setTotal(originalPageInfo.getTotal());
         responsePageInfo.setPageNum(originalPageInfo.getPageNum());
@@ -78,10 +79,10 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
         return PageResponse.of(responsePageInfo, userResponses);
     }
 
-    // getUserById uses UserResponse, so we keep logic but use super.findById
+    // getUserById uses UserInfoResponse, so we keep logic but use super.findById
     // internally if we want,
     // but here we already use userInfoMapper.findById directly or via super.
-    public UserResponse getUserById(String userId) {
+    public UserInfoResponse getUserById(String userId) {
         UserInfo user = super.findById(userId); // Use BaseService method
         return userMapper.toResponse(user);
     }

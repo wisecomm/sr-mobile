@@ -4,6 +4,7 @@ import com.example.springrest.domain.auth.model.AuthUser;
 import com.example.springrest.domain.auth.model.LoginRequest;
 import com.example.springrest.domain.auth.model.LoginResponse;
 import com.example.springrest.domain.auth.model.TokenValidationResponse;
+import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.enums.UserRole;
 import com.example.springrest.global.security.JwtTokenProvider;
 import com.example.springrest.global.exception.AuthenticationException;
@@ -61,7 +62,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(toUserResponse(user))
+                .user(toUserInfoResponse(user))
                 .build();
     }
 
@@ -98,7 +99,7 @@ public class AuthService {
                 .refreshToken(newRefreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(toUserResponse(user))
+                .user(toUserInfoResponse(user))
                 .build();
     }
 
@@ -109,11 +110,11 @@ public class AuthService {
      * @return 사용자 정보
      * @throws IllegalArgumentException 사용자를 찾을 수 없을 때
      */
-    public com.example.springrest.domain.user.model.dto.UserResponse getCurrentUser(String userId) {
+    public UserInfoResponse getCurrentUser(String userId) {
         AuthUser user = userDetailsProvider.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        return toUserResponse(user);
+        return toUserInfoResponse(user);
     }
 
     /**
@@ -162,8 +163,8 @@ public class AuthService {
         }
     }
 
-    private com.example.springrest.domain.user.model.dto.UserResponse toUserResponse(AuthUser user) {
-        return com.example.springrest.domain.user.model.dto.UserResponse.builder()
+    private UserInfoResponse toUserInfoResponse(AuthUser user) {
+        return UserInfoResponse.builder()
                 .userId(user.getUserId())
                 .userName(user.getUserName())
                 .userEmail(user.getEmail())

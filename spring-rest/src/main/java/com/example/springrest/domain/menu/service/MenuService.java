@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import com.example.springrest.global.common.service.BaseService;
+import com.example.springrest.domain.menu.model.dto.MenuInfoResponse;
+import com.example.springrest.domain.menu.model.mapper.MenuMapper;
 
 /**
  * 메뉴 정보 서비스
@@ -24,32 +26,32 @@ import com.example.springrest.global.common.service.BaseService;
 public class MenuService extends BaseService<MenuInfo, String, MenuInfoMapper> {
 
     private final MenuInfoMapper menuInfoMapper;
-    private final com.example.springrest.domain.menu.model.mapper.MenuMapper menuMapper;
+    private final MenuMapper menuMapper;
 
     @Override
     protected MenuInfoMapper getMapper() {
         return menuInfoMapper;
     }
 
-    public List<MenuInfo> getAllMenus() {
-        return menuInfoMapper.findAll();
+    public List<MenuInfoResponse> getAllMenus() {
+        return menuMapper.toResponseList(menuInfoMapper.findAll());
     }
 
-    public PageResponse<MenuInfo> getMenusWithPagination(int page, int size, String searchId) {
+    public PageResponse<MenuInfoResponse> getMenusWithPagination(int page, int size, String searchId) {
         PageHelper.startPage(page, size, "MENU_LVL, MENU_SEQ");
 
         List<MenuInfo> menus = menuInfoMapper.findAllWithSearch(searchId);
         PageInfo<MenuInfo> pageInfo = new PageInfo<>(menus);
 
-        return PageResponse.of(pageInfo, menus);
+        return PageResponse.of(pageInfo, menuMapper.toResponseList(menus));
     }
 
-    public List<MenuInfo> getMenusByUserId(String userId) {
-        return menuInfoMapper.findByUserId(userId);
+    public List<MenuInfoResponse> getMenusByUserId(String userId) {
+        return menuMapper.toResponseList(menuInfoMapper.findByUserId(userId));
     }
 
-    public MenuInfo getMenuById(String menuId) {
-        return super.findById(menuId);
+    public MenuInfoResponse getMenuById(String menuId) {
+        return menuMapper.toResponse(super.findById(menuId));
     }
 
     @Transactional

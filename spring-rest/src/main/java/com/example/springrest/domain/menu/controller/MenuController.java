@@ -3,7 +3,7 @@ package com.example.springrest.domain.menu.controller;
 import com.example.springrest.global.model.dto.ApiResponse;
 import com.example.springrest.global.model.dto.PageResponse;
 import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
-import com.example.springrest.domain.menu.model.entity.MenuInfo;
+import com.example.springrest.domain.menu.model.dto.MenuInfoResponse;
 import com.example.springrest.domain.menu.service.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +28,7 @@ public class MenuController {
 
     @Operation(summary = "메뉴 목록 조회 (페이지네이션)")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<MenuInfo>>> getAllMenus(
+    public ResponseEntity<ApiResponse<PageResponse<MenuInfoResponse>>> getAllMenus(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchId) {
@@ -37,7 +37,7 @@ public class MenuController {
 
     @Operation(summary = "나의 권한 메뉴 조회")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<List<MenuInfo>>> getMyMenus() {
+    public ResponseEntity<ApiResponse<List<MenuInfoResponse>>> getMyMenus() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
         log.info("Fetching menus for current user: {}", userId);
@@ -46,8 +46,8 @@ public class MenuController {
 
     @Operation(summary = "메뉴 상세 조회")
     @GetMapping("/{menuId}")
-    public ResponseEntity<ApiResponse<MenuInfo>> getMenuById(@PathVariable String menuId) {
-        MenuInfo menu = menuService.getMenuById(menuId);
+    public ResponseEntity<ApiResponse<MenuInfoResponse>> getMenuById(@PathVariable String menuId) {
+        MenuInfoResponse menu = menuService.getMenuById(menuId);
         return menu != null ? ResponseEntity.ok(ApiResponse.success(menu)) : ResponseEntity.notFound().build();
     }
 

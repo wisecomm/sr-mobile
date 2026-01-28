@@ -1,8 +1,8 @@
 package com.example.springrest.domain.boards.board.controller;
 
 import com.example.springrest.domain.boards.board.model.dto.BoardRequest;
+import com.example.springrest.domain.boards.board.model.dto.BoardResponse;
 import com.example.springrest.domain.boards.board.model.dto.BoardSearchDto;
-import com.example.springrest.domain.boards.board.model.entity.Board;
 import com.example.springrest.domain.boards.board.service.BoardService;
 import com.example.springrest.global.model.dto.ApiResponse;
 import com.example.springrest.global.model.dto.PageResponse;
@@ -35,7 +35,7 @@ public class BoardController {
 
     @Operation(summary = "게시물 목록 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<Board>>> getAllBoards(
+    public ResponseEntity<ApiResponse<PageResponse<BoardResponse>>> getAllBoards(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @ModelAttribute BoardSearchDto searchDto) {
@@ -44,8 +44,8 @@ public class BoardController {
 
     @Operation(summary = "게시물 상세 조회")
     @GetMapping("/{boardId}")
-    public ResponseEntity<ApiResponse<Board>> getBoardById(@PathVariable Integer boardId) {
-        Board board = boardService.getBoard(boardId);
+    public ResponseEntity<ApiResponse<BoardResponse>> getBoardById(@PathVariable Integer boardId) {
+        BoardResponse board = boardService.getBoard(boardId);
         return board != null ? ResponseEntity.ok(ApiResponse.success(board)) : ResponseEntity.notFound().build();
     }
 

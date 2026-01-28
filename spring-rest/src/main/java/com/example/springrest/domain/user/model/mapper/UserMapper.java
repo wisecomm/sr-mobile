@@ -1,7 +1,7 @@
 package com.example.springrest.domain.user.model.mapper;
 
 import com.example.springrest.domain.user.model.dto.UserInfoRequest;
-import com.example.springrest.domain.user.model.dto.UserResponse;
+import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,12 +18,12 @@ public interface UserMapper {
     /**
      * Entity -> Response DTO
      */
-    UserResponse toResponse(UserInfo entity);
+    UserInfoResponse toResponse(UserInfo entity);
 
     /**
      * Entity List -> Response DTO List
      */
-    List<UserResponse> toResponseList(List<UserInfo> entities);
+    List<UserInfoResponse> toResponseList(List<UserInfo> entities);
 
     /**
      * Request DTO -> Entity (Create)
