@@ -39,6 +39,7 @@
     "react-day-picker": "^9.13.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.69.0",
+    "sharp": "^0.34.5",
     "so-grid-core": "file:packages/so-grid-core-0.1.0.tgz",
     "so-grid-react": "file:packages/so-grid-react-0.1.0.tgz",
     "tailwind-merge": "^3.4.0",

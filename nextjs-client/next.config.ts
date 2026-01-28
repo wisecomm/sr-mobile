@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
     COOKIE_SECURE: process.env.COOKIE_SECURE,
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
