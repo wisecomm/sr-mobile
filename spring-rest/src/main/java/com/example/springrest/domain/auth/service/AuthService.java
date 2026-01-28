@@ -27,6 +27,7 @@ public class AuthService {
     private final UserInfoMapper userInfoMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final com.example.springrest.domain.user.model.mapper.UserMapper userMapper;
 
     /**
      * 사용자 로그인
@@ -64,7 +65,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(user)
+                .user(userMapper.toResponse(user))
                 .build();
     }
 
@@ -103,7 +104,7 @@ public class AuthService {
                 .refreshToken(newRefreshToken)
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
-                .user(user)
+                .user(userMapper.toResponse(user))
                 .build();
     }
 
@@ -114,13 +115,13 @@ public class AuthService {
      * @return 사용자 정보
      * @throws IllegalArgumentException 사용자를 찾을 수 없을 때
      */
-    public UserInfo getCurrentUser(String userId) {
+    public com.example.springrest.domain.user.model.dto.UserResponse getCurrentUser(String userId) {
         UserInfo user = userInfoMapper.findById(userId);
         if (user == null) {
             throw new IllegalArgumentException("User not found: " + userId);
         }
 
-        return user;
+        return userMapper.toResponse(user);
     }
 
     /**

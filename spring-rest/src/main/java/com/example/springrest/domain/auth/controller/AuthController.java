@@ -91,13 +91,13 @@ public class AuthController {
      * @return 인증된 사용자 정보
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserInfo>> getCurrentUser() {
+    public ResponseEntity<ApiResponse<com.example.springrest.domain.user.model.dto.UserResponse>> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
         log.info("Get current user info: {}", userId);
 
-        UserInfo response = authService.getCurrentUser(userId);
+        com.example.springrest.domain.user.model.dto.UserResponse response = authService.getCurrentUser(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

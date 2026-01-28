@@ -21,7 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderMapper orderMapper;
+    private final OrderMapper orderMapper; // Repository Mapper
+    private final com.example.springrest.domain.order.model.mapper.OrderMapper orderDtoMapper; // MapStruct Mapper
 
     public PageResponse<Order> getAllOrders(int page, int size, String custNm, String startDate, String endDate,
             String sort) {
@@ -68,31 +69,19 @@ public class OrderService {
         if (orderMapper.findById(request.getOrderId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 주문 번호입니다: " + request.getOrderId());
         }
-        Order order = convertToEntity(request);
+        Order order = orderDtoMapper.toEntity(request);
         orderMapper.insert(order);
     }
 
     @Transactional
     public void updateOrder(OrderRequest request) {
-        Order order = convertToEntity(request);
+        Order order = orderDtoMapper.toEntity(request);
         orderMapper.update(order);
     }
 
     @Transactional
     public void deleteOrder(String orderId) {
         orderMapper.delete(orderId);
-    }
-
-    private Order convertToEntity(OrderRequest request) {
-        return Order.builder()
-                .orderId(request.getOrderId())
-                .custNm(request.getCustNm())
-                .orderNm(request.getOrderNm())
-                .orderStatus(request.getOrderStatus())
-                .orderAmt(request.getOrderAmt())
-                .orderDate(request.getOrderDate())
-                .useYn(request.getUseYn() != null ? request.getUseYn() : "1")
-                .build();
     }
 
     private String camelToSnake(String str) {

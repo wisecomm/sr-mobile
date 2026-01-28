@@ -22,6 +22,7 @@ import java.util.List;
 public class MenuService {
 
     private final MenuInfoMapper menuInfoMapper;
+    private final com.example.springrest.domain.menu.model.mapper.MenuMapper menuMapper;
 
     public List<MenuInfo> getAllMenus() {
         return menuInfoMapper.findAll();
@@ -46,32 +47,18 @@ public class MenuService {
 
     @Transactional
     public void createMenu(MenuInfoRequest request) {
-        MenuInfo menu = convertToEntity(request);
+        MenuInfo menu = menuMapper.toEntity(request);
         menuInfoMapper.insert(menu);
     }
 
     @Transactional
     public void updateMenu(MenuInfoRequest request) {
-        MenuInfo menu = convertToEntity(request);
+        MenuInfo menu = menuMapper.toEntity(request);
         menuInfoMapper.update(menu);
     }
 
     @Transactional
     public void deleteMenu(String menuId) {
         menuInfoMapper.delete(menuId);
-    }
-
-    private MenuInfo convertToEntity(MenuInfoRequest request) {
-        return MenuInfo.builder()
-                .menuId(request.getMenuId())
-                .menuLvl(request.getMenuLvl())
-                .menuUri(request.getMenuUri())
-                .menuImgUri(request.getMenuImgUri())
-                .menuName(request.getMenuName())
-                .upperMenuId(request.getUpperMenuId())
-                .menuDesc(request.getMenuDesc())
-                .menuSeq(request.getMenuSeq())
-                .useYn(request.getUseYn())
-                .build();
     }
 }

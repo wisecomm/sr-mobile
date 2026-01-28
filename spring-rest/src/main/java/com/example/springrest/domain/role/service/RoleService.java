@@ -27,10 +27,11 @@ public class RoleService {
 
     private final RoleInfoMapper roleInfoMapper;
     private final RoleMenuMapper roleMenuMapper;
+    private final com.example.springrest.domain.role.model.mapper.RoleMapper roleMapper;
 
     public List<RoleInfoResponse> getAllRoles() {
         return roleInfoMapper.findAll().stream()
-                .map(this::convertToResponse)
+                .map(roleMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +42,7 @@ public class RoleService {
         PageInfo<RoleInfo> pageInfo = new PageInfo<>(roles);
 
         List<RoleInfoResponse> content = roles.stream()
-                .map(this::convertToResponse)
+                .map(roleMapper::toResponse)
                 .collect(Collectors.toList());
 
         return PageResponse.of(pageInfo, content);
@@ -49,7 +50,7 @@ public class RoleService {
 
     public RoleInfoResponse getRoleById(String roleId) {
         RoleInfo role = roleInfoMapper.findById(roleId);
-        return role != null ? convertToResponse(role) : null;
+        return role != null ? roleMapper.toResponse(role) : null;
     }
 
     public List<String> getMenuIdsByRoleId(String roleId) {
@@ -60,13 +61,13 @@ public class RoleService {
 
     @Transactional
     public void createRole(RoleInfoRequest request) {
-        RoleInfo role = convertToEntity(request);
+        RoleInfo role = roleMapper.toEntity(request);
         roleInfoMapper.insert(role);
     }
 
     @Transactional
     public void updateRole(RoleInfoRequest request) {
-        RoleInfo role = convertToEntity(request);
+        RoleInfo role = roleMapper.toEntity(request);
         roleInfoMapper.update(role);
     }
 
@@ -87,25 +88,5 @@ public class RoleService {
                     .build();
             roleMenuMapper.insert(mapping);
         }
-    }
-
-    private RoleInfoResponse convertToResponse(RoleInfo entity) {
-        return RoleInfoResponse.builder()
-                .roleId(entity.getRoleId())
-                .roleName(entity.getRoleName())
-                .roleDesc(entity.getRoleDesc())
-                .useYn(entity.getUseYn())
-                .sysInsertDtm(entity.getSysInsertDtm())
-                .sysUpdateDtm(entity.getSysUpdateDtm())
-                .build();
-    }
-
-    private RoleInfo convertToEntity(RoleInfoRequest request) {
-        return RoleInfo.builder()
-                .roleId(request.getRoleId())
-                .roleName(request.getRoleName())
-                .roleDesc(request.getRoleDesc())
-                .useYn(request.getUseYn())
-                .build();
     }
 }

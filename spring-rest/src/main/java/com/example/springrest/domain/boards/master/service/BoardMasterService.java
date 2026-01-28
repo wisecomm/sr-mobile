@@ -22,6 +22,7 @@ import java.util.List;
 public class BoardMasterService {
 
     private final BoardMasterMapper boardMasterMapper;
+    private final com.example.springrest.domain.boards.master.model.mapper.BoardMasterDtoMapper boardMasterDtoMapper;
 
     public PageResponse<BoardMaster> getAllBoards(int page, int size, String brdNm, String startDate, String endDate) {
         PageHelper.startPage(page, size, "BRD_ID ASC");
@@ -48,30 +49,18 @@ public class BoardMasterService {
         if (boardMasterMapper.findById(request.getBrdId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 게시판 코드입니다: " + request.getBrdId());
         }
-        BoardMaster board = convertToEntity(request);
+        BoardMaster board = boardMasterDtoMapper.toEntity(request);
         boardMasterMapper.insert(board);
     }
 
     @Transactional
     public void updateBoard(BoardMasterRequest request) {
-        BoardMaster board = convertToEntity(request);
+        BoardMaster board = boardMasterDtoMapper.toEntity(request);
         boardMasterMapper.update(board);
     }
 
     @Transactional
     public void deleteBoard(String brdId) {
         boardMasterMapper.delete(brdId);
-    }
-
-    private BoardMaster convertToEntity(BoardMasterRequest request) {
-        return BoardMaster.builder()
-                .brdId(request.getBrdId())
-                .brdNm(request.getBrdNm())
-                .brdDesc(request.getBrdDesc())
-                .replyUseYn(request.getReplyUseYn() != null ? request.getReplyUseYn() : "1")
-                .fileUseYn(request.getFileUseYn() != null ? request.getFileUseYn() : "1")
-                .fileMaxCnt(request.getFileMaxCnt() != null ? request.getFileMaxCnt() : 5)
-                .useYn(request.getUseYn() != null ? request.getUseYn() : "1")
-                .build();
     }
 }

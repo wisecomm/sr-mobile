@@ -28,6 +28,7 @@ public class BoardService {
     private final BoardMapper boardMapper;
     private final BoardFileMapper boardFileMapper;
     private final FileStore fileStore;
+    private final com.example.springrest.domain.boards.board.model.mapper.BoardDtoMapper boardDtoMapper;
 
     public PageResponse<Board> getBoardList(int page, int size, BoardSearchDto searchDto) {
         PageHelper.startPage(page, size);
@@ -78,16 +79,11 @@ public class BoardService {
         // TODO: Get real User ID from context
         String userId = "admin"; // Default for now
 
-        Board board = Board.builder()
-                .brdId(request.getBrdId())
-                .userId(userId)
-                .title(request.getTitle())
-                .contents(request.getContents())
-                .secretYn(request.getSecretYn() != null ? request.getSecretYn() : "0")
-                .useYn("1")
-                .sysInsertUserId(userId)
-                .sysUpdateUserId(userId)
-                .build();
+        Board board = boardDtoMapper.toEntity(request);
+        board.setUserId(userId);
+        board.setSysInsertUserId(userId);
+        board.setSysUpdateUserId(userId);
+
         boardMapper.insert(board);
 
         // File Upload
@@ -103,17 +99,16 @@ public class BoardService {
 
     @Transactional
     public void updateBoard(Integer boardId, BoardRequest request, List<MultipartFile> files) throws IOException {
-        Board board = boardMapper.findById(boardId);
-        if (board == null) {
+        Board oldBoard = boardMapper.findById(boardId);
+        if (oldBoard == null) {
             throw new IllegalArgumentException("게시물을 찾을 수 없습니다: " + boardId);
         }
 
         String userId = "admin"; // Default for now
 
-        board.setTitle(request.getTitle());
-        board.setContents(request.getContents());
-        board.setSecretYn(request.getSecretYn() != null ? request.getSecretYn() : "0");
-        board.setUseYn(request.getUseYn() != null ? request.getUseYn() : "1");
+        // Create new entity from request for update
+        Board board = boardDtoMapper.toEntity(request);
+        board.setBoardId(boardId);
         board.setSysUpdateUserId(userId);
 
         boardMapper.update(board);
