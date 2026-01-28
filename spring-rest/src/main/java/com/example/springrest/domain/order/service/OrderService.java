@@ -25,6 +25,7 @@ public class OrderService extends BaseService<Order, String, OrderMapper> {
 
     private final OrderMapper orderMapper; // Repository Mapper
     private final com.example.springrest.domain.order.model.mapper.OrderMapper orderDtoMapper; // MapStruct Mapper
+    private final com.example.springrest.global.util.SortValidator sortValidator;
 
     @Override
     protected OrderMapper getMapper() {
@@ -44,20 +45,12 @@ public class OrderService extends BaseService<Order, String, OrderMapper> {
 
         // Convert sort format if needed (e.g. from "camelCase,asc" to "snake_case asc")
         // Assuming sort comes as "colId,direction"
+        // Sort validation
         String sortClause = null;
         if (sort != null && !sort.isEmpty()) {
             String[] parts = sort.split(",");
             if (parts.length == 2) {
-                // Simple conversion: camelCase to snake_case mapping could be done here if
-                // needed
-                // For now, assume colId matches DB column or rely on frontend to send correct
-                // column name
-                // To be safe against SQL injection, validate parts[1] is asc/desc
-                String col = parts[0];
-                String dir = parts[1].toLowerCase();
-                if ("asc".equals(dir) || "desc".equals(dir)) {
-                    sortClause = camelToSnake(col) + " " + dir;
-                }
+                sortClause = sortValidator.validateAndConvert("orders", parts[0], parts[1]);
             }
         }
 
@@ -91,8 +84,4 @@ public class OrderService extends BaseService<Order, String, OrderMapper> {
         super.delete(orderId);
     }
 
-    private String camelToSnake(String str) {
-        String result = str.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
-        return result;
-    }
 }

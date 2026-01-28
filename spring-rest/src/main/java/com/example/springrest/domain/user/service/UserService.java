@@ -41,6 +41,8 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
 
     private final UserMapper userMapper;
 
+    private final com.example.springrest.global.util.SortValidator sortValidator;
+
     public PageResponse<UserResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
             String sort) {
         PageHelper.startPage(page, size);
@@ -52,31 +54,18 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
             endDate = endDate + " 23:59:59";
         }
 
-        // Convert sort format if needed (e.g. from "camelCase,asc" to "snake_case asc")
-        // Assuming sort comes as "colId,direction"
+        // Sort validation
         String sortClause = null;
         if (sort != null && !sort.isEmpty()) {
             String[] parts = sort.split(",");
             if (parts.length == 2) {
-                // Simple conversion: camelCase to snake_case mapping could be done here if
-                // needed
-                // For now, assume colId matches DB column or rely on frontend to send correct
-                // column name
-                // To be safe against SQL injection, validate parts[1] is asc/desc
-                String col = parts[0];
-                String dir = parts[1].toLowerCase();
-                if ("asc".equals(dir) || "desc".equals(dir)) {
-                    sortClause = camelToSnake(col) + " " + dir;
-                }
+                sortClause = sortValidator.validateAndConvert("users", parts[0], parts[1]);
             }
         }
 
         List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, sortClause);
         List<UserResponse> userResponses = userMapper.toResponseList(users);
 
-        // PageHelper returns a Page<E> which extends ArrayList<E>. If we map it to a
-        // new list, we lose page info unless we manually copy it.
-        // Better approach with PageHelper:
         PageInfo<UserInfo> originalPageInfo = new PageInfo<>(users);
 
         PageInfo<UserResponse> responsePageInfo = new PageInfo<>();
@@ -85,14 +74,8 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
         responsePageInfo.setPageNum(originalPageInfo.getPageNum());
         responsePageInfo.setPageSize(originalPageInfo.getPageSize());
         responsePageInfo.setPages(originalPageInfo.getPages());
-        // Copy other necessary fields if PageResponse uses them.
 
         return PageResponse.of(responsePageInfo, userResponses);
-    }
-
-    private String camelToSnake(String str) {
-        String result = str.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
-        return result;
     }
 
     // getUserById uses UserResponse, so we keep logic but use super.findById

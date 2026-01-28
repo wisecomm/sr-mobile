@@ -30,6 +30,8 @@ public class BoardService {
     private final FileStore fileStore;
     private final com.example.springrest.domain.boards.board.model.mapper.BoardDtoMapper boardDtoMapper;
 
+    private final com.example.springrest.global.util.SortValidator sortValidator;
+
     public PageResponse<Board> getBoardList(int page, int size, BoardSearchDto searchDto) {
         PageHelper.startPage(page, size);
 
@@ -46,12 +48,9 @@ public class BoardService {
         if (sort != null && !sort.isEmpty()) {
             String[] parts = sort.split(",");
             if (parts.length == 2) {
-                String col = parts[0];
-                String dir = parts[1].toLowerCase();
-                if ("asc".equals(dir) || "desc".equals(dir)) {
-                    // camelCase to snake_case conversion if using mybatis dynamic sql
-                    searchDto.setSort(camelToSnake(col) + " " + dir);
-                }
+                // Use safe sort validator
+                String safeSort = sortValidator.validateAndConvert("boards", parts[0], parts[1]);
+                searchDto.setSort(safeSort);
             }
         }
 
@@ -143,8 +142,4 @@ public class BoardService {
         boardFileMapper.deleteByBoardId(boardId);
     }
 
-    private String camelToSnake(String str) {
-        String result = str.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
-        return result;
-    }
 }
