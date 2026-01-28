@@ -13,6 +13,15 @@ import 'so-grid-react/styles.css';
 import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function BoardsPage() {
     return (
@@ -41,8 +50,13 @@ function BoardsContent() {
         openDialog,
         closeDialog,
         handleSubmit,
-        handleDelete,
         onSortChange,
+        // Delete Confirmation
+        deleteConfirmOpen,
+        deleteTargetIds,
+        openDeleteConfirm,
+        closeDeleteConfirm,
+        executeDelete,
     } = useBoardManagement(brdIdParam);
 
     const columns = React.useMemo(() => getColumns(), []);
@@ -103,15 +117,15 @@ function BoardsContent() {
         if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "삭제할 주문을 선택해주세요.",
+                description: "삭제할 게시물을 선택해주세요.",
                 variant: "default",
             });
             return;
         }
 
         const boardIds = selectedRows.map(row => row.boardId);
-        await handleDelete(boardIds);
-    }, [handleDelete, toast]);
+        openDeleteConfirm(boardIds);
+    }, [openDeleteConfirm, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -149,6 +163,27 @@ function BoardsContent() {
                 defaultBrdId={brdIdParam}
                 onSubmit={handleSubmit}
             />
+
+            <Dialog open={deleteConfirmOpen} onOpenChange={closeDeleteConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>게시물 삭제</DialogTitle>
+                        <DialogDescription>
+                            선택한 {deleteTargetIds.length}개의 게시물을 삭제하시겠습니까?
+                            <br />
+                            이 작업은 되돌릴 수 없습니다.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={closeDeleteConfirm}>
+                            취소
+                        </Button>
+                        <Button variant="destructive" onClick={executeDelete}>
+                            삭제
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

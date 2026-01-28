@@ -45,8 +45,15 @@ export interface UseBoardManagementReturn {
     // CRUD 작업
     handleCreate: (data: FormData) => Promise<void>;
     handleUpdate: (data: FormData) => Promise<void>;
-    handleDelete: (postIds: number[]) => Promise<void>;
+
     handleSubmit: (data: Partial<BoardsBoard> & { deleteFileIds?: number[] }, files?: File[] | null) => Promise<void>;
+
+    // 삭제 확인 다이얼로그 (New)
+    deleteConfirmOpen: boolean;
+    deleteTargetIds: number[];
+    openDeleteConfirm: (postIds: number[]) => void;
+    closeDeleteConfirm: () => void;
+    executeDelete: () => Promise<void>;
 }
 
 /**
@@ -198,28 +205,50 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
     }, [selectedPost, updateMutation, toast, closeDialog]);
 
     /**
-     * 게시물 삭제
+     * 게시물 삭제 (상태 관리)
      */
-    const handleDelete = useCallback(async (postIds: number[]) => {
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [deleteTargetIds, setDeleteTargetIds] = useState<number[]>([]);
+
+    const openDeleteConfirm = useCallback((postIds: number[]) => {
         if (postIds.length === 0) {
             toast({ title: '알림', description: '삭제할 게시물을 선택해주세요.', variant: 'default' });
             return;
         }
+        setDeleteTargetIds(postIds);
+        setDeleteConfirmOpen(true);
+    }, [toast]);
 
-        const confirmed = window.confirm(`선택한 ${postIds.length}개의 게시물을 삭제하시겠습니까?`);
-        if (!confirmed) return;
+    const closeDeleteConfirm = useCallback(() => {
+        setDeleteConfirmOpen(false);
+        setDeleteTargetIds([]);
+    }, []);
 
-        const results = await Promise.allSettled(
-            postIds.map(id => deleteMutation.mutateAsync(id))
-        );
+    /**
+     * 실제 삭제 실행
+     */
+    const executeDelete = useCallback(async () => {
+        if (deleteTargetIds.length === 0) return;
 
-        const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        if (succeeded === postIds.length) {
-            toast({ title: '삭제 완료', description: `${succeeded}개의 게시물이 삭제되었습니다.`, variant: 'success' });
-        } else {
-            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${postIds.length - succeeded}개 실패`, variant: 'destructive' });
+        try {
+            const results = await Promise.allSettled(
+                deleteTargetIds.map(id => deleteMutation.mutateAsync(id))
+            );
+
+            const succeeded = results.filter(r => r.status === 'fulfilled').length;
+            if (succeeded === deleteTargetIds.length) {
+                toast({ title: '삭제 완료', description: `${succeeded}개의 게시물이 삭제되었습니다.`, variant: 'success' });
+            } else {
+                toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${deleteTargetIds.length - succeeded}개 실패`, variant: 'destructive' });
+            }
+            closeDeleteConfirm();
+        } catch (error) {
+            console.error('Delete failed', error);
+            toast({ title: '삭제 실패', description: '삭제 중 오류가 발생했습니다.', variant: 'destructive' });
         }
-    }, [deleteMutation, toast]);
+    }, [deleteTargetIds, deleteMutation, toast, closeDeleteConfirm]);
+
+
 
     /**
      * 폼 제출 (생성 또는 수정)
@@ -257,7 +286,13 @@ export function useBoardManagement(initialBrdId?: string, options: UseBoardManag
         closeDialog,
         handleCreate,
         handleUpdate,
-        handleDelete,
+
         handleSubmit,
+        // Delete Confirmation props
+        deleteConfirmOpen,
+        deleteTargetIds,
+        openDeleteConfirm,
+        closeDeleteConfirm,
+        executeDelete,
     };
 }

@@ -64,11 +64,6 @@ async function proxyRequest(request: NextRequest, path: string) {
 
         console.log(`[Proxy] Response status: ${response.status}`);
 
-        // Debug: Log response body to inspect payload
-        // Note: Consuming the body as text means we must return this text, not the stream.
-        const responseText = await response.text();
-        console.log(`[Proxy] Response Body Preview: ${responseText.substring(0, 500)}`);
-
         // 4. 토큰 만료 처리 (401)
         if (response.status === 401) {
             console.log('[Proxy] Received 401. Attempting refresh...');
@@ -89,7 +84,7 @@ async function proxyRequest(request: NextRequest, path: string) {
             responseHeaders.set('content-type', 'application/json');
         }
 
-        return new NextResponse(responseText, {
+        return new NextResponse(response.body, {
             status: response.status,
             statusText: response.statusText,
             headers: responseHeaders,

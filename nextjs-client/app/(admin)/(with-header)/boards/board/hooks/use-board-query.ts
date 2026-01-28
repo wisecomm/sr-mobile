@@ -56,7 +56,16 @@ export const boardsBoardApi = {
                 responseType: 'blob',
             });
 
-            const url = window.URL.createObjectURL(new Blob([response as unknown as Blob]));
+            const blob = response as unknown as Blob;
+
+            // 에러 응답 (JSON)인 경우 처리
+            if (blob.type === 'application/json') {
+                const text = await blob.text();
+                const errorResponse = JSON.parse(text);
+                throw new Error(errorResponse.message || '파일 다운로드에 실패했습니다.');
+            }
+
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', fileName);
@@ -67,7 +76,9 @@ export const boardsBoardApi = {
             window.URL.revokeObjectURL(url);
         } catch (error: unknown) {
             console.error('File download failed:', error);
-            throw new Error('파일 다운로드에 실패했습니다.');
+            // 에러 메시지 추출 및 전파
+            const errorMessage = error instanceof Error ? error.message : '파일 다운로드 중 오류가 발생했습니다.';
+            throw new Error(errorMessage);
         }
     },
 };
