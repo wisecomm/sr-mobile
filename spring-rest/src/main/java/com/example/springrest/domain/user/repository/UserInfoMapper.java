@@ -6,11 +6,13 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+import com.example.springrest.global.common.repository.BaseMapper;
+
 /**
  * 사용자 상세 정보 데이터 접근 매퍼
  */
 @Mapper
-public interface UserInfoMapper {
+public interface UserInfoMapper extends BaseMapper<UserInfo, String> {
     UserInfo findById(@Param("userId") String userId);
 
     List<UserInfo> findAll(@Param("userName") String userName, @Param("startDate") String startDate,

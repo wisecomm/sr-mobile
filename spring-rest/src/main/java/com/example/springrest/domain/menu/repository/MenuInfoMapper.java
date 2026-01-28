@@ -6,11 +6,13 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+import com.example.springrest.global.common.repository.BaseMapper;
+
 /**
  * 메뉴 정보 데이터 접근 매퍼
  */
 @Mapper
-public interface MenuInfoMapper {
+public interface MenuInfoMapper extends BaseMapper<MenuInfo, String> {
     MenuInfo findById(@Param("menuId") String menuId);
 
     List<MenuInfo> findAll();

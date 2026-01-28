@@ -7,8 +7,10 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+import com.example.springrest.global.common.repository.BaseMapper;
+
 @Mapper
-public interface BoardMapper {
+public interface BoardMapper extends BaseMapper<Board, Integer> {
     Board findById(@Param("boardId") Integer boardId);
 
     List<Board> findAll(BoardSearchDto searchDto);

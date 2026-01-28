@@ -13,16 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.springrest.global.common.service.BaseService;
+
 /**
  * 게시판 마스터 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BoardMasterService {
+public class BoardMasterService extends BaseService<BoardMaster, String, BoardMasterMapper> {
 
     private final BoardMasterMapper boardMasterMapper;
     private final com.example.springrest.domain.boards.master.model.mapper.BoardMasterDtoMapper boardMasterDtoMapper;
+
+    @Override
+    protected BoardMasterMapper getMapper() {
+        return boardMasterMapper;
+    }
 
     public PageResponse<BoardMaster> getAllBoards(int page, int size, String brdNm, String startDate, String endDate) {
         PageHelper.startPage(page, size, "BRD_ID ASC");
@@ -41,26 +48,26 @@ public class BoardMasterService {
     }
 
     public BoardMaster getBoardById(String brdId) {
-        return boardMasterMapper.findById(brdId);
+        return super.findById(brdId);
     }
 
     @Transactional
     public void createBoard(BoardMasterRequest request) {
-        if (boardMasterMapper.findById(request.getBrdId()) != null) {
+        if (super.findById(request.getBrdId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 게시판 코드입니다: " + request.getBrdId());
         }
         BoardMaster board = boardMasterDtoMapper.toEntity(request);
-        boardMasterMapper.insert(board);
+        super.create(board);
     }
 
     @Transactional
     public void updateBoard(BoardMasterRequest request) {
         BoardMaster board = boardMasterDtoMapper.toEntity(request);
-        boardMasterMapper.update(board);
+        super.update(board);
     }
 
     @Transactional
     public void deleteBoard(String brdId) {
-        boardMasterMapper.delete(brdId);
+        super.delete(brdId);
     }
 }

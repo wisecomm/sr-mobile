@@ -13,16 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.springrest.global.common.service.BaseService;
+
 /**
  * 메뉴 정보 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MenuService {
+public class MenuService extends BaseService<MenuInfo, String, MenuInfoMapper> {
 
     private final MenuInfoMapper menuInfoMapper;
     private final com.example.springrest.domain.menu.model.mapper.MenuMapper menuMapper;
+
+    @Override
+    protected MenuInfoMapper getMapper() {
+        return menuInfoMapper;
+    }
 
     public List<MenuInfo> getAllMenus() {
         return menuInfoMapper.findAll();
@@ -42,23 +49,23 @@ public class MenuService {
     }
 
     public MenuInfo getMenuById(String menuId) {
-        return menuInfoMapper.findById(menuId);
+        return super.findById(menuId);
     }
 
     @Transactional
     public void createMenu(MenuInfoRequest request) {
         MenuInfo menu = menuMapper.toEntity(request);
-        menuInfoMapper.insert(menu);
+        super.create(menu);
     }
 
     @Transactional
     public void updateMenu(MenuInfoRequest request) {
         MenuInfo menu = menuMapper.toEntity(request);
-        menuInfoMapper.update(menu);
+        super.update(menu);
     }
 
     @Transactional
     public void deleteMenu(String menuId) {
-        menuInfoMapper.delete(menuId);
+        super.delete(menuId);
     }
 }

@@ -17,17 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.springrest.global.common.service.BaseService;
+
 /**
  * 역할 정보 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RoleService {
+public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
 
     private final RoleInfoMapper roleInfoMapper;
     private final RoleMenuMapper roleMenuMapper;
     private final com.example.springrest.domain.role.model.mapper.RoleMapper roleMapper;
+
+    @Override
+    protected RoleInfoMapper getMapper() {
+        return roleInfoMapper;
+    }
 
     public List<RoleInfoResponse> getAllRoles() {
         return roleInfoMapper.findAll().stream()
@@ -49,7 +56,7 @@ public class RoleService {
     }
 
     public RoleInfoResponse getRoleById(String roleId) {
-        RoleInfo role = roleInfoMapper.findById(roleId);
+        RoleInfo role = super.findById(roleId);
         return role != null ? roleMapper.toResponse(role) : null;
     }
 
@@ -62,19 +69,19 @@ public class RoleService {
     @Transactional
     public void createRole(RoleInfoRequest request) {
         RoleInfo role = roleMapper.toEntity(request);
-        roleInfoMapper.insert(role);
+        super.create(role);
     }
 
     @Transactional
     public void updateRole(RoleInfoRequest request) {
         RoleInfo role = roleMapper.toEntity(request);
-        roleInfoMapper.update(role);
+        super.update(role);
     }
 
     @Transactional
     public void deleteRole(String roleId) {
         roleMenuMapper.deleteByRoleId(roleId);
-        roleInfoMapper.delete(roleId);
+        super.delete(roleId);
     }
 
     @Transactional

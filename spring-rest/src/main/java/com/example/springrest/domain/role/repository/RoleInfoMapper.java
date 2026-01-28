@@ -6,11 +6,13 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+import com.example.springrest.global.common.repository.BaseMapper;
+
 /**
  * 역할 정보 데이터 접근 매퍼
  */
 @Mapper
-public interface RoleInfoMapper {
+public interface RoleInfoMapper extends BaseMapper<RoleInfo, String> {
     RoleInfo findById(@Param("roleId") String roleId);
 
     List<RoleInfo> findAll();

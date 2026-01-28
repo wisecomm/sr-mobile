@@ -19,15 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.example.springrest.global.common.service.BaseService;
+
 /**
  * 사용자 정보 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
 
     private final UserInfoMapper userInfoMapper;
+
+    @Override
+    protected UserInfoMapper getMapper() {
+        return userInfoMapper;
+    }
+
     private final UserRoleMapper userRoleMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -87,19 +95,23 @@ public class UserService {
         return result;
     }
 
+    // getUserById uses UserResponse, so we keep logic but use super.findById
+    // internally if we want,
+    // but here we already use userInfoMapper.findById directly or via super.
     public UserResponse getUserById(String userId) {
-        UserInfo user = userInfoMapper.findById(userId);
+        UserInfo user = super.findById(userId); // Use BaseService method
         return userMapper.toResponse(user);
     }
 
     @Transactional
     public void createUser(UserInfoRequest request) {
-        if (userInfoMapper.findById(request.getUserId()) != null) {
+        if (super.findById(request.getUserId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 사용자 ID입니다: " + request.getUserId());
         }
         UserInfo user = userMapper.toEntity(request);
         user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
-        userInfoMapper.insert(user);
+        // Use BaseService create
+        super.create(user);
     }
 
     @Transactional
@@ -111,13 +123,14 @@ public class UserService {
             user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
         }
 
-        userInfoMapper.update(user);
+        // Use BaseService update
+        super.update(user);
     }
 
     @Transactional
     public void deleteUser(String userId) {
         userRoleMapper.deleteByUserId(userId);
-        userInfoMapper.delete(userId);
+        super.delete(userId);
     }
 
     @Transactional

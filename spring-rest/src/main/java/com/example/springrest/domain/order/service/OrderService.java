@@ -13,16 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.springrest.global.common.service.BaseService;
+
 /**
  * 주문 서비스
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderService extends BaseService<Order, String, OrderMapper> {
 
     private final OrderMapper orderMapper; // Repository Mapper
     private final com.example.springrest.domain.order.model.mapper.OrderMapper orderDtoMapper; // MapStruct Mapper
+
+    @Override
+    protected OrderMapper getMapper() {
+        return orderMapper;
+    }
 
     public PageResponse<Order> getAllOrders(int page, int size, String custNm, String startDate, String endDate,
             String sort) {
@@ -61,27 +68,27 @@ public class OrderService {
     }
 
     public Order getOrderById(String orderId) {
-        return orderMapper.findById(orderId);
+        return super.findById(orderId);
     }
 
     @Transactional
     public void createOrder(OrderRequest request) {
-        if (orderMapper.findById(request.getOrderId()) != null) {
+        if (super.findById(request.getOrderId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 주문 번호입니다: " + request.getOrderId());
         }
         Order order = orderDtoMapper.toEntity(request);
-        orderMapper.insert(order);
+        super.create(order);
     }
 
     @Transactional
     public void updateOrder(OrderRequest request) {
         Order order = orderDtoMapper.toEntity(request);
-        orderMapper.update(order);
+        super.update(order);
     }
 
     @Transactional
     public void deleteOrder(String orderId) {
-        orderMapper.delete(orderId);
+        super.delete(orderId);
     }
 
     private String camelToSnake(String str) {

@@ -6,8 +6,10 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+import com.example.springrest.global.common.repository.BaseMapper;
+
 @Mapper
-public interface OrderMapper {
+public interface OrderMapper extends BaseMapper<Order, String> {
     List<Order> findAll(@Param("custNm") String custNm,
             @Param("startDate") String startDate,
             @Param("endDate") String endDate,
