@@ -43,7 +43,7 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
 
     @Transactional(readOnly = true)
     public PageResponse<RoleInfoResponse> getRolesWithPagination(int page, int size, String searchId) {
-        PageHelper.startPage(page, size, "ROLE_ID ASC");
+        PageHelper.startPage(page, size);
 
         List<RoleInfo> roles = roleInfoMapper.findAllWithSearch(searchId);
         PageInfo<RoleInfo> pageInfo = new PageInfo<>(roles);

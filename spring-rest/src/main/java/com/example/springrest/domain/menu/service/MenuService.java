@@ -40,7 +40,7 @@ public class MenuService extends BaseService<MenuInfo, String, MenuInfoMapper> {
 
     @Transactional(readOnly = true)
     public PageResponse<MenuInfoResponse> getMenusWithPagination(int page, int size, String searchId) {
-        PageHelper.startPage(page, size, "MENU_LVL, MENU_SEQ");
+        PageHelper.startPage(page, size);
 
         List<MenuInfo> menus = menuInfoMapper.findAllWithSearch(searchId);
         PageInfo<MenuInfo> pageInfo = new PageInfo<>(menus);

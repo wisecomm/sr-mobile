@@ -33,8 +33,9 @@ public class BoardMasterService extends BaseService<BoardMaster, String, BoardMa
         return boardMasterMapper;
     }
 
-    public PageResponse<BoardMasterResponse> getAllBoards(int page, int size, String brdNm, String startDate, String endDate) {
-        PageHelper.startPage(page, size, "BRD_ID ASC");
+    public PageResponse<BoardMasterResponse> getAllBoards(int page, int size, String brdNm, String startDate,
+            String endDate) {
+        PageHelper.startPage(page, size);
 
         if (startDate != null && !startDate.isEmpty()) {
             startDate = startDate + " 00:00:00";
