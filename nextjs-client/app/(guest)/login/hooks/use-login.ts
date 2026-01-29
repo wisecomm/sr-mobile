@@ -46,6 +46,15 @@ export function useLogin() {
             try {
                 const { accessToken } = await getTokens();
                 if (accessToken) {
+                    if (typeof window !== 'undefined' && window.AndroidBridge) {
+                        try {
+                            window.AndroidBridge.syncCookies();
+                            console.log('[AuthService] Android Bridge syncCookies called');
+                        } catch (e) {
+                            console.error('[AuthService] Android Bridge syncCookies failed', e);
+                        }
+                    }
+
                     // Redirect based on device
                     const userAgent = navigator.userAgent;
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);

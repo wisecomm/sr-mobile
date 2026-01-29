@@ -23,7 +23,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 
 const menuItems = [
     { title: "재고 입고", icon: Barcode, color: "text-primary", href: "/stock/inbound" },
@@ -36,9 +35,24 @@ const menuItems = [
 ];
 
 export default function MainMobilePage() {
-    const router = useRouter();
     const { data: user } = useCurrentUser();
     const logoutMutation = useLogout();
+
+    const handleExit = () => {
+        // [Add] Android Bridge Logout
+        if (typeof window !== 'undefined' && window.AndroidBridge) {
+            try {
+                window.AndroidBridge.exitApp();
+                console.log('[AuthService] Android Bridge logout called');
+            } catch (e) {
+                console.error('[AuthService] Android Bridge logout failed', e);
+            }
+        } else {
+            //            window.alert("브라우저 로그아웃이 호출되었습니다. (Web)");
+            // Fallback for browser (Logout)
+            logoutMutation.mutate();
+        }
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-muted/30 text-foreground max-w-md mx-auto border-x shadow-2xl relative overflow-hidden">
@@ -123,7 +137,7 @@ export default function MainMobilePage() {
                 <Button
                     variant="destructive"
                     className="w-full h-14 rounded-xl shadow-lg font-bold text-lg pointer-events-auto gap-2 hover:bg-destructive/90 transition-all active:scale-90 active:bg-destructive/80"
-                    onClick={() => logoutMutation.mutate()}
+                    onClick={handleExit}
                 >
                     <Power className="h-5 w-5" />
                     작업 종료
