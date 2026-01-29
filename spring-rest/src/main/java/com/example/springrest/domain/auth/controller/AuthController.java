@@ -1,11 +1,11 @@
 package com.example.springrest.domain.auth.controller;
 
 import com.example.springrest.global.model.dto.ApiResponse;
-import com.example.springrest.domain.auth.model.LoginRequest;
-import com.example.springrest.domain.auth.model.LoginResponse;
-import com.example.springrest.domain.auth.model.TokenRefreshRequest;
-import com.example.springrest.domain.auth.model.TokenValidationRequest;
-import com.example.springrest.domain.auth.model.TokenValidationResponse;
+import com.example.springrest.domain.auth.model.dto.LoginRequest;
+import com.example.springrest.domain.auth.model.dto.LoginResponse;
+import com.example.springrest.domain.auth.model.dto.TokenRefreshRequest;
+import com.example.springrest.domain.auth.model.dto.TokenValidationRequest;
+import com.example.springrest.domain.auth.model.dto.TokenValidationResponse;
 
 import com.example.springrest.domain.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;

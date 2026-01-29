@@ -102,7 +102,79 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-## 📡 API 엔드포인트
+## � API 버전 관리 전략
+
+### 버전 체계
+
+본 프로젝트는 **URI Path Versioning** 방식을 사용합니다:
+
+```
+/api/v{major}/...
+```
+
+| 버전 | 상태 | 설명 |
+|------|------|------|
+| `v1` | **Current** | 현재 운영 버전 |
+| `v2` | _Future_ | 다음 메이저 버전 (계획 시 추가) |
+
+### 버전 변경 정책
+
+#### 메이저 버전 변경 (v1 → v2)
+**다음 상황에서 새 메이저 버전 생성:**
+- 기존 API 응답 구조의 Breaking Change
+- 필수 요청 파라미터 추가/제거
+- 엔드포인트 경로 변경
+- 인증 방식 변경
+
+#### 하위 호환 변경 (버전 유지)
+**다음 변경은 기존 버전 내에서 수행:**
+- 새로운 엔드포인트 추가
+- 응답에 새 필드 추가 (기존 필드 유지)
+- 선택적(optional) 요청 파라미터 추가
+- 버그 수정 및 성능 개선
+
+### API 경로 구조
+
+```
+/api/v1/
+├── auth/                    # 인증 (Public)
+│   ├── POST   /login
+│   ├── POST   /refresh
+│   ├── POST   /logout
+│   ├── POST   /validate
+│   └── GET    /me
+│
+├── mgmt/                    # 관리 기능 (Authenticated)
+│   ├── users/               # 사용자 관리
+│   ├── roles/               # 역할 관리
+│   ├── menus/               # 메뉴 관리
+│   ├── orders/              # 주문 관리
+│   └── boards/master/       # 게시판 마스터 관리
+│
+└── boards/                  # 게시판 (Authenticated)
+    └── board/               # 게시물 CRUD
+```
+
+### Deprecation 정책
+
+1. **6개월 사전 공지**: 구 버전 Deprecation 최소 6개월 전 공지
+2. **헤더 알림**: `Deprecation: true`, `Sunset: <date>` 헤더 추가
+3. **문서 업데이트**: Swagger에 deprecated 표시
+4. **병행 운영**: 구/신 버전 최소 6개월 병행 운영
+
+### 클라이언트 가이드
+
+```typescript
+// ✅ 권장: 버전을 명시적으로 지정
+const API_BASE = '/api/v1';
+
+// ❌ 비권장: 버전 없이 사용
+const API_BASE = '/api';
+```
+
+---
+
+## �📡 API 엔드포인트
 
 ### Authentication (인증)
 

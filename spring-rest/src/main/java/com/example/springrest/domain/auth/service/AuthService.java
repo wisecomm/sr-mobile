@@ -1,9 +1,9 @@
 package com.example.springrest.domain.auth.service;
 
-import com.example.springrest.domain.auth.model.AuthUser;
-import com.example.springrest.domain.auth.model.LoginRequest;
-import com.example.springrest.domain.auth.model.LoginResponse;
-import com.example.springrest.domain.auth.model.TokenValidationResponse;
+import com.example.springrest.domain.auth.model.entity.AuthUser;
+import com.example.springrest.domain.auth.model.dto.LoginRequest;
+import com.example.springrest.domain.auth.model.dto.LoginResponse;
+import com.example.springrest.domain.auth.model.dto.TokenValidationResponse;
 import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.enums.UserRole;
 import com.example.springrest.global.security.JwtTokenProvider;
@@ -110,6 +110,7 @@ public class AuthService {
      * @return 사용자 정보
      * @throws IllegalArgumentException 사용자를 찾을 수 없을 때
      */
+    @Transactional(readOnly = true)
     public UserInfoResponse getCurrentUser(String userId) {
         AuthUser user = userDetailsProvider.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
@@ -141,6 +142,7 @@ public class AuthService {
      * @param token JWT 토큰
      * @return 검증 결과 (유효 여부, 사용자 정보)
      */
+    @Transactional(readOnly = true)
     public TokenValidationResponse validateToken(String token) {
         try {
             // 토큰 유효성 검증

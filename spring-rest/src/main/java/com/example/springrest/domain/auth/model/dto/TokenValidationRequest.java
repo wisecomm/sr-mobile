@@ -1,4 +1,4 @@
-package com.example.springrest.domain.auth.model;
+package com.example.springrest.domain.auth.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

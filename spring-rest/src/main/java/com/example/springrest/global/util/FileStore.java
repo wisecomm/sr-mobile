@@ -82,7 +82,14 @@ public class FileStore {
 
     public Resource loadFileAsResource(String storedFileName) throws MalformedURLException {
         File file = new File(getFullPath(storedFileName));
-        Resource resource = new UrlResource(file.toURI());
+        if (!file.exists()) {
+            throw new RuntimeException("File not found: " + storedFileName);
+        }
+        java.net.URI fileUri = file.toURI();
+        if (fileUri == null) {
+            throw new RuntimeException("Could not resolve file URI: " + storedFileName);
+        }
+        Resource resource = new UrlResource(fileUri);
         if (resource.exists() || resource.isReadable()) {
             return resource;
         } else {

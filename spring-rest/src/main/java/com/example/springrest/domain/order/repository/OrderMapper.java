@@ -10,7 +10,9 @@ import com.example.springrest.global.common.repository.BaseMapper;
 
 @Mapper
 public interface OrderMapper extends BaseMapper<Order, String> {
-    List<Order> findAll(@Param("custNm") String custNm,
+    List<Order> findAll();
+
+    List<Order> findAllWithSearch(@Param("custNm") String custNm,
             @Param("startDate") String startDate,
             @Param("endDate") String endDate,
             @Param("sort") String sort);

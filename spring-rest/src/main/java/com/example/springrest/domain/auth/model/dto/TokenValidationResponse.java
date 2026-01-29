@@ -1,4 +1,4 @@
-package com.example.springrest.domain.auth.model;
+package com.example.springrest.domain.auth.model.dto;
 
 import com.example.springrest.domain.user.model.enums.UserRole;
 import lombok.AllArgsConstructor;

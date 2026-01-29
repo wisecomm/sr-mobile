@@ -10,10 +10,10 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 /**
- * 사용자 정보 매퍼 (MapStruct)
+ * 사용자 정보 DTO 매퍼 (MapStruct)
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface UserMapper {
+public interface UserDtoMapper {
 
     /**
      * Entity -> Response DTO
@@ -28,7 +28,7 @@ public interface UserMapper {
     /**
      * Request DTO -> Entity (Create)
      */
-    @Mapping(target = "roles", ignore = true) // Request에 없고 Entity에만 있는 필드 (IGNORE 정책으로 생략 가능하나 명시)
+    @Mapping(target = "roles", ignore = true)
     UserInfo toEntity(UserInfoRequest request);
 
     /**
@@ -42,6 +42,6 @@ public interface UserMapper {
     /**
      * Entity -> Excel DTO
      */
-    @Mapping(target = "userPwd", ignore = true) // 엑셀 다운로드 시 비밀번호 제외
+    @Mapping(target = "userPwd", ignore = true)
     com.example.springrest.domain.user.model.dto.UserExcelDto toExcelDto(UserInfo entity);
 }

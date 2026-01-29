@@ -1,6 +1,6 @@
 package com.example.springrest.domain.user.service;
 
-import com.example.springrest.domain.auth.model.AuthUser;
+import com.example.springrest.domain.auth.model.entity.AuthUser;
 import com.example.springrest.domain.auth.service.UserDetailsProvider;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import com.example.springrest.domain.user.repository.UserInfoMapper;

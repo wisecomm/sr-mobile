@@ -4,16 +4,15 @@ import com.example.springrest.domain.menu.model.dto.MenuInfoRequest;
 import com.example.springrest.domain.menu.model.dto.MenuInfoResponse;
 import com.example.springrest.domain.menu.model.entity.MenuInfo;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
 /**
- * 메뉴 정보 매퍼 (DTO <-> Entity)
+ * 메뉴 정보 DTO 매퍼 (MapStruct)
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface MenuMapper {
+public interface MenuDtoMapper {
 
     /**
      * Request -> Entity

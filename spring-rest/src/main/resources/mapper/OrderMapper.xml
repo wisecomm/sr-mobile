@@ -31,6 +31,12 @@
     <select id="findAll" resultMap="OrderResultMap">
         SELECT <include refid="OrderColumns"/>
         FROM tb_orders
+        ORDER BY sys_insert_dtm DESC
+    </select>
+
+    <select id="findAllWithSearch" resultMap="OrderResultMap">
+        SELECT <include refid="OrderColumns"/>
+        FROM tb_orders
         <where>
             <if test="custNm != null and custNm != ''">
                 AND cust_nm LIKE CONCAT('%', #{custNm}, '%')

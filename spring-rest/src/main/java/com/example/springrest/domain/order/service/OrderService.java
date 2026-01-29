@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.example.springrest.global.common.service.BaseService;
 import com.example.springrest.domain.order.model.dto.OrderResponse;
+import com.example.springrest.domain.order.model.mapper.OrderDtoMapper;
 import com.example.springrest.global.util.SortValidator;
 
 /**
@@ -25,8 +26,8 @@ import com.example.springrest.global.util.SortValidator;
 @RequiredArgsConstructor
 public class OrderService extends BaseService<Order, String, OrderMapper> {
 
-    private final OrderMapper orderMapper; // Repository Mapper
-    private final com.example.springrest.domain.order.model.mapper.OrderMapper orderDtoMapper; // MapStruct Mapper (이름 충돌로 FQCN 유지)
+    private final OrderMapper orderMapper;
+    private final OrderDtoMapper orderDtoMapper;
     private final SortValidator sortValidator;
 
     @Override
@@ -34,6 +35,7 @@ public class OrderService extends BaseService<Order, String, OrderMapper> {
         return orderMapper;
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<OrderResponse> getAllOrders(int page, int size, String custNm, String startDate, String endDate,
             String sort) {
         PageHelper.startPage(page, size);
@@ -56,12 +58,13 @@ public class OrderService extends BaseService<Order, String, OrderMapper> {
             }
         }
 
-        List<Order> orders = orderMapper.findAll(custNm, startDate, endDate, sortClause);
+        List<Order> orders = orderMapper.findAllWithSearch(custNm, startDate, endDate, sortClause);
         PageInfo<Order> pageInfo = new PageInfo<>(orders);
 
         return PageResponse.of(pageInfo, orderDtoMapper.toResponseList(orders));
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(String orderId) {
         return orderDtoMapper.toResponse(super.findById(orderId));
     }

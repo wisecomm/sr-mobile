@@ -45,6 +45,13 @@
         SELECT 
             <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
+        ORDER BY u.USER_ID ASC
+    </select>
+
+    <select id="findAllWithSearch" resultMap="UserInfoResultMap">
+        SELECT 
+            <include refid="UserInfoColumns"/>
+        FROM CHMM_USER_INFO u
         <where>
             <if test="userName != null and userName != ''">
                 AND u.USER_NAME LIKE CONCAT('%', #{userName}, '%')

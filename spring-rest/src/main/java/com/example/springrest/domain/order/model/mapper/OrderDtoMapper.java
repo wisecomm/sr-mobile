@@ -10,10 +10,10 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 /**
- * 주문 매퍼 (DTO <-> Entity)
+ * 주문 DTO 매퍼 (MapStruct)
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface OrderMapper {
+public interface OrderDtoMapper {
 
     /**
      * Request -> Entity

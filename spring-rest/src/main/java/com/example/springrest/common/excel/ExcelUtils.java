@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 엑셀 처리 유틸리티
@@ -86,45 +84,45 @@ public class ExcelUtils {
      */
     public static <T> List<T> fromExcel(MultipartFile file, Class<T> clazz) throws IOException {
         List<T> list = new ArrayList<>();
-        InputStream is = file.getInputStream();
-        Workbook workbook = new XSSFWorkbook(is); // Use XSSF for reading .xlsx
-        Sheet sheet = workbook.getSheetAt(0);
+        
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(is)) {
+            
+            Sheet sheet = workbook.getSheetAt(0);
+            List<Field> fields = getExcelFields(clazz);
 
-        List<Field> fields = getExcelFields(clazz);
+            // Skip header row
+            Iterator<Row> rowIterator = sheet.iterator();
+            if (rowIterator.hasNext()) {
+                rowIterator.next();
+            }
 
-        // Skip header row
-        Iterator<Row> rowIterator = sheet.iterator();
-        if (rowIterator.hasNext())
-            rowIterator.next();
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                try {
+                    T instance = clazz.getDeclaredConstructor().newInstance();
+                    boolean isEmptyRow = true;
 
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            try {
-                T instance = clazz.getDeclaredConstructor().newInstance();
-                boolean isEmptyRow = true;
+                    for (int i = 0; i < fields.size(); i++) {
+                        Field field = fields.get(i);
+                        field.setAccessible(true);
+                        Cell cell = row.getCell(i);
 
-                for (int i = 0; i < fields.size(); i++) {
-                    Field field = fields.get(i);
-                    field.setAccessible(true);
-                    Cell cell = row.getCell(i);
-
-                    if (cell != null && cell.getCellType() != CellType.BLANK) {
-                        isEmptyRow = false;
-                        setFieldValue(instance, field, cell);
+                        if (cell != null && cell.getCellType() != CellType.BLANK) {
+                            isEmptyRow = false;
+                            setFieldValue(instance, field, cell);
+                        }
                     }
-                }
 
-                if (!isEmptyRow) {
-                    list.add(instance);
-                }
+                    if (!isEmptyRow) {
+                        list.add(instance);
+                    }
 
-            } catch (Exception e) {
-                throw new RuntimeException("Error parsing excel row " + row.getRowNum(), e);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error parsing excel row " + row.getRowNum(), e);
+                }
             }
         }
-
-        workbook.close();
-        is.close();
 
         return list;
     }

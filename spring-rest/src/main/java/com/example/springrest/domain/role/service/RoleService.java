@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import com.example.springrest.global.common.service.BaseService;
-import com.example.springrest.domain.role.model.mapper.RoleMapper;
+import com.example.springrest.domain.role.model.mapper.RoleDtoMapper;
 
 /**
  * 역할 정보 서비스
@@ -29,33 +29,37 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
 
     private final RoleInfoMapper roleInfoMapper;
     private final RoleMenuMapper roleMenuMapper;
-    private final RoleMapper roleMapper;
+    private final RoleDtoMapper roleDtoMapper;
 
     @Override
     protected RoleInfoMapper getMapper() {
         return roleInfoMapper;
     }
 
+    @Transactional(readOnly = true)
     public List<RoleInfoResponse> getAllRoles() {
-        return roleMapper.toResponseList(roleInfoMapper.findAll());
+        return roleDtoMapper.toResponseList(roleInfoMapper.findAll());
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<RoleInfoResponse> getRolesWithPagination(int page, int size, String searchId) {
         PageHelper.startPage(page, size, "ROLE_ID ASC");
 
         List<RoleInfo> roles = roleInfoMapper.findAllWithSearch(searchId);
         PageInfo<RoleInfo> pageInfo = new PageInfo<>(roles);
 
-        List<RoleInfoResponse> content = roleMapper.toResponseList(roles);
+        List<RoleInfoResponse> content = roleDtoMapper.toResponseList(roles);
 
         return PageResponse.of(pageInfo, content);
     }
 
+    @Transactional(readOnly = true)
     public RoleInfoResponse getRoleById(String roleId) {
         RoleInfo role = super.findById(roleId);
-        return role != null ? roleMapper.toResponse(role) : null;
+        return role != null ? roleDtoMapper.toResponse(role) : null;
     }
 
+    @Transactional(readOnly = true)
     public List<String> getMenuIdsByRoleId(String roleId) {
         return roleMenuMapper.findByRoleId(roleId).stream()
                 .map(RoleMenuMap::getMenuId)
@@ -64,13 +68,13 @@ public class RoleService extends BaseService<RoleInfo, String, RoleInfoMapper> {
 
     @Transactional
     public void createRole(RoleInfoRequest request) {
-        RoleInfo role = roleMapper.toEntity(request);
+        RoleInfo role = roleDtoMapper.toEntity(request);
         super.create(role);
     }
 
     @Transactional
     public void updateRole(RoleInfoRequest request) {
-        RoleInfo role = roleMapper.toEntity(request);
+        RoleInfo role = roleDtoMapper.toEntity(request);
         super.update(role);
     }
 

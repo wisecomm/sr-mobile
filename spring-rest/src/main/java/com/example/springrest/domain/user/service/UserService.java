@@ -4,7 +4,7 @@ import com.example.springrest.domain.user.model.dto.UserInfoRequest;
 import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import com.example.springrest.domain.user.model.entity.UserRoleMap;
-import com.example.springrest.domain.user.model.mapper.UserMapper;
+import com.example.springrest.domain.user.model.mapper.UserDtoMapper;
 import com.example.springrest.domain.user.repository.UserInfoMapper;
 import com.example.springrest.domain.user.repository.UserRoleMapper;
 import com.example.springrest.global.model.dto.PageResponse;
@@ -40,10 +40,11 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
     private final UserRoleMapper userRoleMapper;
     private final PasswordEncoder passwordEncoder;
 
-    private final UserMapper userMapper;
+    private final UserDtoMapper userDtoMapper;
 
     private final SortValidator sortValidator;
 
+    @Transactional(readOnly = true)
     public PageResponse<UserInfoResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
             String sort) {
         PageHelper.startPage(page, size);
@@ -64,8 +65,8 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
             }
         }
 
-        List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, sortClause);
-        List<UserInfoResponse> userResponses = userMapper.toResponseList(users);
+        List<UserInfo> users = userInfoMapper.findAllWithSearch(userName, startDate, endDate, sortClause);
+        List<UserInfoResponse> userResponses = userDtoMapper.toResponseList(users);
 
         PageInfo<UserInfo> originalPageInfo = new PageInfo<>(users);
 
@@ -82,9 +83,10 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
     // getUserById uses UserInfoResponse, so we keep logic but use super.findById
     // internally if we want,
     // but here we already use userInfoMapper.findById directly or via super.
+    @Transactional(readOnly = true)
     public UserInfoResponse getUserById(String userId) {
         UserInfo user = super.findById(userId); // Use BaseService method
-        return userMapper.toResponse(user);
+        return userDtoMapper.toResponse(user);
     }
 
     @Transactional
@@ -92,7 +94,7 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
         if (super.findById(request.getUserId()) != null) {
             throw new IllegalArgumentException("이미 존재하는 사용자 ID입니다: " + request.getUserId());
         }
-        UserInfo user = userMapper.toEntity(request);
+        UserInfo user = userDtoMapper.toEntity(request);
         user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
         // Use BaseService create
         super.create(user);
@@ -101,7 +103,7 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
     @Transactional
     public void updateUser(UserInfoRequest request) {
         // Update logic via MapStruct
-        UserInfo user = userMapper.toEntityForUpdate(request);
+        UserInfo user = userDtoMapper.toEntityForUpdate(request);
 
         if (request.getUserPwd() != null && !request.getUserPwd().isEmpty()) {
             user.setUserPwd(passwordEncoder.encode(request.getUserPwd()));
@@ -130,6 +132,7 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<String> getUserRoleIds(String userId) {
         return userRoleMapper.findByUserId(userId).stream()
                 .map(UserRoleMap::getRoleId)
@@ -145,10 +148,10 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
             endDate = endDate + " 23:59:59";
         }
 
-        List<UserInfo> users = userInfoMapper.findAll(userName, startDate, endDate, null);
+        List<UserInfo> users = userInfoMapper.findAllWithSearch(userName, startDate, endDate, null);
 
         List<com.example.springrest.domain.user.model.dto.UserExcelDto> excelData = users.stream()
-                .map(userMapper::toExcelDto)
+                .map(userDtoMapper::toExcelDto)
                 .collect(java.util.stream.Collectors.toList());
 
         Workbook workbook = com.example.springrest.common.excel.ExcelUtils
