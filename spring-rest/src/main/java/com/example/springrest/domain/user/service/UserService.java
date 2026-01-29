@@ -45,7 +45,8 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
     private final SortValidator sortValidator;
 
     @Transactional(readOnly = true)
-    public PageResponse<UserInfoResponse> getAllUsers(int page, int size, String userName, String startDate, String endDate,
+    public PageResponse<UserInfoResponse> getAllUsers(int page, int size, String userName, String startDate,
+            String endDate,
             String sort) {
         PageHelper.startPage(page, size);
 
@@ -86,6 +87,15 @@ public class UserService extends BaseService<UserInfo, String, UserInfoMapper> {
     @Transactional(readOnly = true)
     public UserInfoResponse getUserById(String userId) {
         UserInfo user = super.findById(userId); // Use BaseService method
+
+        // [Refactor] Manually populate roles to avoid MyBatis N+1 issue
+        java.util.Set<com.example.springrest.domain.user.model.enums.UserRole> roles = userRoleMapper
+                .findByUserId(userId).stream()
+                .map(ur -> com.example.springrest.domain.user.model.enums.UserRole.valueOf(ur.getRoleId()))
+                .collect(java.util.stream.Collectors.toSet());
+
+        user.setRoles(roles);
+
         return userDtoMapper.toResponse(user);
     }
 

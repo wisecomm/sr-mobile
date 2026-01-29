@@ -3,24 +3,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.springrest.domain.user.repository.UserInfoMapper">
-    <resultMap id="UserInfoResultMap" type="com.example.springrest.domain.user.model.entity.UserInfo">
-        <id property="userId" column="USER_ID"/>
-        <result property="userEmail" column="USER_EMAIL"/>
-        <result property="userMobile" column="USER_MOBILE"/>
-        <result property="userName" column="USER_NAME"/>
-        <result property="userNick" column="USER_NICK"/>
-        <result property="userPwd" column="USER_PWD"/>
-        <result property="userMsg" column="USER_MSG"/>
-        <result property="userDesc" column="USER_DESC"/>
-        <result property="userStatCd" column="USER_STAT_CD"/>
-        <result property="userSnsid" column="USER_SNSID"/>
-        <result property="useYn" column="USE_YN"/>
-        <result property="sysInsertDtm" column="SYS_INSERT_DTM"/>
-        <result property="sysInsertUserId" column="SYS_INSERT_USER_ID"/>
-        <result property="sysUpdateDtm" column="SYS_UPDATE_DTM"/>
-        <result property="sysUpdateUserId" column="SYS_UPDATE_USER_ID"/>
-        <collection property="roles" column="USER_ID" javaType="java.util.HashSet" ofType="com.example.springrest.domain.user.model.enums.UserRole" select="findRolesByUserId"/>
-    </resultMap>
+
 
     <sql id="UserInfoColumns">
         u.USER_ID, u.USER_EMAIL, u.USER_MOBILE, u.USER_NAME, u.USER_NICK, u.USER_PWD, u.USER_MSG, u.USER_DESC, 
@@ -34,21 +17,21 @@
         SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID
     </sql>
 
-    <select id="findById" resultMap="UserInfoResultMap">
+    <select id="findById" resultType="com.example.springrest.domain.user.model.entity.UserInfo">
         SELECT 
             <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
         WHERE u.USER_ID = #{userId}
     </select>
 
-    <select id="findAll" resultMap="UserInfoResultMap">
+    <select id="findAll" resultType="com.example.springrest.domain.user.model.entity.UserInfo">
         SELECT 
             <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u
         ORDER BY u.USER_ID ASC
     </select>
 
-    <select id="findAllWithSearch" resultMap="UserInfoResultMap">
+    <select id="findAllWithSearch" resultType="com.example.springrest.domain.user.model.entity.UserInfo">
         SELECT 
             <include refid="UserInfoColumns"/>
         FROM CHMM_USER_INFO u

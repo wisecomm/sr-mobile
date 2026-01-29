@@ -3,38 +3,26 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.springrest.domain.order.repository.OrderMapper">
-    <resultMap id="OrderResultMap" type="com.example.springrest.domain.order.model.entity.Order">
-        <id property="orderId" column="order_id"/>
-        <result property="custNm" column="cust_nm"/>
-        <result property="orderNm" column="order_nm"/>
-        <result property="orderStatus" column="order_status"/>
-        <result property="orderAmt" column="order_amt"/>
-        <result property="orderDate" column="order_date"/>
-        <result property="useYn" column="use_yn"/>
-        <result property="sysInsertDtm" column="sys_insert_dtm"/>
-        <result property="sysInsertUserId" column="sys_insert_user_id"/>
-        <result property="sysUpdateDtm" column="sys_update_dtm"/>
-        <result property="sysUpdateUserId" column="sys_update_user_id"/>
-    </resultMap>
+
 
     <sql id="OrderColumns">
         order_id, cust_nm, order_nm, order_status, order_amt, order_date, use_yn,
         sys_insert_dtm, sys_insert_user_id, sys_update_dtm, sys_update_user_id
     </sql>
 
-    <select id="findById" resultMap="OrderResultMap">
+    <select id="findById" resultType="com.example.springrest.domain.order.model.entity.Order">
         SELECT <include refid="OrderColumns"/>
         FROM tb_orders
         WHERE order_id = #{orderId}
     </select>
 
-    <select id="findAll" resultMap="OrderResultMap">
+    <select id="findAll" resultType="com.example.springrest.domain.order.model.entity.Order">
         SELECT <include refid="OrderColumns"/>
         FROM tb_orders
         ORDER BY sys_insert_dtm DESC
     </select>
 
-    <select id="findAllWithSearch" resultMap="OrderResultMap">
+    <select id="findAllWithSearch" resultType="com.example.springrest.domain.order.model.entity.Order">
         SELECT <include refid="OrderColumns"/>
         FROM tb_orders
         <where>

@@ -3,35 +3,26 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.springrest.domain.role.repository.RoleInfoMapper">
-    <resultMap id="RoleInfoResultMap" type="com.example.springrest.domain.role.model.entity.RoleInfo">
-        <id property="roleId" column="ROLE_ID"/>
-        <result property="roleName" column="ROLE_NAME"/>
-        <result property="roleDesc" column="ROLE_DESC"/>
-        <result property="useYn" column="USE_YN"/>
-        <result property="sysInsertDtm" column="SYS_INSERT_DTM"/>
-        <result property="sysInsertUserId" column="SYS_INSERT_USER_ID"/>
-        <result property="sysUpdateDtm" column="SYS_UPDATE_DTM"/>
-        <result property="sysUpdateUserId" column="SYS_UPDATE_USER_ID"/>
-    </resultMap>
+
 
     <sql id="RoleInfoColumns">
         ROLE_ID, ROLE_NAME, ROLE_DESC, USE_YN, 
         SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID
     </sql>
 
-    <select id="findById" resultMap="RoleInfoResultMap">
+    <select id="findById" resultType="com.example.springrest.domain.role.model.entity.RoleInfo">
         SELECT <include refid="RoleInfoColumns"/>
         FROM CHMM_ROLE_INFO
         WHERE ROLE_ID = #{roleId}
     </select>
 
-    <select id="findAll" resultMap="RoleInfoResultMap">
+    <select id="findAll" resultType="com.example.springrest.domain.role.model.entity.RoleInfo">
         SELECT <include refid="RoleInfoColumns"/>
         FROM CHMM_ROLE_INFO
         ORDER BY ROLE_ID ASC
     </select>
 
-    <select id="findAllWithSearch" resultMap="RoleInfoResultMap">
+    <select id="findAllWithSearch" resultType="com.example.springrest.domain.role.model.entity.RoleInfo">
         SELECT <include refid="RoleInfoColumns"/>
         FROM CHMM_ROLE_INFO
         <where>

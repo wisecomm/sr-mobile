@@ -3,34 +3,20 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.springrest.domain.boards.board.repository.BoardMapper">
-    <resultMap id="BoardResultMap" type="com.example.springrest.domain.boards.board.model.entity.Board">
-        <id property="boardId" column="BOARD_ID"/>
-        <result property="brdId" column="BRD_ID"/>
-        <result property="userId" column="USER_ID"/>
-        <result property="title" column="TITLE"/>
-        <result property="contents" column="CONTENTS"/>
-        <result property="hitCnt" column="HIT_CNT"/>
 
-        <result property="secretYn" column="SECRET_YN"/>
-        <result property="useYn" column="USE_YN"/>
-        <result property="sysInsertDtm" column="SYS_INSERT_DTM"/>
-        <result property="sysInsertUserId" column="SYS_INSERT_USER_ID"/>
-        <result property="sysUpdateDtm" column="SYS_UPDATE_DTM"/>
-        <result property="sysUpdateUserId" column="SYS_UPDATE_USER_ID"/>
-    </resultMap>
 
     <sql id="BoardColumns">
         BOARD_ID, BRD_ID, USER_ID, TITLE, CONTENTS, HIT_CNT, SECRET_YN, USE_YN,
         SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID
     </sql>
 
-    <select id="findById" resultMap="BoardResultMap">
+    <select id="findById" resultType="com.example.springrest.domain.boards.board.model.entity.Board">
         SELECT <include refid="BoardColumns"/>
         FROM CHMM_BOARD
         WHERE BOARD_ID = #{boardId}
     </select>
 
-    <select id="findAll" resultMap="BoardResultMap">
+    <select id="findAll" resultType="com.example.springrest.domain.boards.board.model.entity.Board">
         SELECT <include refid="BoardColumns"/>
         FROM CHMM_BOARD
         <where>

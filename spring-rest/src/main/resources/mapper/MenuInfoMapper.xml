@@ -3,40 +3,26 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.springrest.domain.menu.repository.MenuInfoMapper">
-    <resultMap id="MenuInfoResultMap" type="com.example.springrest.domain.menu.model.entity.MenuInfo">
-        <id property="menuId" column="MENU_ID"/>
-        <result property="menuLvl" column="MENU_LVL"/>
-        <result property="menuUri" column="MENU_URI"/>
-        <result property="menuImgUri" column="MENU_IMG_URI"/>
-        <result property="menuName" column="MENU_NAME"/>
-        <result property="upperMenuId" column="UPPER_MENU_ID"/>
-        <result property="menuDesc" column="MENU_DESC"/>
-        <result property="menuSeq" column="MENU_SEQ"/>
-        <result property="useYn" column="USE_YN"/>
-        <result property="sysInsertDtm" column="SYS_INSERT_DTM"/>
-        <result property="sysInsertUserId" column="SYS_INSERT_USER_ID"/>
-        <result property="sysUpdateDtm" column="SYS_UPDATE_DTM"/>
-        <result property="sysUpdateUserId" column="SYS_UPDATE_USER_ID"/>
-    </resultMap>
+
 
     <sql id="MenuInfoColumns">
         MENU_ID, MENU_LVL, MENU_URI, MENU_IMG_URI, MENU_NAME, UPPER_MENU_ID, MENU_DESC, MENU_SEQ, 
         USE_YN, SYS_INSERT_DTM, SYS_INSERT_USER_ID, SYS_UPDATE_DTM, SYS_UPDATE_USER_ID
     </sql>
 
-    <select id="findById" resultMap="MenuInfoResultMap">
+    <select id="findById" resultType="com.example.springrest.domain.menu.model.entity.MenuInfo">
         SELECT <include refid="MenuInfoColumns"/>
         FROM CHMM_MENU_INFO
         WHERE MENU_ID = #{menuId}
     </select>
 
-    <select id="findAll" resultMap="MenuInfoResultMap">
+    <select id="findAll" resultType="com.example.springrest.domain.menu.model.entity.MenuInfo">
         SELECT <include refid="MenuInfoColumns"/>
         FROM CHMM_MENU_INFO
         ORDER BY MENU_LVL, MENU_SEQ
     </select>
 
-    <select id="findAllWithSearch" resultMap="MenuInfoResultMap">
+    <select id="findAllWithSearch" resultType="com.example.springrest.domain.menu.model.entity.MenuInfo">
         SELECT <include refid="MenuInfoColumns"/>
         FROM CHMM_MENU_INFO
         <where>
@@ -48,7 +34,7 @@
         ORDER BY MENU_LVL, MENU_SEQ
     </select>
 
-    <select id="findByUserId" resultMap="MenuInfoResultMap">
+    <select id="findByUserId" resultType="com.example.springrest.domain.menu.model.entity.MenuInfo">
         WITH RECURSIVE MENU_TREE AS (
             -- Base case: menus directly assigned to user's roles
             SELECT 

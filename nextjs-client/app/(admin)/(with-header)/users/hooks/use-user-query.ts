@@ -102,6 +102,13 @@ export const useUserRoles = createPaginatedQuery<
     placeholderData: false,
 });
 
+// 단일 사용자 상세 조회
+export const useUser = createPaginatedQuery<UserDetail, { userId: string }>({
+    queryKey: (params) => userKeys.detail(params.userId),
+    queryFn: (params) => userApi.getById(params.userId),
+    enabled: (params) => !!params.userId,
+});
+
 /**
  * Mutations
  */
