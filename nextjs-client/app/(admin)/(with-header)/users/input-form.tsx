@@ -1,7 +1,7 @@
 import * as React from "react";
 import { UserDetail } from "./types";
 import { useRoles } from "@/app/(admin)/(with-header)/roles/hooks/use-role-query";
-import { useUserRoles, useUser } from "./hooks/use-user-query";
+import { useUserRoles } from "./hooks/use-user-query";
 import { Mail, Lock, IdCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,17 +22,8 @@ export interface InputFormProps {
     onCancel: () => void;
 }
 
-export function InputForm({ item: initialItem, onSubmit, onCancel }: InputFormProps) {
-    const isEdit = !!initialItem;
-
-    // [New] Fetch fresh user details on edit
-    const { data: userItem, isLoading: isUserLoading } = useUser(
-        { userId: initialItem?.userId || "" },
-        { enabled: !!initialItem?.userId }
-    );
-
-    // Use fetched data if available, otherwise fallback to item (from grid)
-    const item = userItem || initialItem;
+export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
+    const isEdit = !!item;
 
     const { data: rolesData } = useRoles({ page: 0, size: 100 });
     const { data: fetchedRoleIds, isLoading: isUserRolesLoading } = useUserRoles({ userId: item?.userId || "" });

@@ -28,6 +28,7 @@ export interface InputFormProps {
 export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
     const isEdit = !!item;
 
+
     // Fetch related data
     const { data: menusData } = useMenus({ page: 0, size: 1000 });
     const allMenus = menusData?.list ?? [];

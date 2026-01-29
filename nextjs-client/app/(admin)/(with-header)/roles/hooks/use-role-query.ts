@@ -98,6 +98,13 @@ export const useRoleMenus = createPaginatedQuery<
     placeholderData: false,
 });
 
+// 단일 역할 상세 조회
+export const useRole = createPaginatedQuery<RoleInfo, { roleId: string }>({
+    queryKey: (params) => roleKeys.detail(params.roleId),
+    queryFn: (params) => roleApi.getById(params.roleId),
+    enabled: (params) => !!params.roleId,
+});
+
 /**
  * Mutations
  */

@@ -3,6 +3,7 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { RoleInfo } from "../types";
+import { useRole } from "./use-role-query";
 
 export const roleFormSchema = z.object({
     roleId: z.string().min(2, "Role ID must be at least 2 characters."),
@@ -42,19 +43,27 @@ export function useInputForm({ item, initialMenuIds = [], onSubmit }: UseInputFo
         defaultValues,
     });
 
+    // [Refactor] Fetch fresh role details internally (Board pattern)
+    const { data: roleItem } = useRole(
+        { roleId: item?.roleId || "" },
+        { enabled: !!item?.roleId }
+    );
+
+    const effectiveItem = roleItem || item;
+
     useEffect(() => {
-        if (item) {
+        if (effectiveItem) {
             form.reset({
-                roleId: item.roleId || "",
-                roleName: item.roleName || "",
-                roleDesc: item.roleDesc || "",
-                useYn: item.useYn || "1",
+                roleId: effectiveItem.roleId || "",
+                roleName: effectiveItem.roleName || "",
+                roleDesc: effectiveItem.roleDesc || "",
+                useYn: effectiveItem.useYn || "1",
                 menuIds: initialMenuIds,
             });
         } else {
             form.reset(defaultValues);
         }
-    }, [item, initialMenuIds, form]);
+    }, [effectiveItem, initialMenuIds, form]);
 
     const onFormSubmit = async (data: RoleFormValues) => {
         const { menuIds, ...roleData } = data;

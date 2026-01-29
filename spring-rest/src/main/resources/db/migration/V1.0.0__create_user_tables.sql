@@ -20,7 +20,7 @@
  -- 2. CHMM_ROLE_INFO (역할 정보)
  CREATE TABLE CHMM_ROLE_INFO (
      ROLE_ID             VARCHAR(50) PRIMARY KEY,    -- 롤_아이디 (기본 키)
-     ROLE_NAME           VARCHAR(100) NOT NULL UNIQUE, -- 롤_명 (고유)
+     ROLE_NAME           VARCHAR(100) NOT NULL,      -- 롤_명
      ROLE_DESC           TEXT,                       -- 롤_설명
      USE_YN              CHAR(1) DEFAULT '1' NOT NULL, -- 사용 여부 ('1': 사용, '0': 미사용)
      SYS_INSERT_DTM      TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- 시스템_입력_일시

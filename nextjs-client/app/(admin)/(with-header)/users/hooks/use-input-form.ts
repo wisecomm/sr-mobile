@@ -3,6 +3,7 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UserDetail } from "../types";
+import { useUser } from "./use-user-query";
 
 export const userFormSchema = z.object({
     userId: z.string().min(2, "사용자 ID는 2글자 이상이어야 합니다."),
@@ -46,21 +47,29 @@ export function useInputForm({ item, initialRoleIds = [], onSubmit }: UseInputFo
         defaultValues,
     });
 
+    // [Refactor] Fetch fresh user details internally (Board pattern)
+    const { data: userDetail } = useUser(
+        { userId: item?.userId || "" },
+        { enabled: !!item?.userId }
+    );
+
+    const effectiveItem = userDetail || item;
+
     useEffect(() => {
-        if (item) {
+        if (effectiveItem) {
             form.reset({
-                userId: item.userId || "",
-                userName: item.userName || "",
-                userEmail: item.userEmail || "",
-                userNick: item.userNick || "",
+                userId: effectiveItem.userId || "",
+                userName: effectiveItem.userName || "",
+                userEmail: effectiveItem.userEmail || "",
+                userNick: effectiveItem.userNick || "",
                 userPwd: "",
-                useYn: item.useYn || "1",
+                useYn: effectiveItem.useYn || "1",
                 roleIds: initialRoleIds,
             });
         } else {
             form.reset(defaultValues);
         }
-    }, [item, initialRoleIds, form]);
+    }, [effectiveItem, initialRoleIds, form]);
 
     const onFormSubmit = async (data: UserFormValues) => {
         const { roleIds, ...rest } = data;
