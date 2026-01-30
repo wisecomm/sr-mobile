@@ -4,7 +4,6 @@ import com.example.springrest.domain.user.model.dto.UserInfoRequest;
 import com.example.springrest.domain.user.model.dto.UserInfoResponse;
 import com.example.springrest.domain.user.model.entity.UserInfo;
 import com.example.springrest.domain.user.model.entity.UserRoleMap;
-import com.example.springrest.domain.user.model.enums.UserRole;
 import com.example.springrest.domain.user.model.mapper.UserDtoMapper;
 import com.example.springrest.domain.user.repository.UserInfoMapper;
 import com.example.springrest.domain.user.repository.UserRoleMapper;
