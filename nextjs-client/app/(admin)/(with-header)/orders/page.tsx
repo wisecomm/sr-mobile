@@ -39,6 +39,7 @@ export default function OrdersPage() {
         openDialog,
         closeDialog,
         handleSubmit,
+        isSaving,
         onSortChange,
         // Delete Confirmation
         deleteConfirmOpen,
@@ -151,6 +152,7 @@ export default function OrdersPage() {
                 onOpenChange={closeDialog}
                 item={selectedOrder}
                 onSubmit={handleSubmit}
+                isSaving={isSaving}
             />
 
             <Dialog open={deleteConfirmOpen} onOpenChange={closeDeleteConfirm}>

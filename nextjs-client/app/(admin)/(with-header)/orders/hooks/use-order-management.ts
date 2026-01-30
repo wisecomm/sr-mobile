@@ -41,6 +41,7 @@ export interface UseOrderManagementReturn {
     handleCreate: (data: Partial<OrderDetail>) => Promise<void>;
     handleUpdate: (data: Partial<OrderDetail>) => Promise<void>;
     handleSubmit: (data: Partial<OrderDetail>) => Promise<void>;
+    isSaving: boolean;
 
     // 삭제 확인 다이얼로그
     deleteConfirmOpen: boolean;
@@ -87,7 +88,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const [deleteTargetIds, setDeleteTargetIds] = useState<string[]>([]);
 
     // API 훅
-    const { data: ordersData, isLoading, isError, error, refetch } = useOrders({
+    const { data: ordersData, isLoading, isError, error } = useOrders({
         page: pagination.pageIndex,
         size: pagination.pageSize,
         sort,
@@ -102,7 +103,8 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
                 variant: 'destructive',
             });
         }
-    }, [isError, error, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError, error]);
 
     const createOrderMutation = useCreateOrder();
     const updateOrderMutation = useUpdateOrder();
@@ -111,8 +113,8 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const onSearch = useCallback((params: Partial<OrderSearchParams>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        refetch();
-    }, [refetch]);
+        // queryKey 변경으로 자동 refetch됨
+    }, []);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
@@ -230,6 +232,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         handleCreate,
         handleUpdate,
         handleSubmit,
+        isSaving: createOrderMutation.isPending || updateOrderMutation.isPending,
         deleteConfirmOpen,
         deleteTargetIds,
         openDeleteConfirm,

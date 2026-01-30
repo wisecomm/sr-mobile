@@ -20,9 +20,10 @@ interface InputFormProps {
     item?: OrderDetail | null
     onSubmit: (data: Partial<OrderDetail>) => Promise<void>
     onCancel: () => void
+    isSaving?: boolean
 }
 
-export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
+export function InputForm({ item, onSubmit, onCancel, isSaving = false }: InputFormProps) {
     const { form, handleSubmit, isEdit } = useInputForm({ item, onSubmit })
 
     return (
@@ -160,11 +161,11 @@ export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
                 </div>
 
                 <div className="flex justify-end gap-2 pt-4">
-                    <Button type="button" variant="outline" onClick={onCancel}>
+                    <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
                         취소
                     </Button>
-                    <Button type="submit">
-                        {isEdit ? '수정' : '등록'}
+                    <Button type="submit" disabled={isSaving}>
+                        {isSaving ? '저장 중...' : (isEdit ? '수정' : '등록')}
                     </Button>
                 </div>
             </form>

@@ -9,9 +9,10 @@ interface InputDialogProps {
     onOpenChange: (open: boolean) => void
     item: OrderDetail | null
     onSubmit: (data: Partial<OrderDetail>) => Promise<void>
+    isSaving?: boolean
 }
 
-export function InputDialog({ open, onOpenChange, item, onSubmit }: InputDialogProps) {
+export function InputDialog({ open, onOpenChange, item, onSubmit, isSaving }: InputDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px]">
@@ -25,6 +26,7 @@ export function InputDialog({ open, onOpenChange, item, onSubmit }: InputDialogP
                     item={item}
                     onSubmit={onSubmit}
                     onCancel={() => onOpenChange(false)}
+                    isSaving={isSaving}
                 />
             </DialogContent>
         </Dialog>
