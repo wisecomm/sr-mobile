@@ -42,13 +42,13 @@ function Login() {
 
       <main className="flex-1 flex flex-col w-full max-w-md mx-auto p-4 justify-center">
         <div className="flex flex-col items-center pb-8 pt-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/30 mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/30 mb-6">
             <Boxes className="h-9 w-9 text-white stroke-[1.5]" aria-hidden="true" />
           </div>
           <h1 className="text-foreground tracking-tight text-[32px] font-bold leading-tight text-center mb-2">
             로그인
           </h1>
-          <p className="text-muted-foreground text-base font-normal leading-relaxed text-center max-w-[300px]">
+          <p className="text-muted-foreground text-base font-normal leading-relaxed text-center max-w-75">
             작업자 ID와 비밀번호를 입력하거나<br />사원증을 스캔하세요.
           </p>
         </div>
