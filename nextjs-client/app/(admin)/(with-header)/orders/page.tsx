@@ -12,6 +12,15 @@ import 'so-grid-react/styles.css';
 import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function OrdersPage() {
     const { toast } = useToast();
@@ -30,8 +39,13 @@ export default function OrdersPage() {
         openDialog,
         closeDialog,
         handleSubmit,
-        handleDelete,
         onSortChange,
+        // Delete Confirmation
+        deleteConfirmOpen,
+        deleteTargetIds,
+        openDeleteConfirm,
+        closeDeleteConfirm,
+        executeDelete,
     } = useOrderManagement();
 
     // Define columns
@@ -87,7 +101,7 @@ export default function OrdersPage() {
     /**
      * Delete Button Handler (Toolbar)
      */
-    const handleDeleteClick = React.useCallback(async () => {
+    const handleDeleteClick = React.useCallback(() => {
         const selectedRows = gridApiRef.current?.getSelectedRows();
 
         if (!selectedRows || selectedRows.length === 0) {
@@ -100,8 +114,8 @@ export default function OrdersPage() {
         }
 
         const orderIds = selectedRows.map(row => row.orderId);
-        await handleDelete(orderIds);
-    }, [handleDelete, toast]);
+        openDeleteConfirm(orderIds);
+    }, [openDeleteConfirm, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -124,7 +138,7 @@ export default function OrdersPage() {
                 PaginationComponent={CustomPagination}
                 serverSide={true}
                 totalRows={totalRows}
-                paginationPageSize={5}
+                paginationPageSize={pagination.pageSize}
                 onPaginationChange={handlePaginationChange}
                 loading={isLoading}
                 onSortChange={handleSortChange}
@@ -138,6 +152,27 @@ export default function OrdersPage() {
                 item={selectedOrder}
                 onSubmit={handleSubmit}
             />
+
+            <Dialog open={deleteConfirmOpen} onOpenChange={closeDeleteConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>주문 삭제</DialogTitle>
+                        <DialogDescription>
+                            선택한 {deleteTargetIds.length}개의 주문을 삭제하시겠습니까?
+                            <br />
+                            이 작업은 되돌릴 수 없습니다.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={closeDeleteConfirm}>
+                            취소
+                        </Button>
+                        <Button variant="destructive" onClick={executeDelete}>
+                            삭제
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

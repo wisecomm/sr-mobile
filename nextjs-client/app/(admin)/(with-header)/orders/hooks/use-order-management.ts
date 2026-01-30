@@ -40,8 +40,14 @@ export interface UseOrderManagementReturn {
     // CRUD 작업
     handleCreate: (data: Partial<OrderDetail>) => Promise<void>;
     handleUpdate: (data: Partial<OrderDetail>) => Promise<void>;
-    handleDelete: (orderIds: string[]) => Promise<void>;
     handleSubmit: (data: Partial<OrderDetail>) => Promise<void>;
+
+    // 삭제 확인 다이얼로그
+    deleteConfirmOpen: boolean;
+    deleteTargetIds: string[];
+    openDeleteConfirm: (orderIds: string[]) => void;
+    closeDeleteConfirm: () => void;
+    executeDelete: () => Promise<void>;
 }
 
 /**
@@ -75,6 +81,10 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     // 다이얼로그 상태
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
+
+    // 삭제 확인 다이얼로그 상태
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [deleteTargetIds, setDeleteTargetIds] = useState<string[]>([]);
 
     // API 훅
     const { data: ordersData, isLoading, isError, error, refetch } = useOrders({
@@ -165,26 +175,36 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         }
     }, [selectedOrder, updateOrderMutation, toast, closeDialog]);
 
-    const handleDelete = useCallback(async (orderIds: string[]) => {
+    // 삭제 확인 다이얼로그 열기
+    const openDeleteConfirm = useCallback((orderIds: string[]) => {
         if (orderIds.length === 0) {
             toast({ title: '알림', description: '삭제할 주문을 선택해주세요.', variant: 'default' });
             return;
         }
+        setDeleteTargetIds(orderIds);
+        setDeleteConfirmOpen(true);
+    }, [toast]);
 
-        const confirmed = window.confirm(`선택한 ${orderIds.length}개의 주문을 삭제하시겠습니까?`);
-        if (!confirmed) return;
+    // 삭제 확인 다이얼로그 닫기
+    const closeDeleteConfirm = useCallback(() => {
+        setDeleteConfirmOpen(false);
+        setDeleteTargetIds([]);
+    }, []);
 
+    // 실제 삭제 실행
+    const executeDelete = useCallback(async () => {
         const results = await Promise.allSettled(
-            orderIds.map(id => deleteOrderMutation.mutateAsync(id))
+            deleteTargetIds.map(id => deleteOrderMutation.mutateAsync(id))
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        if (succeeded === orderIds.length) {
+        if (succeeded === deleteTargetIds.length) {
             toast({ title: '삭제 완료', description: `${succeeded}개의 주문이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${orderIds.length - succeeded}개 실패`, variant: 'destructive' });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${deleteTargetIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
-    }, [deleteOrderMutation, toast]);
+        closeDeleteConfirm();
+    }, [deleteTargetIds, deleteOrderMutation, toast, closeDeleteConfirm]);
 
     const handleSubmit = useCallback(async (data: Partial<OrderDetail>) => {
         if (selectedOrder) {
@@ -209,7 +229,11 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         closeDialog,
         handleCreate,
         handleUpdate,
-        handleDelete,
         handleSubmit,
+        deleteConfirmOpen,
+        deleteTargetIds,
+        openDeleteConfirm,
+        closeDeleteConfirm,
+        executeDelete,
     };
 }

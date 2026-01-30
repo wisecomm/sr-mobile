@@ -6,8 +6,7 @@ export const getColumns = (): SOColumnDef<OrderDetail>[] => [
     {
         field: 'id',
         headerName: '',
-        maxWidth: 30,               // 새로 설치 후 지우고 채크박스 사이즈 확인 필요
-        // pinned: 'left',
+        maxWidth: 30,
         checkboxSelection: true,
     },
     {
