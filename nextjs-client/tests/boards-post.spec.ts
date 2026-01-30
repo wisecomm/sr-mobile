@@ -25,7 +25,7 @@ test.describe("Board Post Management", () => {
         await expect(page.locator("label:has-text('게시판 코드')")).not.toBeVisible({ timeout: 10000 });
 
         // --- Test: Board Post Management ---
-        await page.goto(`/boards/board?brdId=${brdId}`);
+        await page.goto(`/boards/${brdId}`);
         await expect(page.locator("table")).toBeVisible();
 
         // Create Post

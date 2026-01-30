@@ -5,7 +5,7 @@ import path from "path";
 test.describe("Board File Upload", () => {
     test("should create a board post with file attachment", async ({ page, authenticatedPage }) => {
         // 1. Navigate to Board List (Notice)
-        await page.goto("/boards/board?brdId=NOTICE");
+        await page.goto("/boards/NOTICE");
 
         // Wait for table to load
         await page.waitForSelector("table");

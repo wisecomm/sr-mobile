@@ -5,36 +5,22 @@ import { getColumns } from "./columns";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { InputDialog } from "./input-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from "next/navigation";
-import { SearchPageLayout } from "@/components/common/search-page-layout";
+import { useParams } from "next/navigation";
 import { useBoardManagement } from "./hooks/use-board-management";
 import { BoardsBoard } from './types';
 import 'so-grid-react/styles.css';
-import { CustomPagination } from "@/components/utils/CustomPagination";
 import { PaginationState, SortModel } from "so-grid-core";
 import { SOGrid, SOGridApi } from "so-grid-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CustomPaginationM } from "@/components/utils/CustomPaginationM";
 
 export default function BoardsPage() {
-    return (
-        <React.Suspense fallback={<div>Loading...</div>}>
-            <BoardsContent />
-        </React.Suspense>
-    );
-}
-
-function BoardsContent() {
     const { toast } = useToast();
-    const searchParamsHook = useSearchParams();
-    const brdIdParam = searchParamsHook.get("brdId") || "";
+    const router = useRouter();
+
+    const params = useParams();
+    const brdId = (params.brdId as string) || "";
 
     // Management hook
     const {
@@ -50,14 +36,9 @@ function BoardsContent() {
         openDialog,
         closeDialog,
         handleSubmit,
+        handleDelete,
         onSortChange,
-        // Delete Confirmation
-        deleteConfirmOpen,
-        deleteTargetIds,
-        openDeleteConfirm,
-        closeDeleteConfirm,
-        executeDelete,
-    } = useBoardManagement(brdIdParam);
+    } = useBoardManagement(brdId);
 
     const columns = React.useMemo(() => getColumns(), []);
 
@@ -117,19 +98,31 @@ function BoardsContent() {
         if (!selectedRows || selectedRows.length === 0) {
             toast({
                 title: "알림",
-                description: "삭제할 게시물을 선택해주세요.",
+                description: "삭제할 주문을 선택해주세요.",
                 variant: "default",
             });
             return;
         }
 
         const boardIds = selectedRows.map(row => row.boardId);
-        openDeleteConfirm(boardIds);
-    }, [openDeleteConfirm, toast]);
+        await handleDelete(boardIds);
+    }, [handleDelete, toast]);
 
     return (
-        <div className="w-full space-y-6">
-            <SearchPageLayout>
+        <div className="w-full max-w-[100vw] overflow-x-hidden h-screen flex flex-col">
+            {/* Header */}
+            <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-300 shrink-0 z-20">
+                <button
+                    onClick={() => router.replace('/mainmobile')}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
+                >
+                    <ArrowLeft className="w-6 h-6 text-slate-900" />
+                </button>
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight">주문 등록</h1>
+                <div className="w-10 h-10" />
+            </header>
+
+            <main className="flex-1 overflow-y-auto overflow-x-auto space-y-2 mt-2 mx-2">
                 <DataTableToolbar
                     onAdd={handleAdd}
                     onEdit={handleEdit}
@@ -139,51 +132,30 @@ function BoardsContent() {
                     initialStartDate={(searchParams.startDate as string) || ""}
                     initialEndDate={(searchParams.endDate as string) || ""}
                 />
-            </SearchPageLayout>
-            <SOGrid
-                rowData={posts}
-                columnDefs={columns}
-                defaultColDef={DEFAULT_COL_DEF}
-                pagination={true}
-                PaginationComponent={CustomPagination}
-                serverSide={true}
-                totalRows={totalRows}
-                paginationPageSize={pagination.pageSize}
-                onPaginationChange={handlePaginationChange}
-                loading={isLoading}
-                onSortChange={handleSortChange}
-                onGridReady={onGridReady}
-                pageIndex={pagination.pageIndex}
-            />
+                <SOGrid
+                    rowData={posts}
+                    columnDefs={columns}
+                    defaultColDef={DEFAULT_COL_DEF}
+                    pagination={true}
+                    PaginationComponent={CustomPaginationM}
+                    serverSide={true}
+                    totalRows={totalRows}
+                    paginationPageSize={pagination.pageSize}
+                    onPaginationChange={handlePaginationChange}
+                    loading={isLoading}
+                    onSortChange={handleSortChange}
+                    onGridReady={onGridReady}
+                    pageIndex={pagination.pageIndex}
+                />
+            </main>
 
             <InputDialog
                 open={dialogOpen}
                 onOpenChange={(open) => !open && closeDialog()}
                 board={selectedPost}
-                defaultBrdId={brdIdParam}
+                defaultBrdId={brdId}
                 onSubmit={handleSubmit}
             />
-
-            <Dialog open={deleteConfirmOpen} onOpenChange={closeDeleteConfirm}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>게시물 삭제</DialogTitle>
-                        <DialogDescription>
-                            선택한 {deleteTargetIds.length}개의 게시물을 삭제하시겠습니까?
-                            <br />
-                            이 작업은 되돌릴 수 없습니다.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={closeDeleteConfirm}>
-                            취소
-                        </Button>
-                        <Button variant="destructive" onClick={executeDelete}>
-                            삭제
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
