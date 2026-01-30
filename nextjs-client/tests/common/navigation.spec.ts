@@ -17,12 +17,13 @@ test.describe("네비게이션", () => {
 
         test("사용자 관리 메뉴 클릭 시 페이지 이동", async ({ page }) => {
             await page.goto("/mainmenu");
+            await page.waitForLoadState('networkidle');
 
-            // 사용자 관리 메뉴 클릭
-            const userMenu = page.locator('text=사용자').or(page.locator('a[href="/users"]'));
-            if (await userMenu.first().isVisible()) {
+            // 사용자 관리 메뉴 클릭 - use more specific link selector
+            const userMenu = page.locator('a[href="/users"]');
+            if (await userMenu.first().isVisible({ timeout: 5000 }).catch(() => false)) {
                 await userMenu.first().click();
-                await expect(page).toHaveURL(/\/users/);
+                await expect(page).toHaveURL(/\/users/, { timeout: 10000 });
             }
         });
 

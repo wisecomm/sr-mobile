@@ -44,8 +44,21 @@ test.describe("Role Management", () => {
         page.once('dialog', dialog => dialog.accept());
         await page.click('button:has-text("삭제")');
 
-        // Wait for success toast or stability
-        await page.waitForTimeout(1000);
+        // Setup promise to wait for delete API
+        const deleteResponsePromise = page.waitForResponse(
+            resp => resp.url().includes('/roles') && resp.request().method() === 'DELETE'
+        );
+
+        page.once('dialog', dialog => dialog.accept());
+        await page.click('button:has-text("삭제")');
+
+        await deleteResponsePromise;
+        await page.waitForLoadState('networkidle');
+
+        // Search again to verify deletion
+        await page.fill('input[placeholder="권한 아이디 입력"]', roleId);
+        await page.click('button:has-text("조회")');
+        await page.waitForLoadState('networkidle');
 
         await expect(page.getByRole("cell", { name: roleId })).not.toBeVisible({ timeout: 10000 });
     });

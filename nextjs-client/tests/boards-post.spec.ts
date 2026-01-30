@@ -41,14 +41,20 @@ test.describe("Board Post Management", () => {
         // Verify post in list
         await expect(page.getByRole("cell", { name: postTitle })).toBeVisible({ timeout: 10000 });
 
-        // Delete Post
+        // Delete Post - Click toolbar delete button
         const postRow = page.locator("tr").filter({ hasText: postTitle });
         await postRow.getByRole('checkbox').click();
-
-        page.once('dialog', dialog => dialog.accept());
         await page.click('button:has-text("삭제")');
 
-        await expect(page.getByRole("cell", { name: postTitle })).not.toBeVisible({ timeout: 10000 });
+        // Wait for confirmation dialog and confirm delete
+        await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
+        await page.getByRole('dialog').getByRole('button', { name: '삭제' }).click();
+
+        // Wait for delete to complete and reload to verify
+        await page.waitForLoadState('networkidle');
+        await page.reload();
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByRole("cell", { name: postTitle })).toBeHidden({ timeout: 10000 });
 
         // --- Teardown: Delete Board Master ---
         await page.goto("/boards/master");
@@ -64,8 +70,13 @@ test.describe("Board Post Management", () => {
         const boardRow = page.locator("tr").filter({ hasText: brdId });
         await boardRow.getByRole('checkbox').click();
 
+        // Boards master uses native window.confirm()
         page.once('dialog', dialog => dialog.accept());
         await page.click('button:has-text("삭제")');
-        await expect(page.getByRole("cell", { name: brdId })).not.toBeVisible({ timeout: 10000 });
+
+        await page.waitForLoadState('networkidle');
+        await page.reload();
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByRole("cell", { name: brdId })).toBeHidden({ timeout: 10000 });
     });
 });
