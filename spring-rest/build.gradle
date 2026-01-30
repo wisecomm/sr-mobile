@@ -85,4 +85,54 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// --- Deployment Tasks ---
+
+// Helper task to clean and prepare dist directory
+tasks.register('prepareDist') {
+    dependsOn 'bootJar'
+    doLast {
+        delete 'dist'
+        mkdir 'dist'
+        copy {
+            from 'build/libs'
+            into 'dist'
+            include '*.jar'
+        }
+    }
+}
+
+// Dev Deployment Build
+tasks.register('buildDeployDev') {
+    dependsOn 'clean', 'prepareDist'
+    group = 'deployment'
+    description = 'Builds the application for DEVELOPMENT and copies artifacts to dist/'
+    
+    doLast {
+        copy {
+            from 'src/main/resources'
+            into 'dist'
+            include 'application-dev.yml'
+            rename 'application-dev.yml', 'application.yml'
+        }
+        println "✅ Build for DEVELOPMENT completed in 'dist/' directory."
+    }
+}
+
+// Prod Deployment Build
+tasks.register('buildDeployProd') {
+    dependsOn 'clean', 'prepareDist'
+    group = 'deployment'
+    description = 'Builds the application for PRODUCTION and copies artifacts to dist/'
+    
+    doLast {
+        copy {
+            from 'src/main/resources'
+            into 'dist'
+            include 'application-prod.yml'
+            rename 'application-prod.yml', 'application.yml'
+        }
+        println "✅ Build for PRODUCTION completed in 'dist/' directory."
+    }
+}
+
 
