@@ -2,7 +2,6 @@ package com.example.springrest.domain.boards.board.repository;
 
 import com.example.springrest.domain.boards.board.model.entity.BoardFile;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

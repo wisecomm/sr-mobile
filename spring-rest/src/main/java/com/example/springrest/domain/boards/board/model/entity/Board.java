@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.example.springrest.domain.boards.board.model.entity.BoardFile;
 import java.util.List;
 
 /**
