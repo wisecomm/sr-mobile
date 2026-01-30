@@ -168,9 +168,9 @@ export function Sidebar() {
     if (!mounted) return null;
 
     return (
-        <div className="flex flex-col w-[240px] border-r bg-muted/40 dark:bg-card/40">
+        <div className="flex flex-col w-60 border-r bg-muted/40 dark:bg-card/40">
             {/* 로고 */}
-            <div className="flex h-[60px] items-center border-b px-4">
+            <div className="flex h-15 items-center border-b px-4">
                 <Link href="/" className="flex items-center gap-2 font-semibold">
                     <Image
                         src="/next.svg"

@@ -57,7 +57,7 @@ export default function MainMobilePage() {
     return (
         <div className="flex flex-col min-h-screen bg-muted/30 text-foreground max-w-md mx-auto border-x shadow-2xl relative overflow-hidden">
             {/* Background Gradient Blob */}
-            <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-primary/20 rounded-full blur-[100px] opacity-50 pointer-events-none" />
+            <div className="absolute -top-25 -left-25 w-75 h-75 bg-primary/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
 
             {/* Header */}
             <header className="flex items-center justify-between p-5 bg-background/80 backdrop-blur-md border-b sticky top-0 z-20">
@@ -115,7 +115,7 @@ export default function MainMobilePage() {
                             >
                                 <div className="absolute inset-0 bg-linear-to-br from-transparent to-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                                <CardContent className="flex flex-col items-center justify-center p-6 gap-4 h-full min-h-[150px]">
+                                <CardContent className="flex flex-col items-center justify-center p-6 gap-4 h-full min-h-38">
                                     <div className={`
                                         p-4 rounded-full bg-muted/50 group-hover:bg-primary/10 transition-colors duration-300
                                         ${item.color}
