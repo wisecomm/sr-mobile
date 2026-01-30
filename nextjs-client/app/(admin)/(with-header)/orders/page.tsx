@@ -1,31 +1,27 @@
 "use client";
 
+/**
+ * Orders Page
+ * 
+ * Resource Factory 기반 주문 관리 페이지
+ */
+
 import * as React from "react";
+import 'so-grid-react/styles.css';
 import { getColumns } from "./columns";
-import { OrderDetail } from "./types";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { SearchPageLayout } from "@/components/common/search-page-layout";
 import { InputDialog } from "./input-dialog";
 import { useOrderManagement } from "./hooks/use-order-management";
 import { useToast } from "@/hooks/use-toast";
-import 'so-grid-react/styles.css';
+import { PaginationState, SOGrid, SOGridApi, SortModel } from "so-grid-react";
+import { OrderDetail } from "./types";
 import { CustomPagination } from "@/components/utils/CustomPagination";
-import { PaginationState, SortModel } from "so-grid-core";
-import { SOGrid, SOGridApi } from "so-grid-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 export default function OrdersPage() {
     const { toast } = useToast();
 
-    // Use management hook
+    // 주문 관리 비즈니스 로직 훅
     const {
         orders,
         totalRows,
@@ -39,17 +35,11 @@ export default function OrdersPage() {
         openDialog,
         closeDialog,
         handleSubmit,
-        isSaving,
+        handleDelete,
         onSortChange,
-        // Delete Confirmation
-        deleteConfirmOpen,
-        deleteTargetIds,
-        openDeleteConfirm,
-        closeDeleteConfirm,
-        executeDelete,
     } = useOrderManagement();
 
-    // Define columns
+    // 테이블 컬럼 설정
     const columns = React.useMemo(() => getColumns(), []);
 
     const DEFAULT_COL_DEF = {
@@ -63,27 +53,31 @@ export default function OrdersPage() {
         gridApiRef.current = api;
     }, []);
 
-
-    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
-        onPaginationChange(pagination);
-    }, [onPaginationChange]);
-
-    const handleSortChange = React.useCallback((sort: SortModel[]) => {
-        onSortChange(sort);
-    }, [onSortChange]);
-
     /**
-     * Add Button Handler
+     * 추가 버튼 핸들러
      */
     const handleAdd = React.useCallback(() => {
         openDialog();
     }, [openDialog]);
 
     /**
-     * Edit Button Handler (Toolbar)
+     * 페이지네이션 변경 핸들러
+     */
+    const handlePaginationChange = React.useCallback((pagination: PaginationState) => {
+        onPaginationChange(pagination);
+    }, [onPaginationChange]);
+
+    /**
+     * 정렬 변경 핸들러
+     */
+    const handleSortChange = React.useCallback((sort: SortModel[]) => {
+        onSortChange(sort);
+    }, [onSortChange]);
+
+    /**
+     * 수정 버튼 핸들러
      */
     const handleEdit = React.useCallback(() => {
-        // API를 통해 선택된 행들 가져오기
         const selectedRows = gridApiRef.current?.getSelectedRows();
 
         if (!selectedRows || selectedRows.length === 0) {
@@ -100,9 +94,9 @@ export default function OrdersPage() {
     }, [toast, openDialog]);
 
     /**
-     * Delete Button Handler (Toolbar)
+     * 삭제 버튼 핸들러
      */
-    const handleDeleteClick = React.useCallback(() => {
+    const handleDeleteClick = React.useCallback(async () => {
         const selectedRows = gridApiRef.current?.getSelectedRows();
 
         if (!selectedRows || selectedRows.length === 0) {
@@ -114,9 +108,9 @@ export default function OrdersPage() {
             return;
         }
 
-        const orderIds = selectedRows.map(row => row.orderId);
-        openDeleteConfirm(orderIds);
-    }, [openDeleteConfirm, toast]);
+        const ids = selectedRows.map(row => row.orderId);
+        await handleDelete(ids);
+    }, [handleDelete, toast]);
 
     return (
         <div className="w-full space-y-6">
@@ -150,31 +144,9 @@ export default function OrdersPage() {
             <InputDialog
                 open={dialogOpen}
                 onOpenChange={closeDialog}
-                item={selectedOrder}
+                order={selectedOrder}
                 onSubmit={handleSubmit}
-                isSaving={isSaving}
             />
-
-            <Dialog open={deleteConfirmOpen} onOpenChange={closeDeleteConfirm}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>주문 삭제</DialogTitle>
-                        <DialogDescription>
-                            선택한 {deleteTargetIds.length}개의 주문을 삭제하시겠습니까?
-                            <br />
-                            이 작업은 되돌릴 수 없습니다.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={closeDeleteConfirm}>
-                            취소
-                        </Button>
-                        <Button variant="destructive" onClick={executeDelete}>
-                            삭제
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }

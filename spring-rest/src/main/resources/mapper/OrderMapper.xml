@@ -30,10 +30,10 @@
                 AND cust_nm LIKE CONCAT('%', #{custNm}, '%')
             </if>
             <if test="startDate != null and startDate != ''">
-                AND sys_insert_dtm &gt;= #{startDate}::timestamp
+                AND order_date &gt;= #{startDate}::timestamp
             </if>
             <if test="endDate != null and endDate != ''">
-                AND sys_insert_dtm &lt;= #{endDate}::timestamp
+                AND order_date &lt;= #{endDate}::timestamp
             </if>
         </where>
         <choose>

@@ -1,73 +1,28 @@
-import {
-    useOrders,
-    useCreateOrder,
-    useUpdateOrder,
-    useDeleteOrder
-} from './use-order-query';
-import { OrderSearchParams } from '../types';
+/**
+ * useOrderManagement Hook
+ * 
+ * 주문 관리 페이지의 비즈니스 로직 캡슐화
+ */
 
 import { useState, useCallback, useEffect } from 'react';
+import { PaginationState } from '@tanstack/react-table';
+import { useOrders, useCreateOrder, useUpdateOrder, useDeleteOrder } from './use-order-query';
 import { useToast } from '@/hooks/use-toast';
-import { OrderDetail } from '../types';
+import { OrderDetail, OrderSearchParams, OrderFilters } from '../types';
 import { formatDate } from '@/components/common';
-import { PaginationState, SortModel } from "so-grid-core";
+import { SortModel } from 'so-grid-core';
+import { PaginationParams } from '@/lib/base-resource-client';
 
+// export type OrderFilters = Omit<OrderSearchParams, keyof PaginationParams>; // Moved to types.ts
 
-/**
- * 주문 관리 훅 리턴 타입
- */
-export interface UseOrderManagementReturn {
-    // 데이터
-    orders: OrderDetail[];
-    totalRows: number;
-    isLoading: boolean;
-
-    // 페이지네이션
-    pagination: PaginationState;
-    onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => void;
-
-    // 검색
-    searchParams: Partial<OrderSearchParams>;
-    onSearch: (params: Partial<OrderSearchParams>) => void;
-    onSortChange: (sortModel: SortModel[]) => void;
-
-    // 다이얼로그
-    dialogOpen: boolean;
-    selectedOrder: OrderDetail | null;
-    openDialog: (order?: OrderDetail) => void;
-    closeDialog: () => void;
-
-    // CRUD 작업
-    handleCreate: (data: Partial<OrderDetail>) => Promise<void>;
-    handleUpdate: (data: Partial<OrderDetail>) => Promise<void>;
-    handleSubmit: (data: Partial<OrderDetail>) => Promise<void>;
-    isSaving: boolean;
-
-    // 삭제 확인 다이얼로그
-    deleteConfirmOpen: boolean;
-    deleteTargetIds: string[];
-    openDeleteConfirm: (orderIds: string[]) => void;
-    closeDeleteConfirm: () => void;
-    executeDelete: () => Promise<void>;
-}
-
-/**
- * 주문 관리 훅
- */
-export interface UseOrderManagementOptions {
-    initialSearch?: Partial<OrderSearchParams>;
-    initialPagination?: Partial<PaginationState>;
-}
-
-export function useOrderManagement(options: UseOrderManagementOptions = {}): UseOrderManagementReturn {
+export function useOrderManagement() {
     const { toast } = useToast();
 
     // 검색 상태
-    const [searchParams, setSearchParams] = useState<Partial<OrderSearchParams>>({
+    const [searchParams, setSearchParams] = useState<OrderFilters>({
         custNm: '',
         startDate: '',
         endDate: formatDate(new Date()),
-        ...options.initialSearch,
     });
 
     const [sort, setSort] = useState<string[] | undefined>(undefined);
@@ -76,20 +31,15 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
-        ...options.initialPagination,
     });
 
     // 다이얼로그 상태
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
-    // 삭제 확인 다이얼로그 상태
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-    const [deleteTargetIds, setDeleteTargetIds] = useState<string[]>([]);
-
     // API 훅
-    const { data: ordersData, isLoading, isError, error } = useOrders({
-        page: pagination.pageIndex,
+    const { data: ordersData, isLoading, isError, error, refetch } = useOrders({
+        page: pagination.pageIndex + 1,
         size: pagination.pageSize,
         sort,
         ...searchParams,
@@ -103,18 +53,21 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
                 variant: 'destructive',
             });
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isError, error]);
+    }, [isError, error, toast]);
 
-    const createOrderMutation = useCreateOrder();
-    const updateOrderMutation = useUpdateOrder();
-    const deleteOrderMutation = useDeleteOrder();
+    const createMutation = useCreateOrder();
+    const updateMutation = useUpdateOrder();
+    const deleteMutation = useDeleteOrder();
 
-    const onSearch = useCallback((params: Partial<OrderSearchParams>) => {
+    /**
+     * 검색 핸들러
+     */
+    const onSearch = useCallback((params: Partial<OrderFilters>) => {
         setSearchParams((prev) => ({ ...prev, ...params }));
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        // queryKey 변경으로 자동 refetch됨
-    }, []);
+        // refetch는 자동 트리거 되므로 명시적 호출 불필요할 수 있으나, 확실히 하기 위해 유지
+        setTimeout(() => refetch(), 0);
+    }, [refetch]);
 
     const onSortChange = useCallback((sortModel: SortModel[]) => {
         const newSort = sortModel.map(s => `${s.colId},${s.sort}`);
@@ -122,99 +75,66 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         setPagination(prev => ({ ...prev, pageIndex: 0 }));
     }, []);
 
+    /**
+     * 다이얼로그 열기
+     */
     const openDialog = useCallback((order?: OrderDetail) => {
         setSelectedOrder(order || null);
         setDialogOpen(true);
     }, []);
 
+    /**
+     * 다이얼로그 닫기
+     */
     const closeDialog = useCallback(() => {
         setDialogOpen(false);
         setSelectedOrder(null);
     }, []);
 
-    const handleCreate = useCallback(async (data: Partial<OrderDetail>) => {
+    /**
+     * 저장 (생성/수정)
+     */
+    const handleSubmit = useCallback(async (data: Partial<OrderDetail>) => {
         try {
-            await createOrderMutation.mutateAsync(data);
-            toast({
-                title: '등록 완료',
-                description: '새 주문이 등록되었습니다.',
-                variant: 'success',
-            });
+            if (selectedOrder) {
+                await updateMutation.mutateAsync({
+                    id: selectedOrder.orderId,
+                    data,
+                });
+                toast({ title: '수정 완료', description: '주문이 수정되었습니다.', variant: 'success' });
+            } else {
+                await createMutation.mutateAsync(data);
+                toast({ title: '등록 완료', description: '새 주문이 등록되었습니다.', variant: 'success' });
+            }
             closeDialog();
         } catch (error) {
-            const message = error instanceof Error ? error.message : '주문 등록에 실패했습니다.';
-            toast({
-                title: '등록 실패',
-                description: message,
-                variant: 'destructive',
-            });
-            throw error;
+            const message = error instanceof Error ? error.message : '저장에 실패했습니다.';
+            toast({ title: '저장 실패', description: message, variant: 'destructive' });
         }
-    }, [createOrderMutation, toast, closeDialog]);
+    }, [selectedOrder, createMutation, updateMutation, toast, closeDialog]);
 
-    const handleUpdate = useCallback(async (data: Partial<OrderDetail>) => {
-        if (!selectedOrder) throw new Error('선택된 주문이 없습니다.');
-
-        try {
-            await updateOrderMutation.mutateAsync({
-                id: selectedOrder.orderId,
-                data,
-            });
-            toast({
-                title: '수정 완료',
-                description: '주문 정보가 수정되었습니다.',
-                variant: 'success',
-            });
-            closeDialog();
-        } catch (error) {
-            const message = error instanceof Error ? error.message : '주문 수정에 실패했습니다.';
-            toast({
-                title: '수정 실패',
-                description: message,
-                variant: 'destructive',
-            });
-            throw error;
-        }
-    }, [selectedOrder, updateOrderMutation, toast, closeDialog]);
-
-    // 삭제 확인 다이얼로그 열기
-    const openDeleteConfirm = useCallback((orderIds: string[]) => {
+    /**
+     * 삭제
+     */
+    const handleDelete = useCallback(async (orderIds: string[]) => {
         if (orderIds.length === 0) {
             toast({ title: '알림', description: '삭제할 주문을 선택해주세요.', variant: 'default' });
             return;
         }
-        setDeleteTargetIds(orderIds);
-        setDeleteConfirmOpen(true);
-    }, [toast]);
 
-    // 삭제 확인 다이얼로그 닫기
-    const closeDeleteConfirm = useCallback(() => {
-        setDeleteConfirmOpen(false);
-        setDeleteTargetIds([]);
-    }, []);
+        if (!confirm(`${orderIds.length}건의 주문을 삭제하시겠습니까?`)) return;
 
-    // 실제 삭제 실행
-    const executeDelete = useCallback(async () => {
         const results = await Promise.allSettled(
-            deleteTargetIds.map(id => deleteOrderMutation.mutateAsync(id))
+            orderIds.map(id => deleteMutation.mutateAsync(id))
         );
 
         const succeeded = results.filter(r => r.status === 'fulfilled').length;
-        if (succeeded === deleteTargetIds.length) {
+        if (succeeded === orderIds.length) {
             toast({ title: '삭제 완료', description: `${succeeded}개의 주문이 삭제되었습니다.`, variant: 'success' });
         } else {
-            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${deleteTargetIds.length - succeeded}개 실패`, variant: 'destructive' });
+            toast({ title: '일부 삭제 실패', description: `${succeeded}개 성공, ${orderIds.length - succeeded}개 실패`, variant: 'destructive' });
         }
-        closeDeleteConfirm();
-    }, [deleteTargetIds, deleteOrderMutation, toast, closeDeleteConfirm]);
-
-    const handleSubmit = useCallback(async (data: Partial<OrderDetail>) => {
-        if (selectedOrder) {
-            await handleUpdate(data);
-        } else {
-            await handleCreate(data);
-        }
-    }, [selectedOrder, handleCreate, handleUpdate]);
+    }, [deleteMutation, toast]);
 
     return {
         orders: ordersData?.list || [],
@@ -229,14 +149,7 @@ export function useOrderManagement(options: UseOrderManagementOptions = {}): Use
         selectedOrder,
         openDialog,
         closeDialog,
-        handleCreate,
-        handleUpdate,
         handleSubmit,
-        isSaving: createOrderMutation.isPending || updateOrderMutation.isPending,
-        deleteConfirmOpen,
-        deleteTargetIds,
-        openDeleteConfirm,
-        closeDeleteConfirm,
-        executeDelete,
+        handleDelete,
     };
 }

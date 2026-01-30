@@ -5,15 +5,21 @@ import { test as base, expect } from "@playwright/test";
  * 로그인이 필요한 테스트에서 사용
  */
 export const test = base.extend<{ authenticatedPage: void }>({
-    authenticatedPage: async ({ page }, use) => {
+    authenticatedPage: async ({ page, context }, use) => {
         // 로그인 수행
         await page.goto("/login");
         await page.fill('input[name="userId"]', "admin");
         await page.fill('input[name="userPwd"]', "12345678");
         await page.click('button[type="submit"]');
 
-        // 로그인 완료 대기
+        // 로그인 완료 대기 - Wait for token storage
         await page.waitForURL(/\/(mainmenu|users|roles|menus|orders)/);
+
+        // Ensure cookies/localstorage are set
+        await page.waitForTimeout(1000);
+
+        // Save storage state
+        await context.storageState({ path: 'playwright/.auth/user.json' });
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
         await use();

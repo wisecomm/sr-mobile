@@ -13,6 +13,7 @@ import { ApiResponse, PageResponse } from '@/types';
 export interface PaginationParams {
     page: number;
     size: number;
+    sort?: string | string[];
 }
 
 /**
@@ -78,7 +79,7 @@ export function filterItems<T>(
  */
 export class BaseResourceClient<T> {
     protected baseUrl: string;
-    protected resourceName: string;
+    public readonly resourceName: string;
 
     constructor(config: ResourceClientConfig) {
         this.baseUrl = config.baseUrl;

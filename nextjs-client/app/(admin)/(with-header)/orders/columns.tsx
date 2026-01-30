@@ -1,5 +1,7 @@
-import { OrderDetail } from "./types";
-import { SOColumnDef } from "so-grid-react";
+"use client";
+
+import { OrderDetail, OrderStatusLabels } from "./types";
+import { SOColumnDef } from "so-grid-core";
 import { CommonGrid } from "@/components/utils/common-grid";
 
 export const getColumns = (): SOColumnDef<OrderDetail>[] => [
@@ -11,38 +13,39 @@ export const getColumns = (): SOColumnDef<OrderDetail>[] => [
     },
     {
         field: 'orderId',
-        headerName: '주문번호',
-        maxWidth: 100,
+        headerName: '주문 번호',
+        maxWidth: 120,
         sortable: true,
-    },
-    {
-        field: 'orderNm',
-        headerName: '주문명',
-        maxWidth: 150,
-    },
-    {
-        field: 'custNm',
-        headerName: '고객명',
-        maxWidth: 150,
     },
     {
         field: 'orderStatus',
         headerName: '상태',
         maxWidth: 100,
+        cellStyle: { textAlign: 'center' },
+        valueFormatter: ({ value }) => OrderStatusLabels[String(value)] || value,
+    },
+    {
+        field: 'custNm',
+        headerName: '고객명',
+        maxWidth: 120,
+    },
+    {
+        field: 'orderNm',
+        headerName: '주문명',
+        maxWidth: 200,
     },
     {
         field: 'orderAmt',
         headerName: '금액',
-        valueFormatter: CommonGrid.formatNumber,
+        maxWidth: 120,
         cellStyle: { textAlign: 'right' },
-        maxWidth: 80,
+        valueFormatter: ({ value }) => Number(value).toLocaleString(),
     },
     {
         field: 'orderDate',
-        headerName: '주문일시',
+        headerName: '주문일',
         valueFormatter: CommonGrid.formatDate,
         cellStyle: { textAlign: 'center' },
-        maxWidth: 80,
+        maxWidth: 120,
     },
-
 ];

@@ -1,90 +1,25 @@
 /**
- * Order API + Query Hooks
+ * Order Query Hooks
+ * 
+ * Resource Factory를 사용하여 자동으로 생성된 CRUD 훅
  */
 
-import { apiClient } from '@/lib/api-client';
-import { ApiResponse, PageResponse } from '@/types';
+import { BaseResourceClient } from '@/lib/base-resource-client';
+import { createResourceHooks } from '@/hooks/query/resource-factory';
 import { OrderDetail, OrderSearchParams } from '../types';
-import { createPaginatedQuery, createMutation } from '@/hooks/query/factory';
 
-/**
- * 주문 검색 파라미터 - types.ts 로 이동됨
- */
-// OrderSearchParams removed
-
-
-/**
- * API 함수들
- */
-const BASE_URL = '/v1/mgmt/orders';
-
-const orderApi = {
-    search: (params: OrderSearchParams): Promise<ApiResponse<PageResponse<OrderDetail>>> => {
-        const queryParams: Record<string, string | number | string[]> = {
-            page: params.page + 1,
-            size: params.size,
-        };
-        if (params.custNm) queryParams.custNm = params.custNm;
-        if (params.startDate) queryParams.startDate = params.startDate;
-        if (params.endDate) queryParams.endDate = params.endDate;
-        if (params.sort) queryParams.sort = params.sort;
-
-        return apiClient.get<PageResponse<OrderDetail>>(BASE_URL, queryParams);
-    },
-
-    getById: (id: string): Promise<ApiResponse<OrderDetail>> => {
-        return apiClient.get<OrderDetail>(`${BASE_URL}/${id}`);
-    },
-
-    create: (data: Partial<OrderDetail>): Promise<ApiResponse<void>> => {
-        return apiClient.post<void>(BASE_URL, data);
-    },
-
-    update: (id: string, data: Partial<OrderDetail>): Promise<ApiResponse<void>> => {
-        return apiClient.put<void>(`${BASE_URL}/${id}`, data);
-    },
-
-    delete: (id: string): Promise<ApiResponse<void>> => {
-        return apiClient.delete<void>(`${BASE_URL}/${id}`);
-    },
-};
-
-/**
- * Query Keys
- */
-export const orderKeys = {
-    all: ['orders'] as const,
-    lists: () => [...orderKeys.all, 'list'] as const,
-    list: (page: number, size: number, custNm?: string, startDate?: string, endDate?: string, sort?: string[]) =>
-        [...orderKeys.lists(), { page, size, custNm, startDate, endDate, sort }] as const,
-    detail: (id: string) => [...orderKeys.all, 'detail', id] as const,
-};
-
-/**
- * Queries
- */
-export const useOrders = createPaginatedQuery<
-    PageResponse<OrderDetail>,
-    { page: number; size: number; custNm?: string; startDate?: string; endDate?: string; sort?: string[] }
->({
-    queryKey: (params) => orderKeys.list(params.page, params.size, params.custNm, params.startDate, params.endDate, params.sort),
-    queryFn: (params) => orderApi.search(params),
+// 리소스 클라이언트 생성
+const client = new BaseResourceClient<OrderDetail>({
+    baseUrl: '/v1/mgmt/orders',
+    resourceName: 'orders',
 });
 
-/**
- * Mutations
- */
-export const useCreateOrder = createMutation<void, Partial<OrderDetail>>({
-    mutationFn: (data) => orderApi.create(data),
-    invalidateKeys: [orderKeys.all],
-});
-
-export const useUpdateOrder = createMutation<void, { id: string; data: Partial<OrderDetail> }>({
-    mutationFn: ({ id, data }) => orderApi.update(id, data),
-    invalidateKeys: [orderKeys.all],
-});
-
-export const useDeleteOrder = createMutation<void, string>({
-    mutationFn: (id) => orderApi.delete(id),
-    invalidateKeys: [orderKeys.all],
-});
+// 팩토리를 통해 표준 훅 생성
+export const {
+    keys: orderKeys,
+    useList: useOrders,
+    useDetail: useOrder,
+    useCreate: useCreateOrder,
+    useUpdate: useUpdateOrder,
+    useDelete: useDeleteOrder,
+} = createResourceHooks<OrderDetail, OrderSearchParams>(client);

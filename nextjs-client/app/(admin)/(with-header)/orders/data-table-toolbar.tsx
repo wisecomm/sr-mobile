@@ -5,16 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { ActionButtons, toolbarButtonClass, DateInput } from "@/components/common";
+import { DateInput, ActionButtons, toolbarButtonClass } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
-
-import { OrderSearchParams } from "./types";
+import { OrderFilters } from "./types";
 
 interface DataTableToolbarProps {
     onAdd: () => void;
     onEdit: () => void;
     onDelete: () => void;
-    onSearch: (params: Partial<OrderSearchParams>) => void;
+    onSearch: (params: OrderFilters) => void;
     isLoading?: boolean;
     initialStartDate?: string;
     initialEndDate?: string;
