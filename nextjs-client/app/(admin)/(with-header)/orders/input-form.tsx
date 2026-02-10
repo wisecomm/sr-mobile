@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { OrderDetail, OrderStatusLabels } from "./types";
@@ -37,7 +37,7 @@ export function InputForm({ item, onSubmit, onCancel }: InputFormProps) {
     const isEdit = !!item;
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema) as Resolver<z.infer<typeof formSchema>>,
         defaultValues: {
             orderId: item?.orderId || "",
             custNm: item?.custNm || "",
