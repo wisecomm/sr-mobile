@@ -59,7 +59,7 @@ export function DateInput({
     value,
     onChange,
     onKeyDown,
-    placeholder = "YYYY-MM-DD",
+    placeholder = "yyyy-MM-dd",
     className,
     variant = "button", // 기본값 변경: button
 }: DateInputProps) {
@@ -125,16 +125,16 @@ export function DateInput({
                     <Button
                         variant={"outline"}
                         className={cn(
-                            "w-[140px] justify-between text-left font-normal px-2",
+                            "w-[140px] justify-start text-left font-normal px-2 gap-2",
                             !value && "text-muted-foreground",
                             className
                         )}
                         onKeyDown={onKeyDown}
                     >
-                        <span className="flex-1 truncate text-left">
+                        <span className="truncate text-left tabular-nums shrink-0">
                             {dateObj ? format(dateObj, "yyyy-MM-dd") : placeholder}
                         </span>
-                        <CalendarIcon className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                        <CalendarIcon className="h-4 w-4 opacity-50 shrink-0" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

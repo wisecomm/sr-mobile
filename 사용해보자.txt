@@ -1,0 +1,25 @@
+analyze-issue.md : "7번 이슈 분석해줘. (analyze-issue 워크플로우 써서)"
+-- 깃허브 이슈 탭 사용 : https://github.com/wisecomm/dog-love/issues
+
+audit-changelog.md : "이번 릴리즈 준비하게 체인지로그 감사(Audit) 좀 해줘. - audit-changelog 워크플로우 써서"
+-- 깃허브 릴리즈 탭 사용 : CHANGELOG.md 파일 작성 위치 수정,
+                      개발자가 만들고 릴리즈할때마다 업데이트 해야함, ( 그러면 양방향 채크한다고 함 )
+평소 개발 중 (계속 추가):
+새로운 기능을 만들거나 버그를 고칠 때마다 
+CHANGELOG.md의 [Unreleased] (아직 배포 안 됨) 섹션 밑에 계속 한 줄씩 쌓아둡니다.
+예:
+markdown
+## [Unreleased]
+- 로그인 버그 수정
+- 장바구니 기능 추가
+- 결제 모듈 연동
+... (계속 추가)
+
+배포(Release) 시점 (확정):
+배포하는 날이 오면, 쌓여 있던 [Unreleased]의 제목을 **버전 번호(예: 1.0.0)**로 바꿉니다.
+그리고 다시 위에 빈 [Unreleased] 섹션을 새로 만듭니다.
+이렇게 하면 "이번 버전에 뭐가 변했는지" 한눈에 볼 수 있고, 나중에 "언제 그 기능이 들어갔지?" 찾아보기도 매우 쉬워집니다.
+
+
+review-pr.md : "지금 수정한 파일들 리뷰해줘 - review-pr 워크플로우 써서"
+-- 깃허브 PR 탭 사용 : https://github.com/wisecomm/dog-love/pulls
